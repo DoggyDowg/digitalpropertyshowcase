@@ -87,6 +87,15 @@ export async function generateMetadata(
   const propertyTitle = property.content?.seo?.title || `${property.name} - ${property.suburb}`
   const propertyDescription = property.content?.seo?.description || `Discover ${property.name} in ${property.suburb}. A stunning property showcased by ${agencyName}.`
 
+  // Prepare the image object
+  const imageObject = ogImage ? {
+    url: ogImage,
+    width: 1200,
+    height: 630,
+    alt: propertyTitle,
+    type: 'image/jpeg',
+  } : null
+
   const metadata: Metadata = {
     title: propertyTitle,
     description: propertyDescription,
@@ -98,20 +107,15 @@ export async function generateMetadata(
       siteName: agencyName,
       locale: 'en_AU',
       type: 'website',
-      images: ogImage ? [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: propertyTitle,
-        },
-      ] : undefined,
+      images: imageObject ? [imageObject] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title: property.content?.og?.title || propertyTitle,
       description: property.content?.og?.description || propertyDescription,
-      images: ogImage ? [ogImage] : undefined,
+      site: '@colellaproperty', // Add your Twitter handle here
+      creator: '@colellaproperty', // Add your Twitter handle here
+      images: imageObject ? [imageObject] : undefined,
     },
     robots: {
       index: true,
