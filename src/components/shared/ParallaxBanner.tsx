@@ -105,7 +105,7 @@ export function ParallaxBanner({ imageSrc, title, loading = false }: ParallaxBan
           {/* Image container */}
           <div 
             ref={imageRef} 
-            className="absolute -top-[150px] left-0 right-0 h-[460px] overflow-hidden"
+            className="absolute -top-[150px] left-0 right-0 h-[460px] overflow-hidden z-0"
           >
             <Image
               src={imageSrc}
@@ -122,12 +122,15 @@ export function ParallaxBanner({ imageSrc, title, loading = false }: ParallaxBan
             />
           </div>
           {/* Overlay */}
-          <div className="absolute inset-0 bg-brand-dark/50" />
+          <div 
+            className="absolute inset-0 z-10" 
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          />
         </div>
       )}
       {/* Content */}
-      <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center justify-center">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-light text-brand-light tracking-wider">
+      <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center justify-center z-20">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-brand-light tracking-wider">
           {title}
         </h2>
       </div>

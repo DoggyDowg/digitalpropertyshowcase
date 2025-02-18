@@ -52,7 +52,6 @@ export function Footer({ property }: FooterProps) {
     <footer id="contact" className="bg-brand-dark text-brand-light">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
         <div className="mb-4">
-          <h2 className="text-2xl font-light">{property.name}</h2>
           <p className="text-lg mt-1">IS THIS THE ONE?</p>
           <p className="font-heading text-xl text-brand-light/80 mt-2">
             {property.street_address}, {property.suburb}, {property.state}
