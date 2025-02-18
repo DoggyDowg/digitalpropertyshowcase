@@ -22,6 +22,19 @@ export function YourHome({ property }: YourHomeProps) {
   const { content } = property
   const featuresData = content.features || { items: [], header: '', headline: '', description: '' }
 
+  // Debug logs
+  useEffect(() => {
+    console.log('[YourHome] Component state:', {
+      propertyId: property.id,
+      isDemoProperty: property.is_demo,
+      bannerUrl,
+      bannerLoading,
+      homeImageUrl,
+      homeImageLoading,
+      featuresData
+    })
+  }, [property.id, property.is_demo, bannerUrl, bannerLoading, homeImageUrl, homeImageLoading, featuresData])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -69,14 +82,12 @@ export function YourHome({ property }: YourHomeProps) {
   }, [])
 
   return (
-    <div className="flex flex-col">
-      <div id="features">
-        <ParallaxBanner
-          imageSrc={bannerUrl || '/images/banners/yourhome.jpg'}
-          title={featuresData.banner_title || "YOUR HOME"}
-          loading={bannerLoading}
-        />
-      </div>
+    <section id="features" className="relative bg-brand-light">
+      <ParallaxBanner
+        imageSrc={bannerUrl || '/images/banners/yourhome.jpg'}
+        title={featuresData.banner_title || "YOUR HOME"}
+        loading={bannerLoading}
+      />
 
       {/* Content Section */}
       <section className="pt-20 pb-20 px-6 sm:px-8 lg:px-12 bg-brand-light">
@@ -171,6 +182,6 @@ export function YourHome({ property }: YourHomeProps) {
           </div>
         </div>
       </section>
-    </div>
+    </section>
   )
 } 

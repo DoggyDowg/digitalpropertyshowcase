@@ -10,6 +10,9 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
   const supabase = createClientComponentClient()
 
   useEffect(() => {
+    let isMounted = true
+    const controller = new AbortController()
+
     async function loadImage() {
       if (!propertyId) {
         console.log('[useFooterImage] No propertyId provided')
@@ -41,12 +44,17 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
 
             // Verify if the image exists by making a HEAD request
             try {
-              const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+              const response = await fetch(publicUrlData.publicUrl, { 
+                method: 'HEAD',
+                signal: controller.signal
+              })
               if (response.ok) {
                 console.log(`[useFooterImage] Found demo footer image in ${format} format`)
-                setImageUrl(publicUrlData.publicUrl)
-                foundImage = true
-                break
+                if (isMounted) {
+                  setImageUrl(publicUrlData.publicUrl)
+                  foundImage = true
+                  break
+                }
               }
             } catch (err) {
               console.log(`[useFooterImage] Error checking ${format} format:`, err)
@@ -55,9 +63,13 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
 
           if (!foundImage) {
             console.error('[useFooterImage] No supported image format found for demo footer')
-            setImageUrl(null)
+            if (isMounted) {
+              setImageUrl(null)
+            }
           }
-          setLoading(false)
+          if (isMounted) {
+            setLoading(false)
+          }
           return
         }
 
@@ -75,8 +87,10 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
           console.log('[useFooterImage] Database query error:', error)
           if (error.code === 'PGRST116') {
             console.log('[useFooterImage] No footer image found for property')
-            setImageUrl(null)
-            setLoading(false)
+            if (isMounted) {
+              setImageUrl(null)
+              setLoading(false)
+            }
             return
           }
           throw error
@@ -91,22 +105,50 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
             .getPublicUrl(data.storage_path)
 
           console.log('[useFooterImage] Generated public URL:', publicUrlData.publicUrl)
-          setImageUrl(publicUrlData.publicUrl)
+          
+          // Verify the image exists
+          try {
+            const response = await fetch(publicUrlData.publicUrl, { 
+              method: 'HEAD',
+              signal: controller.signal
+            })
+            if (response.ok) {
+              if (isMounted) {
+                setImageUrl(publicUrlData.publicUrl)
+              }
+            } else {
+              throw new Error('Image not accessible')
+            }
+          } catch (err) {
+            console.error('[useFooterImage] Error verifying image accessibility:', err)
+            throw err
+          }
         } else {
           console.log('[useFooterImage] No storage path found in asset data')
-          setImageUrl(null)
+          if (isMounted) {
+            setImageUrl(null)
+          }
         }
       } catch (err) {
         console.error('[useFooterImage] Error loading footer image:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load footer image'))
+        if (isMounted) {
+          setError(err instanceof Error ? err : new Error('Failed to load footer image'))
+        }
       } finally {
-        console.log('[useFooterImage] Final state:', { imageUrl, loading: false, error })
-        setLoading(false)
+        if (isMounted) {
+          console.log('[useFooterImage] Final state:', { imageUrl, loading: false, error })
+          setLoading(false)
+        }
       }
     }
 
     loadImage()
-  }, [supabase, propertyId, isDemoProperty, error, imageUrl])
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [supabase, propertyId, isDemoProperty])
 
   return { imageUrl, loading, error }
 } 

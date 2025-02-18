@@ -1,12 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'ik.imagekit.io',
-      'placehold.co',
-      'picsum.photos',
-      'loremflickr.com'
-    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io'
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co'
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos'
+      },
+      {
+        protocol: 'https',
+        hostname: 'loremflickr.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'urguvlckmcehdiibsiwf.supabase.co'
+      }
+    ]
   },
   webpack: (config, { isServer }) => {
     // Handle PDF.js

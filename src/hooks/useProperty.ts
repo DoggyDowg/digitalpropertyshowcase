@@ -36,6 +36,12 @@ export function useProperty(propertyId?: string) {
         if (propertyError) throw propertyError
 
         if (propertyData) {
+          console.log('Property data loaded:', {
+            id: propertyData.id,
+            name: propertyData.name,
+            is_demo: propertyData.is_demo,
+            agency_id: propertyData.agency_id
+          })
           console.log('Property data:', propertyData)
           console.log('Agency settings:', propertyData.agency_settings)
 
@@ -43,10 +49,10 @@ export function useProperty(propertyId?: string) {
           const agencyBranding = propertyData.agency_settings?.branding || {}
           if (agencyBranding.logo) {
             const timestamp = Date.now()
-            if (agencyBranding.logo.dark) {
+            if (agencyBranding.logo.dark && !agencyBranding.logo.dark.includes('?t=')) {
               agencyBranding.logo.dark = `${agencyBranding.logo.dark}?t=${timestamp}`
             }
-            if (agencyBranding.logo.light) {
+            if (agencyBranding.logo.light && !agencyBranding.logo.light.includes('?t=')) {
               agencyBranding.logo.light = `${agencyBranding.logo.light}?t=${timestamp}`
             }
             // Add cache busting for favicon

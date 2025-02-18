@@ -31,6 +31,7 @@ export function RobustImage({
   const hasRegisteredAsset = useRef(false)
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in')
   const imageRef = useRef<HTMLImageElement>(null)
+  const lastUrlRef = useRef<string>(src)
 
   // Verify image URL on mount and changes
   useEffect(() => {
@@ -39,6 +40,15 @@ export function RobustImage({
       setError(true)
       return
     }
+
+    // Skip verification if URL hasn't changed (ignoring cache busting)
+    const baseUrl = src.split('?')[0]
+    const lastBaseUrl = lastUrlRef.current.split('?')[0]
+    if (baseUrl === lastBaseUrl) {
+      return
+    }
+
+    lastUrlRef.current = src
 
     // Verify the URL is valid
     const verifyImage = async () => {
@@ -66,9 +76,10 @@ export function RobustImage({
 
   // Register the image as an asset to load
   useEffect(() => {
-    if (src && !hasRegisteredAsset.current) {
+    const baseUrl = src.split('?')[0]
+    if (baseUrl && !hasRegisteredAsset.current) {
       console.log('[RobustImage] Registering asset:', { 
-        src,
+        src: baseUrl,
         isSupabaseUrl,
         fill,
         width,
@@ -79,10 +90,12 @@ export function RobustImage({
       registerAsset()
     }
 
-    // Reset states when image source changes
+    // Reset states when base image URL changes
     return () => {
-      if (src) {
-        console.log('[RobustImage] Cleaning up for:', { src })
+      const newBaseUrl = src.split('?')[0]
+      const lastBaseUrl = lastUrlRef.current.split('?')[0]
+      if (newBaseUrl !== lastBaseUrl) {
+        console.log('[RobustImage] Cleaning up for:', { src: baseUrl })
         setIsLoaded(false)
         setError(false)
         hasRegisteredAsset.current = false
@@ -115,8 +128,9 @@ export function RobustImage({
     }
   }
 
-  // Add cache busting for Supabase URLs
-  const imageSrc = isSupabaseUrl ? `${src}?t=${Date.now()}` : src
+  // Add cache busting for Supabase URLs, but maintain the same timestamp within component lifecycle
+  const cacheBuster = useRef<string>(`?t=${Date.now()}`)
+  const imageSrc = isSupabaseUrl ? `${src.split('?')[0]}${cacheBuster.current}` : src
 
   return (
     <div className="relative w-full h-full">

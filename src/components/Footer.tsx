@@ -86,6 +86,7 @@ export function Footer({ property }: FooterProps) {
                 fill
                 className="object-cover rounded-lg"
                 priority
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             ) : (
               <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
