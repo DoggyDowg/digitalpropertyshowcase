@@ -20,4 +20,13 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
+};
+
+// Basic JSON-LD for the website
+export const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: siteConfig.name,
+  description: siteConfig.description,
+  url: siteConfig.url,
 }; 
