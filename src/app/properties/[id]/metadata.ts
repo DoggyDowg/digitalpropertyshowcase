@@ -1,8 +1,13 @@
 import { Metadata } from 'next'
 import { getProperty } from '@/utils/propertyUtils'
 import { getGalleryImages } from '@/utils/galleryUtils'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  // Initialize Supabase client
+  const supabase = createServerComponentClient({ cookies })
+
   // Get property data
   const property = await getProperty(params.id)
 
@@ -15,9 +20,31 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
   const agencyName = property.agency_name || property.agency_settings?.copyright?.split('©')?.[1]?.trim() || ''
   
-  // Get the first gallery image for OG image
-  const galleryImages = await getGalleryImages(property.id)
-  const ogImage = galleryImages?.[0]?.src || property.agency_settings?.branding?.logo?.dark
+  // Get the footer image for OG image
+  let ogImage = ''
+  
+  // First try to get the footer image
+  const { data: footerAsset } = await supabase
+    .from('assets')
+    .select('storage_path')
+    .eq('property_id', params.id)
+    .eq('category', 'footer')
+    .eq('status', 'active')
+    .single()
+
+  if (footerAsset?.storage_path) {
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('property-assets')
+      .getPublicUrl(footerAsset.storage_path)
+    ogImage = publicUrlData.publicUrl
+  }
+
+  // If no footer image, fallback to first gallery image
+  if (!ogImage) {
+    const galleryImages = await getGalleryImages(params.id)
+    ogImage = galleryImages?.[0]?.src || property.agency_settings?.branding?.logo?.dark || ''
+  }
 
   // Get the base URL for this property
   // First try property's custom domain, then deployment URL, then fallback to env variable
@@ -26,43 +53,49 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
                  process.env.NEXT_PUBLIC_BASE_URL || 
                  'https://digipropshow.com'
 
+  // Construct the property URL
+  const propertyUrl = `${baseUrl}/properties/${params.id}`
+
+  // Get the property title
+  const propertyTitle = property.content?.seo?.title || `${property.name} - ${property.suburb}`
+  const propertyDescription = property.content?.seo?.description || `Discover ${property.name} in ${property.suburb}. A stunning property showcased by ${agencyName}.`
+
   return {
-    // Use SEO title and description from content
-    title: property.content?.seo?.title || `${property.name} - ${property.suburb}`,
-    description: property.content?.seo?.description,
+    title: propertyTitle,
+    description: propertyDescription,
+    metadataBase: new URL(baseUrl),
     
-    // Use OG specific content for social sharing
     openGraph: {
-      title: property.content?.og?.title || property.content?.seo?.title || `${property.name} - ${property.suburb}`,
-      description: property.content?.og?.description || property.content?.seo?.description,
-      images: [
-        {
-          url: ogImage || '',
-          width: 1200,
-          height: 630,
-          alt: property.name,
-        },
-      ],
+      title: property.content?.og?.title || propertyTitle,
+      description: property.content?.og?.description || propertyDescription,
+      url: propertyUrl,
+      siteName: agencyName,
       locale: 'en_AU',
       type: 'website',
-      siteName: agencyName,
-      url: `${baseUrl}/properties/${params.id}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: propertyTitle,
+        },
+      ],
     },
     
-    // Use OG content for Twitter as well
     twitter: {
       card: 'summary_large_image',
-      title: property.content?.og?.title || property.content?.seo?.title || `${property.name} - ${property.suburb}`,
-      description: property.content?.og?.description || property.content?.seo?.description,
-      images: [ogImage || ''],
+      title: property.content?.og?.title || propertyTitle,
+      description: property.content?.og?.description || propertyDescription,
+      images: [ogImage],
     },
     
     robots: {
       index: true,
       follow: true,
     },
+    
     alternates: {
-      canonical: `${baseUrl}/properties/${params.id}`,
+      canonical: propertyUrl,
     },
   }
 } 

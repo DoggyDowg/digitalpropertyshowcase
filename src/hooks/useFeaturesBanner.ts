@@ -3,9 +3,6 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-const MAX_RETRIES = 3
-const RETRY_DELAY = 1000 // 1 second
-
 export function useFeaturesBanner(propertyId?: string, isDemoProperty?: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -13,10 +10,6 @@ export function useFeaturesBanner(propertyId?: string, isDemoProperty?: boolean)
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    let isMounted = true
-    let retryCount = 0
-    const controller = new AbortController()
-
     async function loadBanner() {
       if (!propertyId) {
         console.log('[useFeaturesBanner] No propertyId provided')
@@ -27,131 +20,82 @@ export function useFeaturesBanner(propertyId?: string, isDemoProperty?: boolean)
       try {
         console.log('[useFeaturesBanner] Starting to load banner:', {
           propertyId,
-          isDemoProperty,
-          retryCount
+          isDemoProperty
         })
         setLoading(true)
         setError(null)
 
-        // For real properties, query the assets table first
-        if (!isDemoProperty) {
-          console.log('[useFeaturesBanner] Loading real property banner')
-          const { data, error } = await supabase
-            .from('assets')
-            .select('storage_path, type')
-            .eq('property_id', propertyId)
-            .eq('category', 'features_banner')
-            .eq('status', 'active')
-            .single()
-
-          console.log('[useFeaturesBanner] Query result:', { data, error })
-
-          if (error) {
-            if (error.code === 'PGRST116') {
-              console.log('[useFeaturesBanner] No features banner found for property')
-              if (isMounted) {
-                setImageUrl(null)
-                setLoading(false)
-              }
-              return
-            }
-            throw error
-          }
-
-          if (data?.storage_path) {
+        // If it's a demo property, use the demo banner
+        if (isDemoProperty) {
+          console.log('[useFeaturesBanner] Loading demo banner')
+          const supportedFormats = ['webp', 'jpg', 'jpeg', 'png']
+          let foundImage = false
+          
+          for (const format of supportedFormats) {
             const { data: publicUrlData } = supabase
               .storage
               .from('property-assets')
-              .getPublicUrl(data.storage_path)
+              .getPublicUrl(`demo/features_banner/banner.${format}`)
 
-            console.log('[useFeaturesBanner] Generated public URL:', publicUrlData.publicUrl)
-
-            // Verify the image exists and is accessible
+            // Verify if the image exists
             try {
-              const response = await fetch(publicUrlData.publicUrl, { 
-                method: 'HEAD',
-                signal: controller.signal
-              })
-              
+              const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
               if (response.ok) {
-                console.log('[useFeaturesBanner] Successfully loaded real property banner')
-                if (isMounted) {
-                  setImageUrl(publicUrlData.publicUrl)
-                  setLoading(false)
-                }
-                return
+                console.log(`[useFeaturesBanner] Found banner image in ${format} format`)
+                setImageUrl(publicUrlData.publicUrl)
+                foundImage = true
+                break
               }
-            } catch (err) {
-              console.error('[useFeaturesBanner] Error verifying banner accessibility:', err)
-              throw err
+            } catch {
+              console.log(`[useFeaturesBanner] No ${format} format found for banner image`)
             }
           }
+
+          if (!foundImage) {
+            console.error('[useFeaturesBanner] No supported image format found for demo banner')
+            setImageUrl(null)
+          }
+          return
         }
 
-        // If we're here, either it's a demo property or the live property's image failed to load
-        if (isDemoProperty) {
-          console.log('[useFeaturesBanner] Loading demo banner')
-          // Prioritize WebP for better performance
+        // Otherwise, query the assets table for a real property
+        console.log('[useFeaturesBanner] Fetching banner for property:', propertyId)
+        const { data, error } = await supabase
+          .from('assets')
+          .select('storage_path')
+          .eq('property_id', propertyId)
+          .eq('category', 'features_banner')
+          .eq('status', 'active')
+          .single()
+
+        if (error) {
+          if (error.code === 'PGRST116') {
+            console.log('[useFeaturesBanner] No features banner found for property')
+            setImageUrl(null)
+            return
+          }
+          throw error
+        }
+
+        if (data?.storage_path) {
           const { data: publicUrlData } = supabase
             .storage
             .from('property-assets')
-            .getPublicUrl('demo/features_banner/banner.webp')
+            .getPublicUrl(data.storage_path)
 
-          try {
-            const response = await fetch(publicUrlData.publicUrl, { 
-              method: 'HEAD',
-              signal: controller.signal
-            })
-            
-            if (response.ok) {
-              console.log('[useFeaturesBanner] Successfully loaded demo banner')
-              if (isMounted) {
-                setImageUrl(publicUrlData.publicUrl)
-                setLoading(false)
-              }
-              return
-            }
-          } catch (err) {
-            console.log('[useFeaturesBanner] Error checking WebP banner:', err)
-            // Fall back to JPG if WebP fails
-            const jpgData = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl('demo/features_banner/banner.jpg')
-
-            if (isMounted) {
-              setImageUrl(jpgData.data.publicUrl)
-              setLoading(false)
-            }
-            return
-          }
+          setImageUrl(publicUrlData.publicUrl)
+        } else {
+          setImageUrl(null)
         }
-
-        // If we reach here, all attempts to load the image have failed
-        throw new Error('Failed to load features banner')
       } catch (err) {
         console.error('[useFeaturesBanner] Error loading features banner:', err)
-        
-        // Implement retry logic
-        if (retryCount < MAX_RETRIES) {
-          console.log(`[useFeaturesBanner] Retrying in ${RETRY_DELAY}ms... (${retryCount + 1}/${MAX_RETRIES})`)
-          retryCount++
-          setTimeout(loadBanner, RETRY_DELAY)
-        } else {
-          if (isMounted) {
-            setError(err instanceof Error ? err : new Error('Failed to load features banner'))
-            setLoading(false)
-          }
-        }
+        setError(err instanceof Error ? err : new Error('Failed to load features banner'))
+      } finally {
+        setLoading(false)
       }
     }
 
     loadBanner()
-
-    return () => {
-      isMounted = false
-      controller.abort()
-    }
   }, [supabase, propertyId, isDemoProperty])
 
   return { imageUrl, loading, error }
