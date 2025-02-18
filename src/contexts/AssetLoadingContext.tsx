@@ -27,6 +27,17 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   const loadingCheckInterval = useRef<NodeJS.Timeout | null>(null)
   const hasCompletedInitialLoad = useRef(false)
 
+  const clearAllTimers = useCallback(() => {
+    if (initializationTimer.current) {
+      clearTimeout(initializationTimer.current)
+      initializationTimer.current = null
+    }
+    if (loadingCheckInterval.current) {
+      clearInterval(loadingCheckInterval.current)
+      loadingCheckInterval.current = null
+    }
+  }, [])
+
   // Reset loading state when component mounts
   useEffect(() => {
     console.log('[AssetLoading] Provider mounted')
@@ -44,6 +55,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         console.log('[AssetLoading] No assets registered during initialization, completing load')
         hasCompletedInitialLoad.current = true
         setIsLoading(false)
+        clearAllTimers()
       }
     }, INITIALIZATION_TIMEOUT)
 
@@ -60,27 +72,21 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         hasCompletedInitialLoad: hasCompletedInitialLoad.current
       })
 
-      // Only auto-complete if we haven't already completed initial load
-      if (timeElapsed > INITIALIZATION_TIMEOUT && totalAssets === 0 && !hasCompletedInitialLoad.current) {
-        console.log('[AssetLoading] No assets registered, completing load')
+      // If we've completed initial load or exceeded timeout with no assets, complete loading
+      if (hasCompletedInitialLoad.current || (timeElapsed > INITIALIZATION_TIMEOUT && totalAssets === 0)) {
+        console.log('[AssetLoading] Completing load and clearing timers')
         hasCompletedInitialLoad.current = true
         setIsLoading(false)
+        clearAllTimers()
       }
     }, LOADING_CHECK_INTERVAL)
 
     return () => {
       console.log('[AssetLoading] Provider unmounting')
       mountedRef.current = false
-      
-      if (initializationTimer.current) {
-        clearTimeout(initializationTimer.current)
-      }
-      
-      if (loadingCheckInterval.current) {
-        clearInterval(loadingCheckInterval.current)
-      }
+      clearAllTimers()
     }
-  }, [])
+  }, [clearAllTimers])
 
   // Handle loading completion
   useEffect(() => {
@@ -100,9 +106,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       })
 
       // Clear any existing timer
-      if (initializationTimer.current) {
-        clearTimeout(initializationTimer.current)
-      }
+      clearAllTimers()
 
       // Add a delay to ensure minimum loading time and smooth transition
       initializationTimer.current = setTimeout(() => {
@@ -110,16 +114,15 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
           console.log('[AssetLoading] Completing load after minimum time')
           hasCompletedInitialLoad.current = true
           setIsLoading(false)
+          clearAllTimers()
         }
       }, remainingTime)
 
       return () => {
-        if (initializationTimer.current) {
-          clearTimeout(initializationTimer.current)
-        }
+        clearAllTimers()
       }
     }
-  }, [totalAssets, loadedAssets, loadingStartTime])
+  }, [totalAssets, loadedAssets, loadingStartTime, clearAllTimers])
 
   const registerAsset = useCallback(() => {
     if (!mountedRef.current) return
@@ -157,12 +160,13 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       previousLoaded: loadedAssets,
       hasCompletedInitialLoad: hasCompletedInitialLoad.current
     })
+    clearAllTimers() // Clear existing timers before reset
     hasCompletedInitialLoad.current = false
     setIsLoading(true)
     setTotalAssets(0)
     setLoadedAssets(0)
     setLoadingStartTime(Date.now())
-  }, [totalAssets, loadedAssets])
+  }, [totalAssets, loadedAssets, clearAllTimers])
 
   // Log state changes
   useEffect(() => {
