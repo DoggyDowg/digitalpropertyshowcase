@@ -87,7 +87,7 @@ export function YourHome({ property }: YourHomeProps) {
   return (
     <section id="features" className="relative bg-brand-light">
       <ParallaxBanner
-        imageSrc={bannerUrl || '/images/banners/yourhome.jpg'}
+        imageSrc={bannerUrl || '/images/banners/features.jpg'}
         title={featuresData.banner_title || "YOUR HOME"}
         loading={bannerLoading}
       />

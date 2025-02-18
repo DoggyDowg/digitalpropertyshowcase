@@ -1,26 +1,5 @@
 import "./globals.css"
-import { Metadata } from 'next'
 import Providers from '@/components/shared/Providers'
-
-export const metadata: Metadata = {
-  title: {
-    default: 'Digital Property Showcase',
-    template: '%s | Digital Property Showcase'
-  },
-  description: 'Discover amazing properties with our digital showcase platform.',
-  openGraph: {
-    type: 'website',
-    locale: 'en_AU',
-    siteName: 'Digital Property Showcase',
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: '/',
-  },
-}
 
 export default function RootLayout({
   children,
