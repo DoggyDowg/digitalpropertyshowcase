@@ -8,9 +8,16 @@ const nextConfig = {
       'loremflickr.com'
     ],
   },
-  webpack: (config) => {
-    // Remove Three.js configs but keep other webpack configs if any
-    return config
+  webpack: (config, { isServer }) => {
+    // Handle PDF.js
+    if (isServer) {
+      config.resolve.alias.canvas = false;
+      config.module.rules.push({
+        test: /pdf\.js$/,
+        use: 'null-loader'
+      });
+    }
+    return config;
   },
   transpilePackages: [
     // Keep other packages but remove Three.js related ones

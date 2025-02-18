@@ -7,22 +7,6 @@ import { HomeGallery } from './HomeGallery'
 import { useFeaturesBanner } from '@/hooks/useFeaturesBanner'
 import { useYourHomeImage } from '@/hooks/useYourHomeImage'
 import type { Property } from '@/types/property'
-import dynamic from 'next/dynamic'
-
-// Dynamically import the VirtualTourSection
-const VirtualTourSection = dynamic(
-  () => import('./virtual-tour/VirtualTourSection'),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-[600px] animate-pulse bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-lg font-semibold text-gray-600">Loading Virtual Tour...</div>
-        </div>
-      </div>
-    )
-  }
-)
 
 interface YourHomeProps {
   property: Property
@@ -37,14 +21,6 @@ export function YourHome({ property }: YourHomeProps) {
   const { imageUrl: homeImageUrl, loading: homeImageLoading } = useYourHomeImage(property.id, property.is_demo)
   const { content } = property
   const featuresData = content.features || { items: [], header: '', headline: '', description: '' }
-
-  // Debug log for virtual tour
-  useEffect(() => {
-    console.log('YourHome render - property:', {
-      id: property.id,
-      is_demo: property.is_demo
-    });
-  }, [property]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
