@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import Image from 'next/image'
 import { ParallaxBanner } from './shared/ParallaxBanner'
 import { HomeGallery } from './HomeGallery'
@@ -20,7 +20,10 @@ export function YourHome({ property }: YourHomeProps) {
   const { imageUrl: bannerUrl, loading: bannerLoading } = useFeaturesBanner(property.id, property.is_demo)
   const { imageUrl: homeImageUrl, loading: homeImageLoading } = useYourHomeImage(property.id, property.is_demo)
   const { content } = property
-  const featuresData = content.features || { items: [], header: '', headline: '', description: '' }
+  
+  const featuresData = useMemo(() => 
+    content.features || { items: [], header: '', headline: '', description: '' }
+  , [content.features])
 
   // Debug logs
   useEffect(() => {

@@ -1,12 +1,20 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { PropertyClientWrapper } from './PropertyClientWrapper'
+import { Metadata } from 'next'
 
 // Add a distinctive version log
 console.log('🏠 DIGITAL PROPERTY SHOWCASE - BUILD VERSION 1.0.0 - ' + new Date().toISOString())
 console.log('================================================')
 
-export default async function PropertyPage({ params }: { params: { id: string } }) {
+type PageParams = { id: string }
+
+export default async function PropertyPage({ 
+  params 
+}: { 
+  params: Promise<PageParams>
+}) {
+  const { id } = await params
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   
@@ -14,11 +22,11 @@ export default async function PropertyPage({ params }: { params: { id: string } 
   const { data: property, error } = await supabase
     .from('properties')
     .select('*, agency_settings(*)')
-    .eq('id', await params.id)
+    .eq('id', id)
     .single()
 
   console.log('=== PROPERTY DATA ===')
-  console.log('Property ID:', params.id)
+  console.log('Property ID:', id)
   console.log('Property:', property)
   console.log('Property is_demo:', property?.is_demo)
   console.log('Property content:', property?.content)
@@ -50,7 +58,18 @@ export default async function PropertyPage({ params }: { params: { id: string } 
     <PropertyClientWrapper 
       property={property}
       template={property.template_name === 'dubai' ? 'dubai' : 'cusco'}
-      propertyId={await params.id}
+      propertyId={id}
     />
   )
+}
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<PageParams>
+}): Promise<Metadata> {
+  const { id } = await params
+  return {
+    title: `Property ${id}`,
+  }
 }
