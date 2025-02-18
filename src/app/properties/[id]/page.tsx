@@ -8,22 +8,23 @@ import { getGalleryImages } from '@/utils/galleryUtils'
 console.log('🏠 DIGITAL PROPERTY SHOWCASE - BUILD VERSION 1.0.0 - ' + new Date().toISOString())
 console.log('================================================')
 
-type GenerateMetadataProps = {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+interface PageProps {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-  { params }: GenerateMetadataProps
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
   console.log('🎯 STARTING METADATA GENERATION 🎯')
   console.log('====================================')
   
+  const { id } = await params
   const supabase = createServerComponentClient({ cookies })
   const { data: property } = await supabase
     .from('properties')
     .select('*, agency_settings(*)')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   console.log('📝 Property Data:', {
@@ -64,7 +65,7 @@ export async function generateMetadata(
     const { data: footerAsset, error: footerError } = await supabase
       .from('assets')
       .select('storage_path')
-      .eq('property_id', params.id)
+      .eq('property_id', id)
       .eq('category', 'footer')
       .eq('status', 'active')
       .single()
@@ -86,7 +87,7 @@ export async function generateMetadata(
   // If no footer image, try gallery images
   if (!ogImage) {
     try {
-      const galleryImages = await getGalleryImages(params.id)
+      const galleryImages = await getGalleryImages(id)
       if (galleryImages?.[0]?.src) {
         ogImage = galleryImages[0].src
         console.log('Using first gallery image:', ogImage)
@@ -115,7 +116,7 @@ export async function generateMetadata(
   }
 
   // Construct the property URL
-  const propertyUrl = `${baseUrl}/properties/${params.id}`
+  const propertyUrl = `${baseUrl}/properties/${id}`
 
   // Get the property title
   const propertyTitle = property.content?.seo?.title || `${property.name} - ${property.suburb}`
@@ -179,12 +180,8 @@ export async function generateMetadata(
   return metadata
 }
 
-interface PageProps {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
 export default async function PropertyPage({ params }: PageProps) {
+  const { id } = await params
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   
@@ -192,11 +189,11 @@ export default async function PropertyPage({ params }: PageProps) {
   const { data: property, error } = await supabase
     .from('properties')
     .select('*, agency_settings(*)')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   console.log('=== PROPERTY DATA ===')
-  console.log('Property ID:', params.id)
+  console.log('Property ID:', id)
   console.log('Property:', property)
   console.log('Property is_demo:', property?.is_demo)
   console.log('Property content:', property?.content)
@@ -228,7 +225,7 @@ export default async function PropertyPage({ params }: PageProps) {
     <PropertyClientWrapper 
       property={property}
       template={property.template_name === 'dubai' ? 'dubai' : 'cusco'}
-      propertyId={params.id}
+      propertyId={id}
     />
   )
 }
