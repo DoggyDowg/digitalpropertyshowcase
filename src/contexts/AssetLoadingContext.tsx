@@ -15,6 +15,7 @@ const AssetLoadingContext = createContext<AssetLoadingContextType | undefined>(u
 
 const MINIMUM_LOADING_TIME = 2000 // 2 seconds minimum loading time
 const LOADING_CHECK_INTERVAL = 100 // Check loading state every 100ms
+const INITIALIZATION_TIMEOUT = 1000 // Wait 1 second for assets to register
 
 export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -24,6 +25,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   const mountedRef = useRef(true)
   const initializationTimer = useRef<NodeJS.Timeout | null>(null)
   const loadingCheckInterval = useRef<NodeJS.Timeout | null>(null)
+  const hasCompletedInitialLoad = useRef(false)
 
   // Reset loading state when component mounts
   useEffect(() => {
@@ -32,6 +34,18 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     setTotalAssets(0)
     setLoadedAssets(0)
     setLoadingStartTime(Date.now())
+    hasCompletedInitialLoad.current = false
+
+    // Initial timeout to check if any assets were registered
+    initializationTimer.current = setTimeout(() => {
+      if (!mountedRef.current) return
+      
+      if (totalAssets === 0 && !hasCompletedInitialLoad.current) {
+        console.log('[AssetLoading] No assets registered during initialization, completing load')
+        hasCompletedInitialLoad.current = true
+        setIsLoading(false)
+      }
+    }, INITIALIZATION_TIMEOUT)
 
     // Set up an interval to check loading state
     loadingCheckInterval.current = setInterval(() => {
@@ -42,12 +56,14 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         totalAssets,
         loadedAssets,
         timeElapsed,
-        isLoading
+        isLoading,
+        hasCompletedInitialLoad: hasCompletedInitialLoad.current
       })
 
-      // If no assets are registered within 1 second, assume everything is loaded
-      if (timeElapsed > 1000 && totalAssets === 0) {
+      // Only auto-complete if we haven't already completed initial load
+      if (timeElapsed > INITIALIZATION_TIMEOUT && totalAssets === 0 && !hasCompletedInitialLoad.current) {
         console.log('[AssetLoading] No assets registered, completing load')
+        hasCompletedInitialLoad.current = true
         setIsLoading(false)
       }
     }, LOADING_CHECK_INTERVAL)
@@ -74,7 +90,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       const timeElapsed = Date.now() - loadingStartTime
       const remainingTime = Math.max(0, MINIMUM_LOADING_TIME - timeElapsed)
 
-      console.log(`[AssetLoading] Loading complete:`, {
+      console.log(`[AssetLoading] All assets loaded:`, {
         totalAssets,
         loadedAssets,
         timeElapsed,
@@ -91,7 +107,8 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       // Add a delay to ensure minimum loading time and smooth transition
       initializationTimer.current = setTimeout(() => {
         if (mountedRef.current) {
-          console.log('[AssetLoading] Hiding loader after minimum time')
+          console.log('[AssetLoading] Completing load after minimum time')
+          hasCompletedInitialLoad.current = true
           setIsLoading(false)
         }
       }, remainingTime)
@@ -111,7 +128,8 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       console.log(`[AssetLoading] Registered new asset:`, {
         previousTotal: prev,
         newTotal,
-        currentLoaded: loadedAssets
+        currentLoaded: loadedAssets,
+        hasCompletedInitialLoad: hasCompletedInitialLoad.current
       })
       return newTotal
     })
@@ -125,7 +143,8 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         previousLoaded: prev,
         newLoaded,
         totalAssets,
-        isComplete: newLoaded === totalAssets
+        isComplete: newLoaded === totalAssets,
+        hasCompletedInitialLoad: hasCompletedInitialLoad.current
       })
       return newLoaded
     })
@@ -135,8 +154,10 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     if (!mountedRef.current) return
     console.log('[AssetLoading] Reset loading state:', {
       previousTotal: totalAssets,
-      previousLoaded: loadedAssets
+      previousLoaded: loadedAssets,
+      hasCompletedInitialLoad: hasCompletedInitialLoad.current
     })
+    hasCompletedInitialLoad.current = false
     setIsLoading(true)
     setTotalAssets(0)
     setLoadedAssets(0)
