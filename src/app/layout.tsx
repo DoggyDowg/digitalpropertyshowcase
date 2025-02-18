@@ -3,24 +3,15 @@ import { Metadata } from 'next'
 import Providers from '@/components/shared/Providers'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: 'Digital Property Showcase',
+  title: {
+    default: 'Digital Property Showcase',
+    template: '%s | Digital Property Showcase'
+  },
   description: 'Discover amazing properties with our digital showcase platform.',
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    url: '/',
+    locale: 'en_AU',
     siteName: 'Digital Property Showcase',
-    title: 'Digital Property Showcase',
-    description: 'Discover amazing properties with our digital showcase platform.',
-    images: [
-      {
-        url: '/og-image.jpg', // This should be a public image in your project
-        width: 1200,
-        height: 630,
-        alt: 'Digital Property Showcase',
-      }
-    ],
   },
   robots: {
     index: true,
