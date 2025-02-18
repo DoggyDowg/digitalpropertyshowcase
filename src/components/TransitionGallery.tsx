@@ -7,6 +7,7 @@ import { useGalleryImages } from '@/hooks/useGalleryImages'
 import { FullscreenGallery } from './FullscreenGallery'
 import styles from '@/styles/TransitionGallery.module.css'
 import type { Property } from '@/types/property'
+import { useAssetLoading } from '@/contexts/AssetLoadingContext'
 
 const socialLinks = [
   {
@@ -52,6 +53,30 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
   const { images, loading, error } = useGalleryImages(property.id, property.is_demo)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   const [copySuccess, setCopySuccess] = useState(false)
+  const { registerAsset, markAssetAsLoaded } = useAssetLoading()
+  const loadedImages = useRef(new Set<string>())
+
+  // Register images with AssetLoadingContext
+  useEffect(() => {
+    if (!loading && images.length > 0) {
+      console.log('TransitionGallery - Registering images:', images.length)
+      // Only register images that haven't been loaded yet
+      images.forEach(image => {
+        if (!loadedImages.current.has(image.id)) {
+          registerAsset()
+        }
+      })
+    }
+  }, [loading, images, registerAsset])
+
+  // Handle image load events
+  const handleImageLoad = (imageId: string) => {
+    if (!loadedImages.current.has(imageId)) {
+      console.log('TransitionGallery - Image loaded:', imageId)
+      loadedImages.current.add(imageId)
+      markAssetAsLoaded()
+    }
+  }
 
   // Add debugging logs
   useEffect(() => {
@@ -186,6 +211,7 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     className="object-cover"
                     priority={index < 4}
+                    onLoad={() => handleImageLoad(image.id)}
                   />
                 </div>
               </div>
