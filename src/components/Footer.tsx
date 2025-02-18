@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Phone, Mail, Facebook, Instagram } from 'lucide-react'
 import { useFooterImage } from '@/hooks/useFooterImage'
 import type { Property, FooterLink, OfficeAddress } from '@/types/property'
+import { RobustImage } from './shared/RobustImage'
 
 interface FooterProps {
   property: Property;
@@ -67,7 +68,7 @@ export function Footer({ property }: FooterProps) {
             {loading ? (
               <div className="absolute inset-0 bg-gray-800 animate-pulse rounded-lg" />
             ) : imageUrl ? (
-              <Image
+              <RobustImage
                 src={imageUrl}
                 alt="Property Footer Image"
                 fill
