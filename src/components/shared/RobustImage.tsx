@@ -30,11 +30,19 @@ export function RobustImage({
   const { registerAsset, markAssetAsLoaded } = useAssetLoading()
   const hasRegisteredAsset = useRef(false)
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in')
+  const imageRef = useRef<HTMLImageElement>(null)
 
   // Register the image as an asset to load
   useEffect(() => {
     if (src && !hasRegisteredAsset.current) {
-      console.log('[RobustImage] Registering asset:', { src })
+      console.log('[RobustImage] Registering asset:', { 
+        src,
+        isSupabaseUrl,
+        fill,
+        width,
+        height,
+        priority 
+      })
       hasRegisteredAsset.current = true
       registerAsset()
     }
@@ -48,10 +56,15 @@ export function RobustImage({
         hasRegisteredAsset.current = false
       }
     }
-  }, [src, registerAsset])
+  }, [src, registerAsset, isSupabaseUrl, fill, width, height, priority])
 
   const handleLoad = () => {
-    console.log('[RobustImage] Image loaded:', { src, hasRegistered: hasRegisteredAsset.current })
+    console.log('[RobustImage] Image loaded:', { 
+      src, 
+      hasRegistered: hasRegisteredAsset.current,
+      naturalWidth: imageRef.current?.naturalWidth,
+      naturalHeight: imageRef.current?.naturalHeight
+    })
     setIsLoaded(true)
     if (hasRegisteredAsset.current) {
       markAssetAsLoaded()
@@ -66,10 +79,14 @@ export function RobustImage({
     }
   }
 
+  // Add cache busting for Supabase URLs
+  const imageSrc = isSupabaseUrl ? `${src}?t=${Date.now()}` : src
+
   return (
     <div className="relative w-full h-full">
       <Image
-        src={src}
+        ref={imageRef}
+        src={imageSrc}
         alt={alt}
         width={fill ? undefined : width}
         height={fill ? undefined : height}
