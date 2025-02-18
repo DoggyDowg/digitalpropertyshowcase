@@ -58,7 +58,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         clearInterval(loadingCheckInterval.current)
       }
     }
-  }, [])
+  }, [isLoading, loadedAssets, loadingStartTime, totalAssets])
 
   // Handle loading completion
   useEffect(() => {
