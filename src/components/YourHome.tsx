@@ -195,13 +195,6 @@ export function YourHome({ property }: YourHomeProps) {
           </div>
         </div>
       </section>
-
-      {/* Virtual Tour Section */}
-      <section id="virtual-tour" className="bg-white">
-        <div className="max-w-7xl mx-auto w-full">
-          <VirtualTourSection property={property} />
-        </div>
-      </section>
     </div>
   )
 } 

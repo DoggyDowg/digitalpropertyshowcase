@@ -88,17 +88,20 @@ export function Hero({ property }: HeroProps) {
       })
 
       // Video reveal animation
-      gsap.set(".video-overlay", {
-        backgroundColor: '#111111',
-        opacity: 1
-      })
+      const videoOverlay = document.querySelector('.video-overlay')
+      if (videoOverlay) {
+        gsap.set(videoOverlay, {
+          backgroundColor: '#111111',
+          opacity: 1
+        })
 
-      gsap.to(".video-overlay", {
-        opacity: 0.5,
-        duration: 4,
-        delay: 1.5,
-        ease: "power2.inOut",
-      })
+        gsap.to(videoOverlay, {
+          opacity: 0.5,
+          duration: 4,
+          delay: 1.5,
+          ease: "power2.inOut",
+        })
+      }
 
       // Text animations sequence
       tl.to(logoRef.current, {
