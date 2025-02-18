@@ -12,6 +12,9 @@ console.log('================================================')
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
+  console.log('🎯 STARTING METADATA GENERATION 🎯')
+  console.log('====================================')
+  
   const { id } = await params
   const supabase = createServerComponentClient({ cookies })
   const { data: property } = await supabase
@@ -20,16 +23,15 @@ export async function generateMetadata(
     .eq('id', id)
     .single()
 
-  console.log('=== PAGE METADATA GENERATOR ===')
-  console.log('Property ID:', id)
-  
-  console.log('Property Data for Metadata:', {
+  console.log('📝 Property Data:', {
     id: property?.id,
     name: property?.name,
-    content: property?.content
+    hasContent: !!property?.content,
+    hasAgencySettings: !!property?.agency_settings
   })
 
   if (!property) {
+    console.log('❌ No property found!')
     return {
       title: 'Property Not Found',
       description: 'The requested property could not be found.',
