@@ -64,7 +64,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
         clearInterval(loadingCheckInterval.current)
       }
     }
-  }, [isLoading, loadedAssets, loadingStartTime, totalAssets])
+  }, [])
 
   // Handle loading completion
   useEffect(() => {
@@ -108,12 +108,10 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     if (!mountedRef.current) return
     setTotalAssets(prev => {
       const newTotal = prev + 1
-      console.log(`[AssetLoading] 🔵 Asset registered:`, {
+      console.log(`[AssetLoading] Registered new asset:`, {
         previousTotal: prev,
         newTotal,
-        currentLoaded: loadedAssets,
-        timestamp: new Date().toISOString(),
-        stackTrace: new Error().stack
+        currentLoaded: loadedAssets
       })
       return newTotal
     })
@@ -123,13 +121,11 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     if (!mountedRef.current) return
     setLoadedAssets(prev => {
       const newLoaded = prev + 1
-      console.log(`[AssetLoading] ✅ Asset loaded:`, {
+      console.log(`[AssetLoading] Asset loaded:`, {
         previousLoaded: prev,
         newLoaded,
         totalAssets,
-        isComplete: newLoaded === totalAssets,
-        timestamp: new Date().toISOString(),
-        stackTrace: new Error().stack
+        isComplete: newLoaded === totalAssets
       })
       return newLoaded
     })
@@ -137,11 +133,9 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
 
   const resetLoading = useCallback(() => {
     if (!mountedRef.current) return
-    console.log('[AssetLoading] 🔄 Reset loading state:', {
+    console.log('[AssetLoading] Reset loading state:', {
       previousTotal: totalAssets,
-      previousLoaded: loadedAssets,
-      timestamp: new Date().toISOString(),
-      stackTrace: new Error().stack
+      previousLoaded: loadedAssets
     })
     setIsLoading(true)
     setTotalAssets(0)
@@ -152,15 +146,13 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   // Log state changes
   useEffect(() => {
     if (!mountedRef.current) return
-    console.log('[AssetLoading] 📊 State updated:', {
+    console.log('[AssetLoading] State updated:', {
       isLoading,
       totalAssets,
       loadedAssets,
-      progress: totalAssets > 0 ? Math.round((loadedAssets / totalAssets) * 100) : 0,
-      timeFromStart: Date.now() - loadingStartTime,
-      timestamp: new Date().toISOString()
+      progress: totalAssets > 0 ? Math.round((loadedAssets / totalAssets) * 100) : 0
     })
-  }, [isLoading, totalAssets, loadedAssets, loadingStartTime])
+  }, [isLoading, totalAssets, loadedAssets])
 
   return (
     <AssetLoadingContext.Provider 
