@@ -38,33 +38,7 @@ export async function generateMetadata(
 
   const agencyName = property.agency_name || property.agency_settings?.copyright?.split('©')?.[1]?.trim() || ''
   
-  // Get the footer image for OG image
-  let ogImage = ''
-  
-  // First try to get the footer image
-  const { data: footerAsset } = await supabase
-    .from('assets')
-    .select('storage_path')
-    .eq('property_id', id)
-    .eq('category', 'footer')
-    .eq('status', 'active')
-    .single()
-
-  if (footerAsset?.storage_path) {
-    const { data: publicUrlData } = supabase
-      .storage
-      .from('property-assets')
-      .getPublicUrl(footerAsset.storage_path)
-    ogImage = publicUrlData.publicUrl
-  }
-
-  // If no footer image, fallback to first gallery image
-  if (!ogImage) {
-    const galleryImages = await getGalleryImages(id)
-    ogImage = galleryImages?.[0]?.src || property.agency_settings?.branding?.logo?.dark || ''
-  }
-
-  // Get the base URL for this property
+  // Get the base URL for this property first
   let baseUrl = property.custom_domain || 
                 property.deployment_url || 
                 process.env.NEXT_PUBLIC_BASE_URL || 
@@ -75,9 +49,64 @@ export async function generateMetadata(
     baseUrl = `https://${baseUrl}`
   }
 
+  // Initialize image variables
+  let ogImage = ''
+  const imageWidth = 1200
+  const imageHeight = 630
+  
+  // First try to get the footer image
+  try {
+    const { data: footerAsset, error: footerError } = await supabase
+      .from('assets')
+      .select('storage_path')
+      .eq('property_id', id)
+      .eq('category', 'footer')
+      .eq('status', 'active')
+      .single()
+
+    if (footerAsset?.storage_path) {
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('property-assets')
+        .getPublicUrl(footerAsset.storage_path)
+      ogImage = publicUrlData.publicUrl
+      console.log('Found footer image:', ogImage)
+    } else {
+      console.log('No footer image found:', footerError)
+    }
+  } catch (error) {
+    console.error('Error fetching footer image:', error)
+  }
+
+  // If no footer image, try gallery images
+  if (!ogImage) {
+    try {
+      const galleryImages = await getGalleryImages(id)
+      if (galleryImages?.[0]?.src) {
+        ogImage = galleryImages[0].src
+        console.log('Using first gallery image:', ogImage)
+      } else {
+        console.log('No gallery images found')
+      }
+    } catch (error) {
+      console.error('Error fetching gallery images:', error)
+    }
+  }
+
+  // Final fallback to agency logo
+  if (!ogImage && property.agency_settings?.branding?.logo?.dark) {
+    ogImage = property.agency_settings.branding.logo.dark
+    console.log('Using agency logo:', ogImage)
+  }
+
   // Ensure ogImage is an absolute URL
-  if (ogImage && !ogImage.startsWith('http')) {
-    ogImage = `${baseUrl}${ogImage}`
+  if (ogImage) {
+    if (!ogImage.startsWith('http')) {
+      ogImage = `${baseUrl}${ogImage}`
+    }
+    console.log('Final OG image URL:', ogImage)
+  } else {
+    console.log('No image found for OG tags')
   }
 
   // Construct the property URL
@@ -87,13 +116,13 @@ export async function generateMetadata(
   const propertyTitle = property.content?.seo?.title || `${property.name} - ${property.suburb}`
   const propertyDescription = property.content?.seo?.description || `Discover ${property.name} in ${property.suburb}. A stunning property showcased by ${agencyName}.`
 
-  // Prepare the image object
+  // Prepare the image object with more specific type handling
   const imageObject = ogImage ? {
     url: ogImage,
-    width: 1200,
-    height: 630,
+    width: imageWidth,
+    height: imageHeight,
     alt: propertyTitle,
-    type: 'image/jpeg',
+    type: ogImage.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg',
   } : null
 
   const metadata: Metadata = {
@@ -113,8 +142,8 @@ export async function generateMetadata(
       card: 'summary_large_image',
       title: property.content?.og?.title || propertyTitle,
       description: property.content?.og?.description || propertyDescription,
-      site: '@colellaproperty', // Add your Twitter handle here
-      creator: '@colellaproperty', // Add your Twitter handle here
+      site: '@colellaproperty',
+      creator: '@colellaproperty',
       images: imageObject ? [imageObject] : undefined,
     },
     robots: {
@@ -133,7 +162,15 @@ export async function generateMetadata(
     },
   }
 
-  console.log('Generated Page Metadata:', metadata)
+  // Log the final metadata for debugging
+  console.log('Final metadata:', {
+    title: metadata.title,
+    description: metadata.description,
+    ogImage: metadata.openGraph?.images,
+    twitterImage: metadata.twitter?.images,
+    baseUrl: metadata.metadataBase?.toString()
+  })
+
   return metadata
 }
 
