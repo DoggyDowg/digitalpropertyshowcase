@@ -99,7 +99,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       mountedRef.current = false
       clearAllTimers()
     }
-  }, [clearAllTimers, completeLoading])
+  }, [clearAllTimers, completeLoading, isLoading, loadedAssets, loadingStartTime, totalAssets])
 
   // Handle loading completion when all assets are loaded
   useEffect(() => {

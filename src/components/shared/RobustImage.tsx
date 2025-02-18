@@ -106,7 +106,6 @@ export function RobustImage({
   const handleError = () => {
     console.error('[RobustImage] Image error:', { 
       src,
-      error: imageRef.current?.error,
       naturalWidth: imageRef.current?.naturalWidth,
       naturalHeight: imageRef.current?.naturalHeight
     })

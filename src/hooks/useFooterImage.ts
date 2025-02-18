@@ -106,7 +106,7 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
     }
 
     loadImage()
-  }, [supabase, propertyId, isDemoProperty])
+  }, [supabase, propertyId, isDemoProperty, error, imageUrl])
 
   return { imageUrl, loading, error }
 } 
