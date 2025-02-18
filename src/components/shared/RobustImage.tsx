@@ -32,6 +32,38 @@ export function RobustImage({
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in')
   const imageRef = useRef<HTMLImageElement>(null)
 
+  // Verify image URL on mount and changes
+  useEffect(() => {
+    if (!src) {
+      console.error('[RobustImage] No src provided')
+      setError(true)
+      return
+    }
+
+    // Verify the URL is valid
+    const verifyImage = async () => {
+      try {
+        console.log('[RobustImage] Verifying image URL:', src)
+        const response = await fetch(src, { method: 'HEAD' })
+        if (!response.ok) {
+          console.error('[RobustImage] Image URL verification failed:', response.status, response.statusText)
+          setError(true)
+          if (hasRegisteredAsset.current) {
+            markAssetAsLoaded()
+          }
+        }
+      } catch (err) {
+        console.error('[RobustImage] Error verifying image URL:', err)
+        setError(true)
+        if (hasRegisteredAsset.current) {
+          markAssetAsLoaded()
+        }
+      }
+    }
+
+    verifyImage()
+  }, [src, markAssetAsLoaded])
+
   // Register the image as an asset to load
   useEffect(() => {
     if (src && !hasRegisteredAsset.current) {
@@ -72,7 +104,12 @@ export function RobustImage({
   }
 
   const handleError = () => {
-    console.log('[RobustImage] Image error:', { src })
+    console.error('[RobustImage] Image error:', { 
+      src,
+      error: imageRef.current?.error,
+      naturalWidth: imageRef.current?.naturalWidth,
+      naturalHeight: imageRef.current?.naturalHeight
+    })
     setError(true)
     if (hasRegisteredAsset.current) {
       markAssetAsLoaded() // Mark as loaded even on error to prevent hanging

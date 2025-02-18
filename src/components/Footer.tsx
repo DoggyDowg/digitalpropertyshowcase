@@ -6,13 +6,25 @@ import { Phone, Mail, Facebook, Instagram } from 'lucide-react'
 import { useFooterImage } from '@/hooks/useFooterImage'
 import type { Property, FooterLink, OfficeAddress } from '@/types/property'
 import { RobustImage } from './shared/RobustImage'
+import { useEffect } from 'react'
 
 interface FooterProps {
   property: Property;
 }
 
 export function Footer({ property }: FooterProps) {
-  const { imageUrl, loading } = useFooterImage(property.id, property.is_demo)
+  const { imageUrl, loading, error } = useFooterImage(property.id, property.is_demo)
+  
+  // Add debug logging for footer image
+  useEffect(() => {
+    console.log('[Footer] Footer image state:', {
+      imageUrl,
+      loading,
+      error,
+      propertyId: property.id,
+      isDemoProperty: property.is_demo
+    })
+  }, [imageUrl, loading, error, property.id, property.is_demo])
   
   // Find all links
   const phoneLink = property.footer_links?.find((link: FooterLink) => link.id === 'phone')
@@ -73,10 +85,13 @@ export function Footer({ property }: FooterProps) {
                 alt="Property Footer Image"
                 fill
                 className="object-cover rounded-lg"
+                priority
               />
             ) : (
               <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
-                <p className="text-brand-light/50">No footer image available</p>
+                <p className="text-brand-light/50">
+                  {error ? `Error: ${error.message}` : 'No footer image available'}
+                </p>
               </div>
             )}
           </div>
