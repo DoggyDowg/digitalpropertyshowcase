@@ -191,6 +191,12 @@ export async function generateMetadata(
     alternates: {
       canonical: propertyUrl,
     },
+    // Add Facebook App ID if available
+    ...(process.env.NEXT_PUBLIC_FACEBOOK_APP_ID && {
+      other: {
+        'fb:app_id': process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
+      },
+    }),
   }
 
   // Log the final metadata for debugging
@@ -199,7 +205,8 @@ export async function generateMetadata(
     description: metadata.description,
     ogImage: metadata.openGraph?.images,
     twitterImage: metadata.twitter?.images,
-    baseUrl: metadata.metadataBase?.toString()
+    baseUrl: metadata.metadataBase?.toString(),
+    fbAppId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || 'Not set'
   })
   console.info('[Server] ✅ METADATA GENERATION COMPLETED ✅\n')
 
