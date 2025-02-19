@@ -13,22 +13,26 @@ async function verifyImageUrl(url: string): Promise<boolean> {
 }
 
 async function getOptimizedImageUrl(originalUrl: string): Promise<string> {
-  // If it's a Supabase storage URL, add transformation parameters
+  // If it's an OG image, return as is since it's already optimized
+  if (originalUrl.includes('/og_image/')) {
+    return originalUrl;
+  }
+  
+  // For other images from Supabase storage, add transformation parameters
   if (originalUrl.includes('supabase.co/storage/v1/object/public')) {
-    // Add more aggressive optimization parameters
     const transformParams = new URLSearchParams({
       width: '1200',
       height: '630',
       quality: '75',
       format: 'jpg',
       fit: 'cover'
-    }).toString()
+    }).toString();
     
     // Remove any existing query parameters and add our new ones
-    const baseUrl = originalUrl.split('?')[0]
-    return `${baseUrl}?${transformParams}`
+    const baseUrl = originalUrl.split('?')[0];
+    return `${baseUrl}?${transformParams}`;
   }
-  return originalUrl
+  return originalUrl;
 }
 
 // Metadata generation
@@ -85,37 +89,66 @@ export async function generateMetadata(
   const imageWidth = 1200
   const imageHeight = 630
   
-  // First try to get the footer image
+  // First try to get the dedicated OG image
   try {
-    console.info('[Server] 🖼️ Attempting to fetch footer image...')
-    const { data: footerAsset } = await supabase
+    console.info('[Server] 🖼️ Attempting to fetch OG image...')
+    const { data: ogAsset } = await supabase
       .from('assets')
       .select('storage_path')
       .eq('property_id', id)
-      .eq('category', 'footer')
+      .eq('category', 'og_image')
       .eq('status', 'active')
       .single()
 
-    if (footerAsset?.storage_path) {
+    if (ogAsset?.storage_path) {
       const { data: publicUrlData } = supabase
         .storage
         .from('property-assets')
-        .getPublicUrl(footerAsset.storage_path)
+        .getPublicUrl(ogAsset.storage_path)
       
       const imageUrl = await getOptimizedImageUrl(publicUrlData.publicUrl)
       if (await verifyImageUrl(imageUrl)) {
         ogImage = imageUrl
-        console.info('[Server] Found and optimized footer image:', ogImage)
+        console.info('[Server] Found and using optimized OG image:', ogImage)
       }
     }
   } catch (error) {
-    console.error('[Server] Error fetching footer image:', error)
+    console.error('[Server] Error fetching OG image:', error)
   }
 
-  // If no footer image, try gallery images
+  // If no OG image, try footer image
   if (!ogImage) {
     try {
-      console.info('[Server] 🖼️ Attempting to fetch gallery images...')
+      console.info('[Server] 🖼️ Falling back to footer image...')
+      const { data: footerAsset } = await supabase
+        .from('assets')
+        .select('storage_path')
+        .eq('property_id', id)
+        .eq('category', 'footer')
+        .eq('status', 'active')
+        .single()
+
+      if (footerAsset?.storage_path) {
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('property-assets')
+          .getPublicUrl(footerAsset.storage_path)
+        
+        const imageUrl = await getOptimizedImageUrl(publicUrlData.publicUrl)
+        if (await verifyImageUrl(imageUrl)) {
+          ogImage = imageUrl
+          console.info('[Server] Using optimized footer image as fallback:', ogImage)
+        }
+      }
+    } catch (error) {
+      console.error('[Server] Error fetching footer image:', error)
+    }
+  }
+
+  // If still no image, try gallery images
+  if (!ogImage) {
+    try {
+      console.info('[Server] 🖼️ Falling back to gallery images...')
       const galleryImages = await getGalleryImages(id)
       if (galleryImages?.[0]?.src) {
         const imageUrl = galleryImages[0].src
@@ -124,7 +157,7 @@ export async function generateMetadata(
         const optimizedUrl = await getOptimizedImageUrl(fullImageUrl)
         if (await verifyImageUrl(optimizedUrl)) {
           ogImage = optimizedUrl
-          console.info('[Server] Using optimized gallery image:', ogImage)
+          console.info('[Server] Using optimized gallery image as fallback:', ogImage)
         }
       }
     } catch (error) {
@@ -140,7 +173,7 @@ export async function generateMetadata(
     const optimizedUrl = await getOptimizedImageUrl(fullLogoUrl)
     if (await verifyImageUrl(optimizedUrl)) {
       ogImage = optimizedUrl
-      console.info('[Server] Using optimized agency logo:', ogImage)
+      console.info('[Server] Using optimized agency logo as final fallback:', ogImage)
     }
   }
 

@@ -193,33 +193,68 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
           throw new Error(`Invalid file type. Accepted types for ${config.label}: ${config.acceptedTypes.join(', ')}`);
         }
 
+        // For OG images, validate and optimize before upload
+        let fileToUpload = file;
+        if (category === 'og_image' && isImage) {
+          try {
+            // Create FormData and append the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Send to optimization API
+            const response = await fetch('/api/optimize-image', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.error || 'Failed to optimize image');
+            }
+
+            // Get the optimized image blob
+            const optimizedBlob = await response.blob();
+            
+            // Convert optimized blob to File
+            fileToUpload = new File([optimizedBlob], file.name, {
+              type: 'image/jpeg'
+            });
+          } catch (error) {
+            throw new Error(
+              error instanceof Error 
+                ? error.message 
+                : 'Failed to optimize image for social sharing'
+            );
+          }
+        }
+
         // Generate a clean filename (remove special characters, spaces, etc)
         const cleanFileName = file.name.toLowerCase()
           .replace(/[^a-z0-9.]/g, '_')
           .replace(/_+/g, '_');
 
         // Generate content hash for cache busting
-        const contentHash = await generateContentHash(file);
+        const contentHash = await generateContentHash(fileToUpload);
 
         // Create the storage path using the directory configuration
         const path = `${propertyId}/${config.directory}/${cleanFileName}`;
         
         console.log('Uploading file:', {
           name: file.name,
-          size: file.size,
-          type: file.type,
+          size: fileToUpload.size,
+          type: fileToUpload.type,
           category,
           path,
           contentHash
         });
 
         // Create a new Blob with the correct MIME type
-        const blob = new Blob([file], { type: file.type });
+        const blob = new Blob([fileToUpload], { type: fileToUpload.type });
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('property-assets')
           .upload(path, blob, {
-            contentType: file.type,
+            contentType: fileToUpload.type,
             cacheControl: '3600',
             upsert: true
           });

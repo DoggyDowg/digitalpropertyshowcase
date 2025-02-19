@@ -1,5 +1,5 @@
 export type AssetCategory = 'hero_video' | 'gallery' | 'your_home' | 'neighbourhood' | 'footer' | 'floorplan' | 
-  'features_banner' | 'lifestyle_banner' | 'neighbourhood_banner' | 'property_logo' | '3d_tour' | 'aerials';
+  'features_banner' | 'lifestyle_banner' | 'neighbourhood_banner' | 'property_logo' | '3d_tour' | 'aerials' | 'og_image';
 export type AssetType = 'image' | 'video' | 'pdf' | 'glb';
 
 export interface Asset {
@@ -51,6 +51,7 @@ export interface PropertyAssets {
   property_logo?: Asset;
   '3d_tour': Asset[];
   aerials: Asset[];
+  og_image?: Asset;
 }
 
 // Configuration for each asset category
@@ -157,5 +158,13 @@ export const ASSET_CATEGORY_CONFIG: Record<AssetCategory, {
     required: false,
     description: 'Aerial photographs of the property and surroundings',
     directory: 'aerials'
+  },
+  og_image: {
+    label: 'Social Sharing Image',
+    maxFiles: 1,
+    acceptedTypes: ['image'],
+    required: false,
+    description: 'Image optimized for social media sharing (1200x630px recommended)',
+    directory: 'og_image'
   }
 }; 
