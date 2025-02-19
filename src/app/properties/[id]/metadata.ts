@@ -15,9 +15,18 @@ async function verifyImageUrl(url: string): Promise<boolean> {
 async function getOptimizedImageUrl(originalUrl: string): Promise<string> {
   // If it's a Supabase storage URL, add transformation parameters
   if (originalUrl.includes('supabase.co/storage/v1/object/public')) {
-    // Add width and quality parameters to reduce file size
-    const transformParams = '?width=1200&quality=80'
-    return `${originalUrl}${transformParams}`
+    // Add more aggressive optimization parameters
+    const transformParams = new URLSearchParams({
+      width: '1200',
+      height: '630',
+      quality: '75',
+      format: 'jpg',
+      fit: 'cover'
+    }).toString()
+    
+    // Remove any existing query parameters and add our new ones
+    const baseUrl = originalUrl.split('?')[0]
+    return `${baseUrl}?${transformParams}`
   }
   return originalUrl
 }
