@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { getGalleryImages } from '@/utils/galleryUtils'
+import { siteConfig } from '@/config/site'
 
 async function verifyImageUrl(url: string): Promise<boolean> {
   try {
@@ -191,11 +192,9 @@ export async function generateMetadata(
     alternates: {
       canonical: propertyUrl,
     },
-    ...(process.env.NEXT_PUBLIC_FACEBOOK_APP_ID && {
-      other: {
-        'fb:app_id': process.env.NEXT_PUBLIC_FACEBOOK_APP_ID as string,
-      },
-    }),
+    other: {
+      'fb:app_id': siteConfig.facebookAppId,
+    },
   }
 
   // Log the final metadata for debugging
@@ -205,7 +204,7 @@ export async function generateMetadata(
     ogImage: metadata.openGraph?.images,
     twitterImage: metadata.twitter?.images,
     baseUrl: metadata.metadataBase?.toString(),
-    fbAppId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || 'Not set'
+    fbAppId: siteConfig.facebookAppId
   })
   console.info('[Server] ✅ METADATA GENERATION COMPLETED ✅\n')
 
