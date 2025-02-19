@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { getGalleryImages } from '@/utils/galleryUtils'
-import { siteConfig } from '@/config/site'
 
 async function verifyImageUrl(url: string): Promise<boolean> {
   try {
