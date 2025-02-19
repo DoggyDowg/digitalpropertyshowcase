@@ -3,18 +3,36 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { getGalleryImages } from '@/utils/galleryUtils'
 
-// Add a distinctive version log
-console.log('🏠 DIGITAL PROPERTY SHOWCASE - BUILD VERSION 1.0.0 - ' + new Date().toISOString())
-console.log('================================================')
+async function verifyImageUrl(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD' })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+async function getOptimizedImageUrl(originalUrl: string): Promise<string> {
+  // If it's a Supabase storage URL, add transformation parameters
+  if (originalUrl.includes('supabase.co/storage/v1/object/public')) {
+    // Add width and quality parameters to reduce file size
+    const transformParams = '?width=1200&quality=80'
+    return `${originalUrl}${transformParams}`
+  }
+  return originalUrl
+}
 
 // Metadata generation
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
-  console.log('🎯 STARTING METADATA GENERATION 🎯')
-  console.log('====================================')
+  // Server-side logging with distinctive markers
+  console.info('\n🔍 [Server] METADATA GENERATION STARTED 🔍')
+  console.info('==========================================')
   
   const { id } = await params
+  console.info(`[Server] Processing metadata for property ID: ${id}`)
+  
   const supabase = createServerComponentClient({ cookies })
   const { data: property } = await supabase
     .from('properties')
@@ -22,7 +40,8 @@ export async function generateMetadata(
     .eq('id', id)
     .single()
 
-  console.log('📝 Property Data:', {
+  // Log property data with server marker
+  console.info('[Server] 📝 Property Data:', {
     id: property?.id,
     name: property?.name,
     hasContent: !!property?.content,
@@ -30,7 +49,7 @@ export async function generateMetadata(
   })
 
   if (!property) {
-    console.log('❌ No property found!')
+    console.warn('[Server] ❌ No property found for ID:', id)
     return {
       title: 'Property Not Found',
       description: 'The requested property could not be found.',
@@ -45,6 +64,8 @@ export async function generateMetadata(
                 process.env.NEXT_PUBLIC_BASE_URL || 
                 'https://digipropshow.com'
   
+  console.info('[Server] Using base URL:', baseUrl)
+  
   // Ensure baseUrl starts with https://
   if (!baseUrl.startsWith('https://')) {
     baseUrl = `https://${baseUrl}`
@@ -57,7 +78,8 @@ export async function generateMetadata(
   
   // First try to get the footer image
   try {
-    const { data: footerAsset, error: footerError } = await supabase
+    console.info('[Server] 🖼️ Attempting to fetch footer image...')
+    const { data: footerAsset } = await supabase
       .from('assets')
       .select('storage_path')
       .eq('property_id', id)
@@ -70,44 +92,52 @@ export async function generateMetadata(
         .storage
         .from('property-assets')
         .getPublicUrl(footerAsset.storage_path)
-      ogImage = publicUrlData.publicUrl
-      console.log('Found footer image:', ogImage)
-    } else {
-      console.log('No footer image found:', footerError)
+      
+      const imageUrl = await getOptimizedImageUrl(publicUrlData.publicUrl)
+      if (await verifyImageUrl(imageUrl)) {
+        ogImage = imageUrl
+        console.info('[Server] Found and optimized footer image:', ogImage)
+      }
     }
   } catch (error) {
-    console.error('Error fetching footer image:', error)
+    console.error('[Server] Error fetching footer image:', error)
   }
 
   // If no footer image, try gallery images
   if (!ogImage) {
     try {
+      console.info('[Server] 🖼️ Attempting to fetch gallery images...')
       const galleryImages = await getGalleryImages(id)
       if (galleryImages?.[0]?.src) {
-        ogImage = galleryImages[0].src
-        console.log('Using first gallery image:', ogImage)
-      } else {
-        console.log('No gallery images found')
+        const imageUrl = galleryImages[0].src
+        // Ensure gallery image URL is absolute
+        const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
+        const optimizedUrl = await getOptimizedImageUrl(fullImageUrl)
+        if (await verifyImageUrl(optimizedUrl)) {
+          ogImage = optimizedUrl
+          console.info('[Server] Using optimized gallery image:', ogImage)
+        }
       }
     } catch (error) {
-      console.error('Error fetching gallery images:', error)
+      console.error('[Server] Error fetching gallery images:', error)
     }
   }
 
   // Final fallback to agency logo
   if (!ogImage && property.agency_settings?.branding?.logo?.dark) {
-    ogImage = property.agency_settings.branding.logo.dark
-    console.log('Using agency logo:', ogImage)
+    const logoUrl = property.agency_settings.branding.logo.dark
+    // Ensure logo URL is absolute
+    const fullLogoUrl = logoUrl.startsWith('http') ? logoUrl : `${baseUrl}${logoUrl}`
+    const optimizedUrl = await getOptimizedImageUrl(fullLogoUrl)
+    if (await verifyImageUrl(optimizedUrl)) {
+      ogImage = optimizedUrl
+      console.info('[Server] Using optimized agency logo:', ogImage)
+    }
   }
 
-  // Ensure ogImage is an absolute URL
-  if (ogImage) {
-    if (!ogImage.startsWith('http')) {
-      ogImage = `${baseUrl}${ogImage}`
-    }
-    console.log('Final OG image URL:', ogImage)
-  } else {
-    console.log('No image found for OG tags')
+  // Ensure final ogImage is an absolute URL and exists
+  if (ogImage && !ogImage.startsWith('http')) {
+    ogImage = `${baseUrl}${ogImage}`
   }
 
   // Construct the property URL
@@ -123,7 +153,7 @@ export async function generateMetadata(
     width: imageWidth,
     height: imageHeight,
     alt: propertyTitle,
-    type: ogImage.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg',
+    type: 'image/jpeg', // Default to JPEG as most property images will be this format
   } : null
 
   const metadata: Metadata = {
@@ -164,13 +194,14 @@ export async function generateMetadata(
   }
 
   // Log the final metadata for debugging
-  console.log('Final metadata:', {
+  console.info('[Server] 📊 Final metadata:', {
     title: metadata.title,
     description: metadata.description,
     ogImage: metadata.openGraph?.images,
     twitterImage: metadata.twitter?.images,
     baseUrl: metadata.metadataBase?.toString()
   })
+  console.info('[Server] ✅ METADATA GENERATION COMPLETED ✅\n')
 
   return metadata
 } 

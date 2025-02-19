@@ -10,25 +10,33 @@ export default async function PropertyPage({
 }: { 
   params: Promise<{ id: string }> 
 }) {
+  console.info('\n🏠 [Server] PROPERTY PAGE RENDER STARTED 🏠')
+  console.info('==========================================')
+  
   const { id } = await params
+  console.info(`[Server] Rendering property page for ID: ${id}`)
+  
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   
   // Fetch property data on the server
+  console.info('[Server] Fetching property data...')
   const { data: property, error } = await supabase
     .from('properties')
     .select('*, agency_settings(*)')
     .eq('id', id)
     .single()
 
-  console.log('=== PROPERTY DATA ===')
-  console.log('Property ID:', id)
-  console.log('Property:', property)
-  console.log('Property is_demo:', property?.is_demo)
-  console.log('Property content:', property?.content)
-  console.log('===================')
+  console.info('[Server] Property Data:', {
+    id: property?.id,
+    name: property?.name,
+    hasContent: !!property?.content,
+    hasAgencySettings: !!property?.agency_settings,
+    error: error?.message
+  })
 
   if (error) {
+    console.error('[Server] ❌ Error fetching property:', error.message)
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -40,6 +48,7 @@ export default async function PropertyPage({
   }
 
   if (!property) {
+    console.warn('[Server] ⚠️ No property found for ID:', id)
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse">
@@ -50,6 +59,7 @@ export default async function PropertyPage({
     )
   }
 
+  console.info('[Server] ✅ PROPERTY PAGE RENDER COMPLETED ✅\n')
   return (
     <PropertyClientWrapper 
       property={property}
