@@ -192,9 +192,6 @@ export async function generateMetadata(
     alternates: {
       canonical: propertyUrl,
     },
-    other: {
-      'fb:app_id': siteConfig.facebookAppId,
-    },
   }
 
   // Log the final metadata for debugging
@@ -204,7 +201,6 @@ export async function generateMetadata(
     ogImage: metadata.openGraph?.images,
     twitterImage: metadata.twitter?.images,
     baseUrl: metadata.metadataBase?.toString(),
-    fbAppId: siteConfig.facebookAppId
   })
   console.info('[Server] ✅ METADATA GENERATION COMPLETED ✅\n')
 

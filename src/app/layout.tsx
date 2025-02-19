@@ -1,6 +1,7 @@
 import "./globals.css"
 import Providers from '@/components/shared/Providers'
 import { siteConfig } from '@/config/site'
+import Script from 'next/script'
 
 export default function RootLayout({
   children,
@@ -19,6 +20,28 @@ export default function RootLayout({
       <body>
         {children}
         <Providers />
+        <Script
+          id="facebook-jssdk"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.fbAsyncInit = function() {
+                FB.init({
+                  appId: '${siteConfig.facebookAppId}',
+                  xfbml: true,
+                  version: 'v18.0'
+                });
+              };
+              (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "https://connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+              }(document, 'script', 'facebook-jssdk'));
+            `,
+          }}
+        />
       </body>
     </html>
   )
