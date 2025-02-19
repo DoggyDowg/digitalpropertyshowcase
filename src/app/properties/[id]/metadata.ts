@@ -150,6 +150,7 @@ export async function generateMetadata(
   // Prepare the image object with more specific type handling
   const imageObject = ogImage ? {
     url: ogImage,
+    secureUrl: ogImage,
     width: imageWidth,
     height: imageHeight,
     alt: propertyTitle,
