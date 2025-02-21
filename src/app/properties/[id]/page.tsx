@@ -5,6 +5,10 @@ import { generateMetadata } from './metadata'
 
 export { generateMetadata }
 
+// Add cache control headers
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function PropertyPage({ 
   params 
 }: { 
@@ -19,17 +23,33 @@ export default async function PropertyPage({
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   
-  // Fetch property data on the server
-  console.info('[Server] Fetching property data...')
   const { data: property, error } = await supabase
     .from('properties')
     .select(`
       *,
-      agency_settings(*),
+      agency_settings:agency_id (
+        id,
+        branding,
+        footer_links,
+        copyright,
+        menu_items,
+        office_addresses
+      ),
       assets!property_id(*)
     `)
     .eq('id', id)
     .single()
+
+  // Add detailed debug logging
+  console.info('[Server] Property Data Debug:', {
+    id: property?.id,
+    name: property?.name,
+    hasAgencySettings: !!property?.agency_settings,
+    agencySettingsId: property?.agency_id,
+    footerLinksCount: property?.agency_settings?.footer_links?.length || 0,
+    footerLinksData: property?.agency_settings?.footer_links,
+    error: error?.message
+  })
 
   console.info('[Server] Property Data:', {
     id: property?.id,

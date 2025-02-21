@@ -31,7 +31,6 @@
     "@types/lodash": "^4.17.15",
     "@types/nodemailer": "^6.4.17",
     "@types/pdfjs-dist": "^2.10.377",
-    "@types/three": "^0.173.0",
     "@types/uuid": "^10.0.0",
     "animate.css": "^4.1.1",
     "cheerio": "^1.0.0",
@@ -45,7 +44,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
     "magic.css": "^1.4.8",
-    "next": "^15.1.0",
+    "next": "^14.1.0",
     "nodemailer": "^6.9.16",
     "pdfjs-dist": "^3.11.174",
     "puppeteer": "^24.1.0",
@@ -71,6 +70,7 @@
     "@types/node": "^20",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@types/three": "^0.173.0",
     "babel-loader": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
@@ -81,6 +81,6 @@
     "tailwind-scrollbar": "^3.1.0",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5.0.4"
   }
 }

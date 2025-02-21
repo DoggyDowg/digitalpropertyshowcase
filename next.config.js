@@ -22,7 +22,8 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'urguvlckmcehdiibsiwf.supabase.co'
       }
-    ]
+    ],
+    domains: ['ckqbqxqvxgvxqgzc.public.blob.vercel-storage.com'],
   },
   webpack: (config, { isServer }) => {
     // Handle PDF.js
@@ -36,9 +37,9 @@ const nextConfig = {
     return config;
   },
   transpilePackages: [
-    // Keep other packages but remove Three.js related ones
     'react-pdf',
-    '@react-pdf/renderer'
+    '@react-pdf/renderer',
+    'sonner'
   ]
 }
 

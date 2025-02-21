@@ -49,9 +49,36 @@ export async function generateMetadata(
   const supabase = createServerComponentClient({ cookies })
   const { data: property } = await supabase
     .from('properties')
-    .select('*, agency_settings(*)')
+    .select(`
+      *,
+      agency_settings:agency_id (
+        id,
+        branding,
+        footer_links,
+        copyright,
+        menu_items,
+        office_addresses
+      )
+    `)
     .eq('id', id)
     .single()
+
+  // Debug logging for agency settings data
+  console.info('[Server] Agency Settings Debug:', {
+    hasAgencySettings: !!property?.agency_settings,
+    agencyId: property?.agency_id,
+    footerLinksCount: property?.agency_settings?.footer_links?.length || 0,
+    footerLinksData: property?.agency_settings?.footer_links
+  })
+
+  // Add cache busting timestamp and cache control headers
+  const timestamp = Date.now()
+
+  console.info('[Server] 🔄 Cache Debug:', {
+    timestamp,
+    hasAgencySettings: !!property?.agency_settings,
+    footerLinksCount: property?.agency_settings?.footer_links?.length || 0
+  })
 
   // Log property data with server marker
   console.info('[Server] 📝 Property Data:', {
@@ -83,6 +110,17 @@ export async function generateMetadata(
   if (!baseUrl.startsWith('https://')) {
     baseUrl = `https://${baseUrl}`
   }
+
+  // Debug favicon URL construction
+  const faviconUrl = property.agency_settings?.branding?.favicon
+  // Add cache busting timestamp to favicon URL
+  const faviconUrlWithCache = faviconUrl ? `${faviconUrl}?t=${Date.now()}` : undefined
+  console.info('[Server] 🎨 Favicon Debug:', {
+    originalFaviconUrl: faviconUrl,
+    faviconUrlWithCache,
+    isAbsoluteUrl: faviconUrl?.startsWith('http'),
+    baseUrl
+  })
 
   // Initialize image variables
   let ogImage = ''
@@ -221,9 +259,9 @@ export async function generateMetadata(
       images: imageObject ? [imageObject] : undefined,
     },
     icons: property.agency_settings?.branding?.favicon ? {
-      icon: property.agency_settings.branding.favicon,
-      shortcut: property.agency_settings.branding.favicon,
-      apple: property.agency_settings.branding.favicon,
+      icon: faviconUrlWithCache,
+      shortcut: faviconUrlWithCache,
+      apple: faviconUrlWithCache,
     } : undefined,
     robots: {
       index: true,

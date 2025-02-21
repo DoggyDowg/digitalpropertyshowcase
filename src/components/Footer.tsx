@@ -14,6 +14,15 @@ interface FooterProps {
 export function Footer({ property }: FooterProps) {
   const { imageUrl, loading, error } = useFooterImage(property.id, property.is_demo)
   
+  // Debug logging
+  console.log('Footer Component Debug:', {
+    propertyId: property.id,
+    hasAgencySettings: !!property.agency_settings,
+    agencySettingsData: property.agency_settings,
+    footerLinksFromAgencySettings: property.agency_settings?.footer_links,
+    footerLinksDirectly: property.footer_links,
+  })
+  
   // Find all links
   const phoneLink = property.agency_settings?.footer_links?.find((link: FooterLink) => link.id === 'phone')
   const emailLink = property.agency_settings?.footer_links?.find((link: FooterLink) => link.id === 'email')
@@ -25,6 +34,14 @@ export function Footer({ property }: FooterProps) {
   const customLinks = property.agency_settings?.footer_links?.filter((link: FooterLink) => 
     !['phone', 'email', 'facebook', 'instagram'].includes(link.id)
   ) || []
+
+  // Additional debug logging for processed links
+  console.log('Processed Footer Links:', {
+    phoneLink,
+    emailLink,
+    socialLinksCount: socialLinks.length,
+    customLinksCount: customLinks.length
+  })
 
   // Get agency logo and office details
   const agencyLogo = property.agency_settings?.branding?.logo?.light

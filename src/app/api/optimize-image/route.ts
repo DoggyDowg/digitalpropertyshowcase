@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 
+// Use Node.js runtime instead of Edge
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     // Get the file from the request
@@ -98,10 +101,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}; 
+} 
