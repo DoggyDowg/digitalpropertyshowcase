@@ -174,6 +174,7 @@ export interface Property {
       contact?: string
     }
     office_addresses?: OfficeAddress[]
+    footer_links?: FooterLink[]
   }
   assets?: PropertyAssets
   virtual_tour_enabled?: boolean
