@@ -44,6 +44,28 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Create a response that we'll modify based on conditions
+  const res = NextResponse.next()
+
+  // Handle auth for admin routes
+  if (pathname.startsWith('/admin')) {
+    const supabase = createMiddlewareClient({ req: request, res })
+    const { data: { session } } = await supabase.auth.getSession()
+
+    // Protect all admin routes except login
+    if (pathname !== '/admin/login') {
+      if (!session) {
+        // Redirect to login if not authenticated
+        const redirectUrl = new URL('/admin/login', request.url)
+        return NextResponse.redirect(redirectUrl)
+      }
+    } else if (session) {
+      // If we're on the login page and already authenticated, redirect to admin dashboard
+      const redirectUrl = new URL('/admin', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+
   // Handle custom domains
   if (hostname && !hostname.includes('localhost') && !hostname.includes('vercel.app')) {
     try {
@@ -64,7 +86,7 @@ export async function middleware(request: NextRequest) {
           hostname,
           error: error?.message
         }))
-        return NextResponse.next()
+        return res
       }
 
       // Rewrite to the property page while keeping the URL clean
@@ -98,46 +120,15 @@ export async function middleware(request: NextRequest) {
       return response
     } catch (err) {
       console.error('Middleware error:', err)
-      return NextResponse.next()
+      return res
     }
-  }
-
-  // Create a Supabase client configured to use cookies
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req: request, res })
-
-  // Check auth status
-  const { data: { session } } = await supabase.auth.getSession()
-
-  // Protect all admin routes except login
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    if (!session) {
-      // Redirect to login if not authenticated
-      const redirectUrl = new URL('/admin/login', request.url)
-      return NextResponse.redirect(redirectUrl)
-    }
-  }
-
-  // If we're on the login page and already authenticated, redirect to admin dashboard
-  if (pathname === '/admin/login' && session) {
-    const redirectUrl = new URL('/admin', request.url)
-    return NextResponse.redirect(redirectUrl)
   }
 
   return res
 }
 
-// Configure the middleware to run on specific paths
+// Match all routes except static files and API routes
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/admin/:path*'
-  ],
+  matcher: ['/:path*']
+} 
 } 
