@@ -12,7 +12,7 @@ try {
   emailjs.init({
     publicKey: process.env.NEXT_PUBLIC_EMAILJS_USER_ID!,
   });
-  console.log('EmailJS initialized successfully with version:', emailjs.version);
+  console.log('EmailJS initialized successfully');
 } catch (error) {
   console.error('EmailJS initialization failed:', error);
 }
