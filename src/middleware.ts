@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
@@ -101,10 +102,42 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next()
+  // Create a Supabase client configured to use cookies
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req: request, res })
+
+  // Check auth status
+  const { data: { session } } = await supabase.auth.getSession()
+
+  // Protect all admin routes except login
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    if (!session) {
+      // Redirect to login if not authenticated
+      const redirectUrl = new URL('/admin/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+
+  // If we're on the login page and already authenticated, redirect to admin dashboard
+  if (pathname === '/admin/login' && session) {
+    const redirectUrl = new URL('/admin', request.url)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  return res
 }
 
-// Match all routes for testing
+// Configure the middleware to run on specific paths
 export const config = {
-  matcher: ['/:path*']
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/admin/:path*'
+  ],
 } 

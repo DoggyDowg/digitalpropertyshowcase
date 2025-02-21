@@ -128,7 +128,7 @@ export interface Property {
   suburb: string
   state: string
   price: string
-  status: string
+  status: 'draft' | 'published' | 'archived'
   agency_id: string | null
   agency_name: string | null
   agent_id: string | null
@@ -176,4 +176,5 @@ export interface Property {
     office_addresses?: OfficeAddress[]
   }
   assets?: PropertyAssets
+  virtual_tour_enabled?: boolean
 }

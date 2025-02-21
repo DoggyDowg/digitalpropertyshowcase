@@ -23,7 +23,11 @@ export default async function PropertyPage({
   console.info('[Server] Fetching property data...')
   const { data: property, error } = await supabase
     .from('properties')
-    .select('*, agency_settings(*)')
+    .select(`
+      *,
+      agency_settings(*),
+      assets!property_id(*)
+    `)
     .eq('id', id)
     .single()
 
@@ -32,6 +36,8 @@ export default async function PropertyPage({
     name: property?.name,
     hasContent: !!property?.content,
     hasAgencySettings: !!property?.agency_settings,
+    hasAssets: !!property?.assets,
+    assetsCount: property?.assets?.length,
     error: error?.message
   })
 
@@ -64,7 +70,6 @@ export default async function PropertyPage({
     <PropertyClientWrapper 
       property={property}
       template={property.template_name === 'dubai' ? 'dubai' : 'cusco'}
-      propertyId={id}
     />
   )
 }

@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ParallaxBanner } from './shared/ParallaxBanner'
 import { HomeGallery } from './HomeGallery'
 import { useFeaturesBanner } from '@/hooks/useFeaturesBanner'
 import { useYourHomeImage } from '@/hooks/useYourHomeImage'
+import styles from '@/styles/Hero.module.css'
 import type { Property } from '@/types/property'
 
 interface YourHomeProps {
@@ -25,18 +27,10 @@ export function YourHome({ property }: YourHomeProps) {
     content.features || { items: [], header: '', headline: '', description: '' }
   , [content.features])
 
-  // Debug logs
-  useEffect(() => {
-    console.log('[YourHome] Component state:', {
-      propertyId: property.id,
-      isDemoProperty: property.is_demo,
-      bannerUrl,
-      bannerLoading,
-      homeImageUrl,
-      homeImageLoading,
-      featuresData
-    })
-  }, [property.id, property.is_demo, bannerUrl, bannerLoading, homeImageUrl, homeImageLoading, featuresData])
+  // Check if virtual tour is enabled
+  const showVirtualTour = useMemo(() => {
+    return property.virtual_tour_enabled;
+  }, [property.virtual_tour_enabled]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -106,7 +100,19 @@ export function YourHome({ property }: YourHomeProps) {
               }}
             >
               <h3 className="text-3xl font-light mb-6 text-brand-dark">{featuresData.headline}</h3>
-              <p className="text-brand-dark">{featuresData.description || featuresData.header}</p>
+              <p className="text-brand-dark mb-8">{featuresData.description || featuresData.header}</p>
+              
+              {/* Virtual Tour Button */}
+              {showVirtualTour && (
+                <Link
+                  href={`/properties/${property.id}/virtual-tour`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${styles.slideEffect} inline-block px-8 py-3 text-brand-light bg-brand-dark active:translate-y-[3px] no-underline hover:no-underline`}
+                >
+                  View Virtual Tour
+                </Link>
+              )}
             </div>
 
             {/* Right Column - Image */}

@@ -1,6 +1,5 @@
 'use client'
 
-import { useProperty } from '@/hooks/useProperty'
 import { ClientLayout } from '@/components/layouts/ClientLayout'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
@@ -14,26 +13,14 @@ import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import CustomChat from '@/components/shared/CustomChat'
 import { GridGallery } from './components/ScrollerTransition'
+import type { Property } from '@/types/property'
 
 interface DubaiTemplateProps {
-  propertyId: string
+  property: Property
 }
 
-export function DubaiTemplate({ propertyId }: DubaiTemplateProps) {
-  const { property, loading, error } = useProperty(propertyId)
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Error</h1>
-          <p className="mt-2 text-gray-600">{error.message}</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (loading || !property) {
+export function DubaiTemplate({ property }: DubaiTemplateProps) {
+  if (!property) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse">
@@ -47,7 +34,6 @@ export function DubaiTemplate({ propertyId }: DubaiTemplateProps) {
   return (
     <ClientLayout property={property}>
       <main className="min-h-screen">
-        {/* Dubai template specific container styles can be added here */}
         <div className="dubai-template overflow-x-hidden">
           <Header property={property} />
           <Hero property={property} />

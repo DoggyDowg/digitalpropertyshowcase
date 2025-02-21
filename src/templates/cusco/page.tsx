@@ -1,6 +1,5 @@
 'use client'
 
-import { useProperty } from '@/hooks/useProperty'
 import { Header } from '@/components/Header'
 import { Hero as CuscoHero } from '@/components/Hero'
 import { Hero as DubaiHero } from '@/templates/dubai/components/Hero'
@@ -14,27 +13,15 @@ import { MoreInfo } from '@/components/MoreInfo'
 import { ClientLayout } from '@/components/layouts/ClientLayout'
 import { Contact } from '@/components/Contact'
 import CustomChat from '@/components/shared/CustomChat'
+import type { Property } from '@/types/property'
 
 interface CuscoTemplateProps {
-  propertyId: string
+  property: Property
   templateStyle?: 'cusco' | 'dubai'
 }
 
-export function CuscoTemplate({ propertyId, templateStyle = 'cusco' }: CuscoTemplateProps) {
-  const { property, loading, error } = useProperty(propertyId)
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Error</h1>
-          <p className="mt-2 text-gray-600">{error.message}</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (loading || !property) {
+export function CuscoTemplate({ property, templateStyle = 'cusco' }: CuscoTemplateProps) {
+  if (!property) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse">

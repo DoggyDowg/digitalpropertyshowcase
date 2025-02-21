@@ -336,32 +336,49 @@ const PropertyMoreInfo = forwardRef<{ handleSave: () => Promise<void> }, Propert
                         </a>
                       )}
                     </div>
-                  ) : (
+                  ) :
                     <div>
-                      <input
-                        type={moreInfo.ctaButtons.primary.type === 'anchor' ? 'text' : 'url'}
-                        value={moreInfo.ctaButtons.primary.url}
-                        onChange={(e) => {
-                          updateMoreInfo(prevState => ({
-                            ...prevState,
-                            ctaButtons: {
-                              ...prevState.ctaButtons,
-                              primary: { ...prevState.ctaButtons.primary, url: e.target.value }
-                            }
-                          }));
-                        }}
-                        className="w-full p-2 border rounded"
-                        placeholder={moreInfo.ctaButtons.primary.type === 'anchor' ? 
-                          'e.g., viewings (without #)' : 
-                          'e.g., https://example.com'}
-                      />
-                      {moreInfo.ctaButtons.primary.type === 'anchor' && (
-                        <p className="mt-1 text-sm text-gray-500">
-                          Available sections: viewings, features, lifestyle, neighbourhood
-                        </p>
+                      {moreInfo.ctaButtons.primary.type === 'anchor' ? (
+                        <select
+                          value={moreInfo.ctaButtons.primary.url}
+                          onChange={(e) => {
+                            updateMoreInfo(prevState => ({
+                              ...prevState,
+                              ctaButtons: {
+                                ...prevState.ctaButtons,
+                                primary: { ...prevState.ctaButtons.primary, url: e.target.value }
+                              }
+                            }));
+                          }}
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select a section</option>
+                          <option value="hero">Hero</option>
+                          <option value="features">Features</option>
+                          <option value="lifestyle">Lifestyle</option>
+                          <option value="neighbourhood">Neighbourhood</option>
+                          <option value="viewings">Viewings</option>
+                          <option value="contact">Make an Enquiry</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="url"
+                          value={moreInfo.ctaButtons.primary.url}
+                          onChange={(e) => {
+                            updateMoreInfo(prevState => ({
+                              ...prevState,
+                              ctaButtons: {
+                                ...prevState.ctaButtons,
+                                primary: { ...prevState.ctaButtons.primary, url: e.target.value }
+                              }
+                            }));
+                          }}
+                          className="w-full p-2 border rounded"
+                          placeholder="e.g., https://example.com"
+                        />
                       )}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
             </div>
@@ -430,30 +447,50 @@ const PropertyMoreInfo = forwardRef<{ handleSave: () => Promise<void> }, Propert
                         </a>
                       )}
                     </div>
-                  ) : (
+                  ) :
                     <div>
-                      <input
-                        type={moreInfo.ctaButtons.secondary.type === 'anchor' ? 'text' : 'url'}
-                        value={moreInfo.ctaButtons.secondary.url}
-                        onChange={(e) => updateMoreInfo({
-                          ...moreInfo,
-                          ctaButtons: {
-                            ...moreInfo.ctaButtons,
-                            secondary: { ...moreInfo.ctaButtons.secondary, url: e.target.value }
-                          }
-                        })}
-                        className="w-full p-2 border rounded"
-                        placeholder={moreInfo.ctaButtons.secondary.type === 'anchor' ? 
-                          'e.g., viewings (without #)' : 
-                          'e.g., https://example.com'}
-                      />
+                      {moreInfo.ctaButtons.secondary.type === 'anchor' ? (
+                        <select
+                          value={moreInfo.ctaButtons.secondary.url}
+                          onChange={(e) => updateMoreInfo({
+                            ...moreInfo,
+                            ctaButtons: {
+                              ...moreInfo.ctaButtons,
+                              secondary: { ...moreInfo.ctaButtons.secondary, url: e.target.value }
+                            }
+                          })}
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select a section</option>
+                          <option value="hero">Hero</option>
+                          <option value="features">Features</option>
+                          <option value="lifestyle">Lifestyle</option>
+                          <option value="neighbourhood">Neighbourhood</option>
+                          <option value="viewings">Viewings</option>
+                          <option value="contact">Make an Enquiry</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="url"
+                          value={moreInfo.ctaButtons.secondary.url}
+                          onChange={(e) => updateMoreInfo({
+                            ...moreInfo,
+                            ctaButtons: {
+                              ...moreInfo.ctaButtons,
+                              secondary: { ...moreInfo.ctaButtons.secondary, url: e.target.value }
+                            }
+                          })}
+                          className="w-full p-2 border rounded"
+                          placeholder="e.g., https://example.com"
+                        />
+                      )}
                       {moreInfo.ctaButtons.secondary.type === 'anchor' && (
                         <p className="mt-1 text-sm text-gray-500">
-                          Available sections: viewings, features, lifestyle, neighbourhood
+                          Click on a section to automatically scroll to it on the property page
                         </p>
                       )}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
             </div>

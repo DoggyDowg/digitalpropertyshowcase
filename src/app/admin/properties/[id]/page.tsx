@@ -970,15 +970,14 @@ function PropertyEditContent({ id }: { id: string }) {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Template</label>
-                      <select
-                        value={property.template_name}
-                        onChange={(e) => handlePropertyChange('template_name', e.target.value)}
+                      <label className="block text-sm font-medium text-gray-700">Price</label>
+                      <input
+                        type="text"
+                        value={property.price || ''}
+                        onChange={(e) => handlePropertyChange('price', e.target.value)}
                         className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                      >
-                        <option value="cusco">Cusco</option>
-                        <option value="dubai">Dubai</option>
-                      </select>
+                        placeholder="e.g., $1,500,000"
+                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
