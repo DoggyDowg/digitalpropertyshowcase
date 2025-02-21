@@ -7,8 +7,15 @@ import type { Property } from '@/types/property'
 import { Toaster, toast } from 'react-hot-toast'
 import emailjs from '@emailjs/browser'
 
-// Initialize EmailJS
-emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_USER_ID!);
+// Initialize EmailJS with new method
+try {
+  emailjs.init({
+    publicKey: process.env.NEXT_PUBLIC_EMAILJS_USER_ID!,
+  });
+  console.log('EmailJS initialized successfully with version:', emailjs.version);
+} catch (error) {
+  console.error('EmailJS initialization failed:', error);
+}
 
 interface ContactProps {
   property: Property
@@ -19,6 +26,17 @@ export function Contact({ property }: ContactProps) {
   const agencyLogo = property.agency_settings?.branding.logo.dark
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+
+  // Verify EmailJS configuration on mount
+  useEffect(() => {
+    console.log('EmailJS Configuration Check:', {
+      serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID?.substring(0, 4) + '...',
+      templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID?.substring(0, 4) + '...',
+      hasUserId: !!process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
+      environment: process.env.NODE_ENV,
+      domain: window.location.origin
+    });
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -60,13 +78,14 @@ export function Contact({ property }: ContactProps) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Submit handler triggered')
-    e.preventDefault()
-    console.log('Default prevented')
-    setIsSubmitting(true)
+    console.log('Submit handler triggered');
+    e.preventDefault();
+    console.log('Default prevented');
+    setIsSubmitting(true);
 
     try {
       // First, get the agent's name from the API
+      console.log('Fetching agent data...');
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -75,17 +94,21 @@ export function Contact({ property }: ContactProps) {
         body: JSON.stringify({
           agentId: property.agent_id
         }),
-      })
+      });
 
-      const agentData = await response.json()
+      console.log('Agent API response status:', response.status);
+      const agentData = await response.json();
+      
       if (!response.ok) {
-        throw new Error(agentData.error || 'Failed to fetch agent information')
+        throw new Error(agentData.error || 'Failed to fetch agent information');
       }
 
-      // Prepare template parameters
+      console.log('Agent data received successfully');
+
+      // Prepare template parameters with complete agent data
       const templateParams = {
         to_email: agent?.email,
-        to_name: agentData.firstName,
+        to_name: agentData.firstName, // Using the firstName from API response
         from_name: formData.name,
         from_email: formData.email,
         phone: formData.phone,
@@ -93,20 +116,27 @@ export function Contact({ property }: ContactProps) {
         property_name: property.name,
         form_type: 'enquiry',
         subject: 'New Property Enquiry'
-      }
+      };
 
-      // Send email using EmailJS client-side
-      await emailjs.send(
+      console.log('Sending email with params:', {
+        ...templateParams,
+        to_email: '***@***.com' // Mask email for security in logs
+      });
+
+      // Send with explicit public key as backup
+      const result = await emailjs.send(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        templateParams
-      )
+        templateParams,
+        process.env.NEXT_PUBLIC_EMAILJS_USER_ID! // Adding public key here as backup
+      );
 
-      // Show success toast
+      console.log('EmailJS Response:', result);
+      
       toast.success(
         'Thank you for your enquiry. We will be in touch soon.',
         {
-          duration: 15000, // 15 seconds
+          duration: 15000,
           position: 'bottom-center',
           style: {
             background: 'var(--brand-light)',
@@ -115,11 +145,16 @@ export function Contact({ property }: ContactProps) {
             borderRadius: '8px',
           },
         }
-      )
-      // Reset form
-      setFormData({ name: '', email: '', phone: '', message: '' })
+      );
+      
+      setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      // Show error toast
+      console.error('Detailed error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
       toast.error(
         error instanceof Error ? error.message : 'Failed to send enquiry',
         {
@@ -132,9 +167,9 @@ export function Contact({ property }: ContactProps) {
             borderRadius: '8px',
           },
         }
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
