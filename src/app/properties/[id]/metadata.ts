@@ -220,6 +220,11 @@ export async function generateMetadata(
       creator: '@colellaproperty',
       images: imageObject ? [imageObject] : undefined,
     },
+    icons: property.agency_settings?.branding?.favicon ? {
+      icon: property.agency_settings.branding.favicon,
+      shortcut: property.agency_settings.branding.favicon,
+      apple: property.agency_settings.branding.favicon,
+    } : undefined,
     robots: {
       index: true,
       follow: true,

@@ -66,32 +66,6 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
     setProcessedAssets(groupedAssets);
   }, [property?.assets]);
 
-  // Handle favicon updates
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const faviconUrl = property?.agency_settings?.branding?.favicon;
-    if (!faviconUrl) return;
-
-    // Update favicon
-    let link = document.querySelector("link[rel='icon']") as HTMLLinkElement;
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.href = faviconUrl;
-
-    // Update apple touch icon
-    let appleLink = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
-    if (!appleLink) {
-      appleLink = document.createElement('link');
-      appleLink.rel = 'apple-touch-icon';
-      document.head.appendChild(appleLink);
-    }
-    appleLink.href = faviconUrl;
-  }, [property?.agency_settings?.branding?.favicon]);
-
   // Create a new property object with processed assets
   const propertyWithProcessedAssets = {
     ...property,
