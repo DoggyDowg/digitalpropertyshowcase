@@ -9,6 +9,7 @@ import { ASSET_CATEGORY_CONFIG } from '@/types/assets';
 import Image from 'next/image';
 import { Loader2, X, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { isValidYouTubeUrl, getYouTubeVideoId } from '@/lib/youtube';
 
 interface PropertyAssetsProps {
   propertyId: string;
@@ -99,7 +100,99 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
   const [error, setError] = useState<string>('');
   const [virtualTourEnabled, setVirtualTourEnabled] = useState(false);
   const [has3DTourAssets, setHas3DTourAssets] = useState(false);
+  const [heroVideo, setHeroVideo] = useState<{ url: string; type: 'upload' | 'youtube' } | null>(null);
+  const [promoVideo, setPromoVideo] = useState<{ url: string; type: 'upload' | 'youtube' } | null>(null);
+  const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
+
+  // Move loadData outside of useEffect and wrap in useCallback
+  const loadData = useCallback(async () => {
+    if (!propertyId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      setUploadProgress({});
+      setVirtualTourEnabled(false);
+      setHas3DTourAssets(false);
+      
+      // Fetch assets
+      const { data: assetData, error: assetError } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('property_id', propertyId);
+      
+      if (assetError) throw assetError;
+      
+      // Fetch property virtual tour status
+      const { data: propertyData, error: propertyError } = await supabase
+        .from('properties')
+        .select('virtual_tour_enabled')
+        .eq('id', propertyId)
+        .single();
+      
+      if (propertyError) throw propertyError;
+
+      // Group assets by category
+      const grouped = assetData.reduce((acc: PropertyAssets, asset: Asset) => {
+        if (asset.category === 'gallery' || asset.category === 'neighbourhood' || asset.category === 'floorplan' || asset.category === '3d_tour' || asset.category === 'aerials') {
+          acc[asset.category] = [...(acc[asset.category] || []), asset];
+        } else {
+          acc[asset.category] = asset;
+        }
+        return acc;
+      }, { gallery: [], neighbourhood: [], floorplan: [], '3d_tour': [], aerials: [] });
+
+      setAssets(grouped);
+      setVirtualTourEnabled(propertyData?.virtual_tour_enabled || false);
+      
+      // Check if there are any 3D tour assets
+      const has3DTour = assetData?.some(asset => 
+        asset.category === '3d_tour' && asset.status === 'active'
+      ) || false;
+      setHas3DTourAssets(has3DTour);
+
+      // Load existing videos
+      const videos = assetData.filter(a => a.type === 'video');
+      if (videos.length > 0) {
+        // Set hero video
+        const heroVid = videos.find(v => v.video_type === 'hero');
+        if (heroVid) {
+          setHeroVideo({
+            url: heroVid.source_type === 'youtube' 
+              ? heroVid.external_url 
+              : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${heroVid.storage_path}`,
+            type: heroVid.source_type
+          });
+        }
+
+        // Set promo video
+        const promoVid = videos.find(v => v.video_type === 'promo');
+        if (promoVid) {
+          setPromoVideo({
+            url: promoVid.source_type === 'youtube' 
+              ? promoVid.external_url 
+              : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${promoVid.storage_path}`,
+            type: promoVid.source_type
+          });
+        }
+      }
+
+    } catch (err) {
+      console.error('Error loading assets:', err);
+      setError('Failed to load assets');
+    } finally {
+      setLoading(false);
+    }
+  }, [propertyId, supabase]);
+
+  // Load existing assets and virtual tour status
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Check authentication
   useEffect(() => {
@@ -109,65 +202,10 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
         setError('You must be logged in to upload files');
         console.error('Authentication error:', error);
       }
+      setLoading(false);
     }
     checkAuth();
   }, [supabase]);
-
-  // Load existing assets and virtual tour status
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setError('');
-        setUploadProgress({});
-        setVirtualTourEnabled(false);
-        setHas3DTourAssets(false);
-        
-        // Fetch assets
-        const { data: assetData, error: assetError } = await supabase
-          .from('assets')
-          .select('*')
-          .eq('property_id', propertyId);
-        
-        if (assetError) throw assetError;
-        
-        // Fetch property virtual tour status
-        const { data: propertyData, error: propertyError } = await supabase
-          .from('properties')
-          .select('virtual_tour_enabled')
-          .eq('id', propertyId)
-          .single();
-        
-        if (propertyError) throw propertyError;
-
-        // Group assets by category
-        const grouped = assetData.reduce((acc: PropertyAssets, asset: Asset) => {
-          if (asset.category === 'gallery' || asset.category === 'neighbourhood' || asset.category === 'floorplan' || asset.category === '3d_tour' || asset.category === 'aerials') {
-            acc[asset.category] = [...(acc[asset.category] || []), asset];
-          } else {
-            acc[asset.category] = asset;
-          }
-          return acc;
-        }, { gallery: [], neighbourhood: [], floorplan: [], '3d_tour': [], aerials: [] });
-
-        setAssets(grouped);
-        setVirtualTourEnabled(propertyData?.virtual_tour_enabled || false);
-        
-        // Check if there are any 3D tour assets
-        const has3DTour = assetData?.some(asset => 
-          asset.category === '3d_tour' && asset.status === 'active'
-        ) || false;
-        setHas3DTourAssets(has3DTour);
-
-      } catch (err) {
-        console.error('Error loading assets:', err);
-        setError('Failed to load assets');
-      }
-    }
-
-    if (propertyId) {
-      loadData();
-    }
-  }, [propertyId, supabase]);
 
   // Handle file drops
   const onDrop = useCallback(async (acceptedFiles: File[], category: AssetCategory) => {
@@ -289,7 +327,7 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
             message: uploadError.message,
             name: uploadError.name
           });
-          throw uploadError;
+          throw new Error(`Failed to upload video: ${uploadError.message}`);
         }
 
         if (!uploadData?.path) {
@@ -447,6 +485,324 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
     }
   };
 
+  // Handle video upload
+  const handleVideoUpload = async (files: File[], videoType: 'hero' | 'promo') => {
+    const loadingToast = toast.loading(`Uploading ${videoType} video...`);
+    try {
+      if (files.length === 0) {
+        toast.dismiss(loadingToast);
+        return;
+      }
+      const file = files[0]; // Only use the first file
+
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        toast.dismiss(loadingToast);
+        toast.error('Please upload a valid video file');
+        return;
+      }
+
+      // Delete existing video of this type first
+      const { data: existingVideos, error: fetchError } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('property_id', propertyId)
+        .eq('type', 'video')
+        .eq('video_type', videoType);
+
+      if (fetchError) {
+        console.error('Error fetching existing videos:', fetchError);
+        throw new Error('Failed to check for existing videos');
+      }
+
+      if (existingVideos?.length) {
+        // Delete from storage if it was an upload
+        for (const video of existingVideos) {
+          if (video.source_type === 'upload') {
+            const { error: deleteError } = await supabase.storage
+              .from('property-assets')
+              .remove([video.storage_path]);
+            
+            if (deleteError) {
+              console.error('Error deleting existing video from storage:', deleteError);
+              throw new Error('Failed to delete existing video from storage');
+            }
+          }
+        }
+
+        // Delete from database
+        const { error: dbDeleteError } = await supabase
+          .from('assets')
+          .delete()
+          .eq('property_id', propertyId)
+          .eq('video_type', videoType);
+
+        if (dbDeleteError) {
+          console.error('Error deleting existing video from database:', dbDeleteError);
+          throw new Error('Failed to delete existing video from database');
+        }
+      }
+
+      // Upload new video
+      const cleanFileName = file.name.toLowerCase()
+        .replace(/[^a-z0-9.]/g, '_')
+        .replace(/_+/g, '_');
+
+      const path = `${propertyId}/videos/${videoType}/${cleanFileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('property-assets')
+        .upload(path, file, {
+          contentType: file.type,
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Storage upload error:', {
+          error: uploadError,
+          message: uploadError.message,
+          name: uploadError.name
+        });
+        throw new Error(`Failed to upload video: ${uploadError.message}`);
+      }
+
+      if (!uploadData?.path) {
+        throw new Error('No upload path returned from storage');
+      }
+
+      // Create asset record
+      const { error: dbError } = await supabase
+        .from('assets')
+        .insert([{
+          property_id: propertyId,
+          type: 'video',
+          video_type: videoType,
+          source_type: 'upload',
+          filename: cleanFileName,
+          storage_path: uploadData.path,
+          status: 'active',
+          category: `${videoType}_video` // Add the category field
+        }]);
+
+      if (dbError) {
+        console.error('Database insert error:', {
+          error: dbError,
+          message: dbError.message,
+          code: dbError.code,
+          details: dbError.details,
+          hint: dbError.hint
+        });
+        // If the upload succeeded but DB insert failed, try to clean up the uploaded file
+        await supabase.storage
+          .from('property-assets')
+          .remove([uploadData.path]);
+        throw new Error(`Failed to create asset record: ${dbError.message}`);
+      }
+
+      // Update state
+      const videoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${uploadData.path}`;
+      if (videoType === 'hero') {
+        setHeroVideo({ url: videoUrl, type: 'upload' });
+      } else {
+        setPromoVideo({ url: videoUrl, type: 'upload' });
+      }
+
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success(`${videoType === 'hero' ? 'Hero' : 'Promo'} video uploaded successfully`);
+      onSave?.();
+    } catch (error) {
+      // Make sure to dismiss the loading toast
+      toast.dismiss(loadingToast);
+      
+      console.error('Error uploading video:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      toast.error(error instanceof Error ? error.message : 'Failed to upload video', {
+        duration: 5000 // Add a duration to auto-dismiss error toasts
+      });
+    }
+  };
+
+  // Update handleYouTubeUrl to also include category
+  const handleYouTubeUrl = async (url: string, videoType: 'hero' | 'promo') => {
+    const loadingToast = toast.loading(`Adding ${videoType} video from YouTube...`);
+    try {
+      if (!isValidYouTubeUrl(url)) {
+        toast.dismiss(loadingToast);
+        toast.error('Please enter a valid YouTube URL', { duration: 5000 });
+        return;
+      }
+
+      // Delete existing video of this type first
+      const { data: existingVideos, error: fetchError } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('property_id', propertyId)
+        .eq('type', 'video')
+        .eq('video_type', videoType);
+
+      if (fetchError) {
+        console.error('Error fetching existing videos:', fetchError);
+        throw fetchError;
+      }
+
+      if (existingVideos?.length) {
+        // Delete from storage if it was an upload
+        for (const video of existingVideos) {
+          if (video.source_type === 'upload') {
+            const { error: deleteError } = await supabase.storage
+              .from('property-assets')
+              .remove([video.storage_path]);
+              
+            if (deleteError) {
+              console.error('Error deleting existing video:', deleteError);
+              throw deleteError;
+            }
+          }
+        }
+
+        // Delete from database
+        const { error: deleteError } = await supabase
+          .from('assets')
+          .delete()
+          .eq('property_id', propertyId)
+          .eq('video_type', videoType);
+
+        if (deleteError) {
+          console.error('Error deleting existing video record:', deleteError);
+          throw deleteError;
+        }
+      }
+
+      // Create asset record
+      const videoId = getYouTubeVideoId(url);
+      if (!videoId) {
+        throw new Error('Could not extract video ID from URL');
+      }
+
+      const { data: insertData, error: dbError } = await supabase
+        .from('assets')
+        .insert([{
+          property_id: propertyId,
+          type: 'video',
+          video_type: videoType,
+          source_type: 'youtube',
+          external_url: url,
+          status: 'active',
+          category: 'promo_video',
+          filename: `youtube_${videoId}.mp4`,
+          title: `YouTube Video ${videoId}`,
+          storage_path: `youtube/${videoId}` // Add a placeholder storage path for YouTube videos
+        }])
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Error creating YouTube video record:', dbError);
+        throw dbError;
+      }
+
+      if (!insertData) {
+        throw new Error('No data returned from insert operation');
+      }
+
+      // Update state
+      if (videoType === 'hero') {
+        setHeroVideo({ url, type: 'youtube' });
+      } else {
+        setPromoVideo({ url, type: 'youtube' });
+      }
+
+      // Reload assets to ensure everything is in sync
+      loadData();
+
+      toast.dismiss(loadingToast);
+      toast.success(`${videoType === 'hero' ? 'Hero' : 'Promo'} video added successfully`, {
+        duration: 5000
+      });
+      onSave?.();
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      console.error('Error adding YouTube video:', error);
+      toast.error(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to add YouTube video', 
+        { duration: 5000 }
+      );
+    }
+  };
+
+  const removeVideo = async (videoType: 'hero' | 'promo') => {
+    try {
+      const { data: existingVideos } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('property_id', propertyId)
+        .eq('type', 'video')
+        .eq('video_type', videoType)
+
+      if (existingVideos?.length) {
+        // Delete from storage if it was an upload
+        for (const video of existingVideos) {
+          if (video.source_type === 'upload') {
+            await supabase.storage
+              .from('property-assets')
+              .remove([video.storage_path])
+          }
+        }
+
+        // Delete from database
+        await supabase
+          .from('assets')
+          .delete()
+          .eq('property_id', propertyId)
+          .eq('video_type', videoType)
+      }
+
+      // Update state
+      if (videoType === 'hero') {
+        setHeroVideo(null)
+      } else {
+        setPromoVideo(null)
+      }
+
+      toast.success(`${videoType === 'hero' ? 'Hero' : 'Promo'} video removed`)
+      onSave?.()
+    } catch (error) {
+      console.error('Error removing video:', error)
+      toast.error('Failed to remove video')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {/* Loading skeleton for each section */}
+        {['Hero Video', 'Promo Video', 'Gallery', 'Features', 'Lifestyle', 'Neighbourhood'].map((section) => (
+          <div key={section} className="bg-white rounded-lg shadow p-6">
+            <div className="animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="aspect-square bg-gray-200 rounded-lg"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {isDemoProperty && (
@@ -463,6 +819,143 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
           <p className="text-red-600">{error}</p>
         </div>
       )}
+
+      {/* Videos Section */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold capitalize border-b pb-2">Videos</h2>
+        
+        {/* Hero Video */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-medium">Hero Video</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              The hero video will be used as a background video in certain sections of the property showcase. 
+              It should be a short, high-quality video that looks good when looped. Sound is not necessary as it will be muted.
+              <br />
+              <strong className="text-gray-700">Note:</strong> Only direct video uploads are allowed for the hero video to ensure optimal performance as a background video.
+            </p>
+          </div>
+          
+          {heroVideo ? (
+            <div className="space-y-4">
+              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <video
+                  src={heroVideo.url}
+                  className="w-full h-full object-cover"
+                  controls
+                />
+              </div>
+              <button
+                onClick={() => removeVideo('hero')}
+                className="px-3 py-1 text-sm text-red-600 hover:text-red-700"
+              >
+                Remove Video
+              </button>
+            </div>
+          ) : (
+            <div>
+              <UploadZone
+                category="hero_video"
+                config={{
+                  label: "Hero Video",
+                  directory: "videos",
+                  maxFiles: 1,
+                  acceptedTypes: ["video"],
+                  description: "Upload a video file for the hero section",
+                  required: false
+                }}
+                onDrop={(files) => handleVideoUpload(files, 'hero')}
+                isAtCapacity={false}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Promo Video */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-medium">Promo Video</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              The promo video will be displayed in the More Info section and can be viewed in full screen with sound. 
+              You can either upload a video file or provide a YouTube URL.
+              If no promo video is set, the hero video will be used as a fallback.
+            </p>
+          </div>
+          
+          {promoVideo ? (
+            <div className="space-y-4">
+              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                {promoVideo.type === 'upload' ? (
+                  <video
+                    src={promoVideo.url}
+                    className="w-full h-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${getYouTubeVideoId(promoVideo.url)}?rel=0&modestbranding=1&playsinline=1&showinfo=0&enablejsapi=1&origin=${process.env.NEXT_PUBLIC_APP_URL}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+              <button
+                onClick={() => removeVideo('promo')}
+                className="px-3 py-1 text-sm text-red-600 hover:text-red-700"
+              >
+                Remove Video
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <UploadZone
+                category="promo_video"
+                config={{
+                  label: "Promo Video",
+                  directory: "videos",
+                  maxFiles: 1,
+                  acceptedTypes: ["video"],
+                  description: "Upload a video file for the promo section",
+                  required: false
+                }}
+                onDrop={(files) => handleVideoUpload(files, 'promo')}
+                isAtCapacity={false}
+              />
+              <div className="flex items-center">
+                <span className="text-sm text-gray-500">or</span>
+                <form 
+                  className="flex-1 ml-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const input = e.currentTarget.querySelector('input');
+                    const url = input?.value.trim();
+                    if (url) {
+                      handleYouTubeUrl(url, 'promo');
+                      // Clear input after submission
+                      if (input) input.value = '';
+                    }
+                  }}
+                >
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter YouTube URL"
+                      className="flex-1 px-3 py-2 border rounded-md"
+                    />
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Main Asset Categories */}
       {Object.entries(assetsByDirectory).map(([directory, categories]) => (

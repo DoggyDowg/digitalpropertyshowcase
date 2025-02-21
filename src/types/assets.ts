@@ -1,4 +1,4 @@
-export type AssetCategory = 'hero_video' | 'gallery' | 'your_home' | 'neighbourhood' | 'footer' | 'floorplan' | 
+export type AssetCategory = 'hero_video' | 'promo_video' | 'gallery' | 'your_home' | 'neighbourhood' | 'footer' | 'floorplan' | 
   'features_banner' | 'lifestyle_banner' | 'neighbourhood_banner' | 'property_logo' | '3d_tour' | 'aerials' | 'og_image';
 export type AssetType = 'image' | 'video' | 'pdf' | 'glb';
 
@@ -40,6 +40,7 @@ export type NewAsset = Omit<Asset, 'id' | 'created_at' | 'updated_at'>;
 // Grouped assets by category
 export interface PropertyAssets {
   hero_video?: Asset;
+  promo_video?: Asset;
   gallery: Asset[];
   your_home?: Asset;
   neighbourhood: Asset[];
@@ -70,6 +71,14 @@ export const ASSET_CATEGORY_CONFIG: Record<AssetCategory, {
     required: true,
     description: 'The main video shown in the hero section',
     directory: 'hero_transition'
+  },
+  promo_video: {
+    label: 'Promo Video',
+    maxFiles: 1,
+    acceptedTypes: ['video'],
+    required: false,
+    description: 'The main video shown in the promo section',
+    directory: 'promo_transition'
   },
   gallery: {
     label: 'Gallery',

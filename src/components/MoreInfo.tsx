@@ -10,6 +10,7 @@ import { useMoreInfoFloorplans } from '@/hooks/useMoreInfoFloorplans'
 import { PDFPreview } from '@/components/shared/PDFPreview'
 import type { Asset } from '@/types/assets'
 import type { Property } from '@/types/property'
+import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
 
 interface MoreInfoProps {
   property: Property;
@@ -114,6 +115,9 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const colors = branding?.colors
   const accentColor = colors?.accent || '#f5f5f5'
 
+  // Determine if video is from YouTube
+  const isYouTubeVideo = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')
+
   return (
     <section 
       ref={sectionRef}
@@ -156,13 +160,21 @@ export function MoreInfo({ property }: MoreInfoProps) {
               >
                 {/* Video Preview */}
                 <div className="absolute inset-0 overflow-hidden">
-                  <video
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                    src={videoUrl}
-                    preload="metadata"
-                  />
+                  {isYouTubeVideo ? (
+                    <iframe
+                      src={`${getYouTubeEmbedUrl(getYouTubeVideoId(videoUrl) || '')}?controls=0&autoplay=0`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    />
+                  ) : (
+                    <video
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                      src={videoUrl}
+                      preload="metadata"
+                    />
+                  )}
                 </div>
                 {/* Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-brand-dark/20 group-hover:bg-brand-dark/30 transition-all">
@@ -308,14 +320,23 @@ export function MoreInfo({ property }: MoreInfoProps) {
       {showVideo && videoUrl && (
         <div className="fixed inset-0 bg-brand-dark bg-opacity-90 z-50 flex items-center justify-center">
           <div className="relative w-full max-w-6xl aspect-video">
-            <video
-              className="w-full h-full"
-              controls
-              autoPlay
-            >
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            {isYouTubeVideo ? (
+              <iframe
+                src={`${getYouTubeEmbedUrl(getYouTubeVideoId(videoUrl) || '')}?autoplay=1&rel=0&modestbranding=1&playsinline=1&showinfo=0&enablejsapi=1&origin=${process.env.NEXT_PUBLIC_APP_URL}`}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                className="w-full h-full"
+                controls
+                autoPlay
+              >
+                <source src={videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
             <button
               className="absolute top-4 right-4 text-brand-light p-2 hover:bg-brand-light/10 rounded-full transition-all duration-150 hover:scale-110 cursor-pointer"
               onClick={() => setShowVideo(false)}

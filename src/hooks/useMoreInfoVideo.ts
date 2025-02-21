@@ -3,124 +3,86 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export function useMoreInfoVideo(propertyId?: string, isDemoProperty?: boolean) {
+interface VideoData {
+  videoUrl: string | null
+  videoType: 'upload' | 'youtube' | null
+  loading: boolean
+  error: Error | null
+}
+
+export function useMoreInfoVideo(propertyId: string, isDemoProperty: boolean): VideoData {
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [videoType, setVideoType] = useState<'upload' | 'youtube' | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    let isMounted = true
-    const abortController = new AbortController()
-
     async function loadVideo() {
-      if (!propertyId) {
-        console.log('No propertyId provided')
-        setLoading(false)
-        return
-      }
-
       try {
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, use the demo video
-        if (isDemoProperty) {
-          console.log('Loading demo video')
-          const supportedFormats = ['mp4', 'webm'] // Common video formats
-          let foundVideo = false
-          
-          for (const format of supportedFormats) {
-            const { data: publicUrlData } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(`demo/hero_video/hero.${format}`)
-
-            // Verify if the video exists
-            try {
-              const response = await fetch(publicUrlData.publicUrl, { 
-                method: 'HEAD',
-                signal: abortController.signal
-              })
-              if (response.ok) {
-                console.log(`Found demo video in ${format} format`)
-                if (isMounted) {
-                  setVideoUrl(publicUrlData.publicUrl)
-                }
-                foundVideo = true
-                break
-              }
-            } catch (err) {
-              console.log(`No ${format} format found for demo video:`, err)
-            }
-          }
-
-          if (!foundVideo) {
-            console.error('No supported video format found for demo video')
-            if (isMounted) {
-              setVideoUrl(null)
-            }
-          }
-          if (isMounted) {
-            setLoading(false)
-          }
-          return
-        }
-
-        // Otherwise, query the assets table for a real property
-        console.log('Fetching video for property:', propertyId)
-        const { data, error } = await supabase
+        // First try to get promo video
+        const { data: promoVideo, error: promoError } = await supabase
           .from('assets')
-          .select('storage_path')
+          .select('*')
           .eq('property_id', propertyId)
-          .eq('category', 'hero_video')
-          .eq('status', 'active')
+          .eq('type', 'video')
+          .eq('video_type', 'promo')
           .single()
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            console.log('No video found for property')
-            if (isMounted) {
-              setVideoUrl(null)
-            }
-            return
-          }
-          throw error
+        if (promoError && promoError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+          throw promoError
         }
 
-        if (data?.storage_path) {
-          const { data: publicUrlData } = supabase
-            .storage
-            .from('property-assets')
-            .getPublicUrl(data.storage_path)
+        // If no promo video, try to get hero video
+        if (!promoVideo) {
+          const { data: heroVideo, error: heroError } = await supabase
+            .from('assets')
+            .select('*')
+            .eq('property_id', propertyId)
+            .eq('type', 'video')
+            .eq('video_type', 'hero')
+            .single()
 
-          if (isMounted) {
-            setVideoUrl(publicUrlData.publicUrl)
+          if (heroError && heroError.code !== 'PGRST116') {
+            throw heroError
+          }
+
+          if (heroVideo) {
+            if (heroVideo.source_type === 'youtube') {
+              setVideoUrl(heroVideo.external_url)
+              setVideoType('youtube')
+            } else {
+              setVideoUrl(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${heroVideo.storage_path}`)
+              setVideoType('upload')
+            }
           }
         } else {
-          if (isMounted) {
-            setVideoUrl(null)
+          // Use promo video
+          if (promoVideo.source_type === 'youtube') {
+            setVideoUrl(promoVideo.external_url)
+            setVideoType('youtube')
+          } else {
+            setVideoUrl(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${promoVideo.storage_path}`)
+            setVideoType('upload')
           }
         }
       } catch (err) {
         console.error('Error loading video:', err)
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Failed to load video'))
-        }
+        setError(err instanceof Error ? err : new Error('Failed to load video'))
       } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     }
 
-    loadVideo()
-
-    return () => {
-      isMounted = false
-      abortController.abort()
+    if (!isDemoProperty) {
+      loadVideo()
+    } else {
+      setLoading(false)
     }
-  }, [supabase, propertyId, isDemoProperty])
+  }, [propertyId, isDemoProperty, supabase])
 
-  return { videoUrl, loading, error }
+  return { videoUrl, videoType, loading, error }
 } 

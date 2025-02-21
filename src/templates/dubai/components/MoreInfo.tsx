@@ -34,7 +34,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const supabase = createClientComponentClient()
-  const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id)
+  const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo)
 
   console.log('MoreInfo render - videoUrl:', videoUrl)
   console.log('MoreInfo render - videoLoading:', videoLoading)
