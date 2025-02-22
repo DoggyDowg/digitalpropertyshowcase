@@ -113,11 +113,33 @@ export async function generateMetadata(
 
   // Debug favicon URL construction
   const faviconUrl = property.agency_settings?.branding?.favicon
+  // Ensure favicon URL is absolute
+  const absoluteFaviconUrl = faviconUrl 
+    ? (faviconUrl.startsWith('http') ? faviconUrl : `${baseUrl}${faviconUrl}`)
+    : undefined
   // Add cache busting timestamp to favicon URL
-  const faviconUrlWithCache = faviconUrl ? `${faviconUrl}?t=${Date.now()}` : undefined
+  const faviconUrlWithCache = absoluteFaviconUrl ? `${absoluteFaviconUrl}?t=${Date.now()}` : undefined
+
+  // Verify favicon URL is accessible
+  let verifiedFaviconUrl: string | undefined = undefined;
+  if (faviconUrlWithCache) {
+    try {
+      const isValid = await verifyImageUrl(faviconUrlWithCache);
+      if (isValid) {
+        verifiedFaviconUrl = faviconUrlWithCache;
+      } else {
+        console.warn('[Server] ⚠️ Favicon URL is not accessible:', faviconUrlWithCache);
+      }
+    } catch (error) {
+      console.error('[Server] Error verifying favicon URL:', error);
+    }
+  }
+
   console.info('[Server] 🎨 Favicon Debug:', {
     originalFaviconUrl: faviconUrl,
+    absoluteFaviconUrl,
     faviconUrlWithCache,
+    verifiedFaviconUrl,
     isAbsoluteUrl: faviconUrl?.startsWith('http'),
     baseUrl
   })
@@ -258,10 +280,10 @@ export async function generateMetadata(
       creator: '@colellaproperty',
       images: imageObject ? [imageObject] : undefined,
     },
-    icons: property.agency_settings?.branding?.favicon ? {
-      icon: faviconUrlWithCache,
-      shortcut: faviconUrlWithCache,
-      apple: faviconUrlWithCache,
+    icons: verifiedFaviconUrl ? {
+      icon: verifiedFaviconUrl,
+      shortcut: verifiedFaviconUrl,
+      apple: verifiedFaviconUrl,
     } : undefined,
     robots: {
       index: true,
@@ -286,6 +308,7 @@ export async function generateMetadata(
     ogImage: metadata.openGraph?.images,
     twitterImage: metadata.twitter?.images,
     baseUrl: metadata.metadataBase?.toString(),
+    favicon: (metadata.icons as { icon?: string } | undefined)?.icon
   })
   console.info('[Server] ✅ METADATA GENERATION COMPLETED ✅\n')
 
