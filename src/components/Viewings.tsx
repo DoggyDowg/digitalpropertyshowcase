@@ -202,7 +202,8 @@ export function Viewings({ property }: ViewingsProps) {
 
   return (
     <section id="viewings" className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="absolute inset-0 bg-brand-dark/90" />
+      <div className="max-w-7xl mx-auto relative">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h2 className="text-4xl font-light text-brand-light mb-4">{viewings.title}</h2>
         </div>

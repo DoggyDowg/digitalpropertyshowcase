@@ -10,16 +10,6 @@ export async function middleware(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams.toString()
   const fullUrl = searchParams ? `${request.url}?${searchParams}` : request.url
 
-  // Log every request in detail
-  console.log(JSON.stringify({
-    message: '🔍 MIDDLEWARE REQUEST',
-    timestamp: new Date().toISOString(),
-    hostname,
-    pathname,
-    fullUrl,
-    headers: Object.fromEntries(request.headers.entries())
-  }))
-
   // Skip middleware for Next.js internals and static files
   if (
     pathname.startsWith('/_next') || 
@@ -28,19 +18,11 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/api') ||
     pathname.includes('.')  // Skip files with extensions
   ) {
-    console.log(JSON.stringify({
-      message: '⏭️ SKIPPING INTERNAL PATH',
-      pathname
-    }))
     return NextResponse.next()
   }
 
   // Skip if we're already on a property page
   if (pathname.startsWith('/properties/')) {
-    console.log(JSON.stringify({
-      message: '⏭️ ALREADY ON PROPERTIES PATH',
-      pathname
-    }))
     return NextResponse.next()
   }
 
@@ -81,11 +63,7 @@ export async function middleware(request: NextRequest) {
         .single()
 
       if (error || !property) {
-        console.log(JSON.stringify({
-          message: '❌ NO PROPERTY FOUND FOR DOMAIN',
-          hostname,
-          error: error?.message
-        }))
+        console.error('Custom domain not found:', { hostname, error: error?.message })
         return res
       }
 
@@ -98,24 +76,8 @@ export async function middleware(request: NextRequest) {
         newUrl.search = searchParams
       }
       
-      console.log(JSON.stringify({
-        message: '↪️ REWRITING URL',
-        from: pathname,
-        to: newUrl.pathname,
-        hostname,
-        fullFrom: fullUrl,
-        fullTo: `${newUrl.origin}${newUrl.pathname}${newUrl.search}`
-      }))
-      
       const response = NextResponse.rewrite(newUrl)
-      
-      // Add custom domain detection header
       response.headers.set('x-custom-domain', 'true')
-      
-      // Add debug headers
-      response.headers.set('x-debug-rewrite-from', pathname)
-      response.headers.set('x-debug-rewrite-to', newUrl.pathname)
-      response.headers.set('x-debug-hostname', hostname)
       
       return response
     } catch (err) {

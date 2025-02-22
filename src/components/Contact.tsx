@@ -174,9 +174,10 @@ export function Contact({ property }: ContactProps) {
   }
 
   return (
-    <section id="contact" ref={sectionRef} className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
+    <section id="contact" ref={sectionRef} className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-12 relative">
+      <div className="absolute inset-0 bg-brand-dark/90" />
       <Toaster />
-      <div className="max-w-7xl mx-auto h-full">
+      <div className="max-w-7xl mx-auto h-full relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Agent Details - Left Side */}
           <div 

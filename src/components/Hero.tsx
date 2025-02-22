@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { useHeroVideo } from '@/hooks/useHeroVideo'
 import { HeaderLink } from './shared/HeaderLink'
 import styles from '@/styles/Hero.module.css'
 import type { Property } from '@/types/property'
@@ -36,25 +35,18 @@ function scrollToSection(sectionId: string) {
 }
 
 export function Hero({ property }: HeroProps) {
-  // For demo properties, use the full path to the demo video
-  const heroVideoPath = property.is_demo 
-    ? 'demo/hero_video/hero.mp4'
-    : property.id
-  const { videoUrl } = useHeroVideo(heroVideoPath)
-
   // Refs for GSAP animations
   const addressRef = useRef<HTMLHeadingElement>(null)
   const suburbRef = useRef<HTMLHeadingElement>(null)
   const ctaContainerRef = useRef<HTMLDivElement>(null)
   const headlineRef = useRef<HTMLHeadingElement>(null)
-  const subheadlineRef = useRef<HTMLParagraphElement>(null)
+  const subheadlineRef = useRef<HTMLHeadingElement>(null)
   const topSectionRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLDivElement>(null)
 
   // Set up GSAP animations
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    const videoElement = document.querySelector('video')
 
     // Set up scroll animation for top section
     if (topSectionRef.current) {
@@ -86,22 +78,6 @@ export function Hero({ property }: HeroProps) {
         y: 30,
         filter: 'blur(10px)'
       })
-
-      // Video reveal animation
-      const videoOverlay = document.querySelector('.video-overlay')
-      if (videoOverlay) {
-        gsap.set(videoOverlay, {
-          backgroundColor: '#111111',
-          opacity: 1
-        })
-
-        gsap.to(videoOverlay, {
-          opacity: 0.5,
-          duration: 4,
-          delay: 1.5,
-          ease: "power2.inOut",
-        })
-      }
 
       // Text animations sequence
       tl.to(logoRef.current, {
@@ -143,52 +119,17 @@ export function Hero({ property }: HeroProps) {
       }, '-=1.0')
     }
 
-    // Start animations when video is loaded
-    if (videoElement) {
-      if (videoElement.readyState >= 3) {
-        startAnimations()
-      } else {
-        videoElement.addEventListener('loadeddata', startAnimations)
-      }
-    } else {
-      startAnimations()
-    }
+    // Start animations immediately since video is handled elsewhere
+    startAnimations()
 
     // Cleanup
     return () => {
-      videoElement?.removeEventListener('loadeddata', startAnimations)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
   }, [])
 
   return (
     <section className="relative h-screen w-full overflow-x-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        {videoUrl ? (
-          <>
-            <video
-              className="absolute h-[100vh] w-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              style={{ position: 'fixed', top: 0, left: 0, zIndex: -2 }}
-            >
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-            {/* Video overlay for fade effect */}
-            <div 
-              className="video-overlay absolute inset-0 bg-black/50" 
-              style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }} 
-            />
-          </>
-        ) : (
-          <div className="absolute inset-0 bg-brand-dark" />
-        )}
-      </div>
-
       {/* Content */}
       <div className="relative h-full flex flex-col text-brand-light text-center px-4 sm:px-6 lg:px-12">
         {/* Initial Navigation */}
@@ -270,16 +211,11 @@ export function Hero({ property }: HeroProps) {
             <button 
               className={`${styles.slideEffect} px-8 py-3 text-brand-light bg-brand-dark active:translate-y-[3px]`}
               onClick={() => {
-                console.log('Primary button clicked');
                 const primaryBtn = property.metadata?.more_info?.ctaButtons?.primary;
-                console.log('Primary button config:', primaryBtn);
-                
                 if (primaryBtn?.type === 'anchor' && primaryBtn.url) {
                   scrollToSection(primaryBtn.url);
                 } else if (primaryBtn?.url) {
                   window.open(primaryBtn.url, '_blank');
-                } else {
-                  console.log('No valid URL or type configured');
                 }
               }}
             >
@@ -290,16 +226,11 @@ export function Hero({ property }: HeroProps) {
             <button 
               className={`${styles.slideEffectReverse} px-8 py-3 text-brand-light active:translate-y-[3px]`}
               onClick={() => {
-                console.log('Secondary button clicked');
                 const secondaryBtn = property.metadata?.more_info?.ctaButtons?.secondary;
-                console.log('Secondary button config:', secondaryBtn);
-                
                 if (secondaryBtn?.type === 'anchor' && secondaryBtn.url) {
                   scrollToSection(secondaryBtn.url);
                 } else if (secondaryBtn?.url) {
                   window.open(secondaryBtn.url, '_blank');
-                } else {
-                  console.log('No valid URL or type configured');
                 }
               }}
             >

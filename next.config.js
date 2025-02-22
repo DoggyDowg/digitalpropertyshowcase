@@ -8,25 +8,13 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'placehold.co'
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos'
-      },
-      {
-        protocol: 'https',
-        hostname: 'loremflickr.com'
-      },
-      {
-        protocol: 'https',
         hostname: 'urguvlckmcehdiibsiwf.supabase.co'
       }
     ],
     domains: ['ckqbqxqvxgvxqgzc.public.blob.vercel-storage.com'],
   },
   webpack: (config, { isServer }) => {
-    // Handle PDF.js
+    // Handle PDF.js in server environment
     if (isServer) {
       config.resolve.alias.canvas = false;
       config.module.rules.push({
@@ -36,10 +24,10 @@ const nextConfig = {
     }
     return config;
   },
+  // Only transpile packages that actually need it
   transpilePackages: [
     'react-pdf',
-    '@react-pdf/renderer',
-    'sonner'
+    '@react-pdf/renderer'
   ]
 }
 
