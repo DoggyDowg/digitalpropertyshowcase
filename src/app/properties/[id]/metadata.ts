@@ -282,9 +282,34 @@ export async function generateMetadata(
       images: imageObject ? [imageObject] : undefined,
     },
     icons: verifiedFaviconUrl ? {
-      icon: verifiedFaviconUrl,
-      shortcut: verifiedFaviconUrl,
-      apple: verifiedFaviconUrl,
+      icon: [
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '32x32'
+        }
+      ],
+      shortcut: [
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '32x32'
+        }
+      ],
+      apple: [
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '180x180'
+        }
+      ],
+      other: [
+        {
+          rel: 'icon',
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+        }
+      ]
     } : undefined,
     robots: {
       index: true,
