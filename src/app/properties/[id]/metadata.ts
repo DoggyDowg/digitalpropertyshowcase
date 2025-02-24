@@ -118,7 +118,11 @@ export async function generateMetadata(
     ? (faviconUrl.startsWith('http') ? faviconUrl : `${baseUrl}${faviconUrl}`)
     : undefined
   // Add cache busting timestamp to favicon URL
-  const faviconUrlWithCache = absoluteFaviconUrl ? `${absoluteFaviconUrl}?t=${Date.now()}` : undefined
+  const faviconUrlWithCache = absoluteFaviconUrl 
+    ? absoluteFaviconUrl.includes('?') 
+      ? `${absoluteFaviconUrl}&t=${Date.now()}`
+      : `${absoluteFaviconUrl}?t=${Date.now()}`
+    : undefined;
 
   // Verify favicon URL is accessible
   let verifiedFaviconUrl: string | undefined = undefined;
