@@ -28,22 +28,7 @@ const nextConfig = {
   transpilePackages: [
     'react-pdf',
     '@react-pdf/renderer'
-  ],
-  // Disable default favicon
-  generateEtags: false,
-  async headers() {
-    return [
-      {
-        source: '/favicon.ico',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate'
-          }
-        ]
-      }
-    ]
-  }
+  ]
 }
 
 module.exports = nextConfig 

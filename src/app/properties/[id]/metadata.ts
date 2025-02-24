@@ -286,28 +286,24 @@ export async function generateMetadata(
         {
           url: verifiedFaviconUrl,
           type: 'image/png',
-          sizes: '32x32'
+          sizes: '32x32',
+          rel: 'icon'
         }
       ],
       shortcut: [
         {
           url: verifiedFaviconUrl,
           type: 'image/png',
-          sizes: '32x32'
+          sizes: '32x32',
+          rel: 'shortcut icon'
         }
       ],
       apple: [
         {
           url: verifiedFaviconUrl,
           type: 'image/png',
-          sizes: '180x180'
-        }
-      ],
-      other: [
-        {
-          rel: 'icon',
-          url: verifiedFaviconUrl,
-          type: 'image/png',
+          sizes: '180x180',
+          rel: 'apple-touch-icon'
         }
       ]
     } : undefined,

@@ -2,6 +2,14 @@ import "./globals.css"
 import Providers from '@/components/shared/Providers'
 import { siteConfig } from '@/config/site'
 import Script from 'next/script'
+import { Metadata } from 'next'
+
+// This will prevent Next.js from adding its default favicon
+export const metadata: Metadata = {
+  icons: {
+    icon: []
+  }
+}
 
 export default function RootLayout({
   children,
