@@ -2,14 +2,6 @@ import "./globals.css"
 import Providers from '@/components/shared/Providers'
 import { siteConfig } from '@/config/site'
 import Script from 'next/script'
-import { Metadata } from 'next'
-
-// This will prevent Next.js from adding its default favicon
-export const metadata: Metadata = {
-  icons: {
-    icon: []
-  }
-}
 
 export default function RootLayout({
   children,
@@ -22,6 +14,8 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="fb:app_id" content={siteConfig.facebookAppId} />
+        {/* This empty favicon link prevents Next.js from injecting its default favicon */}
+        <link rel="icon" href="data:," />
         <script src="//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" async></script>
       </head>
       <body>
