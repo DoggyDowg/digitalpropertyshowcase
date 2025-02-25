@@ -121,18 +121,33 @@ export async function generateMetadata(
   // Use the favicon URL as is - no need for additional timestamp
   const faviconUrlWithCache = absoluteFaviconUrl;
 
-  // Verify favicon URL is accessible
+  // Verify favicon URL is accessible - with improved error handling and fallback
   let verifiedFaviconUrl: string | undefined = undefined;
   if (faviconUrlWithCache) {
     try {
-      const isValid = await verifyImageUrl(faviconUrlWithCache);
+      // Add a timeout to the verification to prevent hanging in production
+      const verifyPromise = verifyImageUrl(faviconUrlWithCache);
+      const timeoutPromise = new Promise<boolean>((resolve) => {
+        setTimeout(() => resolve(false), 2000); // 2-second timeout
+      });
+      
+      // Use the result of whichever promise resolves first
+      const isValid = await Promise.race([verifyPromise, timeoutPromise]);
+      
       if (isValid) {
         verifiedFaviconUrl = faviconUrlWithCache;
+        console.info('[Server] ✅ Favicon URL verified:', faviconUrlWithCache);
       } else {
         console.warn('[Server] ⚠️ Favicon URL is not accessible:', faviconUrlWithCache);
+        // Try without verification as a fallback
+        verifiedFaviconUrl = faviconUrlWithCache;
+        console.info('[Server] Using unverified favicon as fallback');
       }
     } catch (error) {
       console.error('[Server] Error verifying favicon URL:', error);
+      // Use the URL anyway as a fallback
+      verifiedFaviconUrl = faviconUrlWithCache;
+      console.info('[Server] Using unverified favicon due to error');
     }
   }
 
@@ -288,6 +303,12 @@ export async function generateMetadata(
           type: 'image/png',
           sizes: '32x32',
           rel: 'icon'
+        },
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '16x16',
+          rel: 'icon'
         }
       ],
       shortcut: [
@@ -304,6 +325,21 @@ export async function generateMetadata(
           type: 'image/png',
           sizes: '180x180',
           rel: 'apple-touch-icon'
+        }
+      ],
+      // Add other sizes for better compatibility
+      other: [
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '192x192',
+          rel: 'icon'
+        },
+        {
+          url: verifiedFaviconUrl,
+          type: 'image/png',
+          sizes: '512x512',
+          rel: 'icon'
         }
       ]
     } : undefined,

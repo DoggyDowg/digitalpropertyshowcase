@@ -28,7 +28,31 @@ const nextConfig = {
   transpilePackages: [
     'react-pdf',
     '@react-pdf/renderer'
-  ]
+  ],
+  // Ensure static assets are properly handled
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
+      },
+      {
+        // Specific headers for favicon
+        source: '/favicon.ico',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 

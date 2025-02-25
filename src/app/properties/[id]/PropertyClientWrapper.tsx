@@ -5,6 +5,7 @@ import { CuscoTemplate } from '@/templates/cusco/page'
 import { DubaiTemplate } from '@/templates/dubai/page'
 import type { Property } from '@/types/property'
 import type { Asset, PropertyAssets } from '@/types/assets'
+import DynamicFavicon from '@/components/shared/DynamicFavicon'
 
 interface PropertyClientWrapperProps {
   property: Property & { assets?: Asset[] }
@@ -72,9 +73,28 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
     assets: processedAssets
   };
 
-  return template === 'dubai' ? (
-    <DubaiTemplate property={propertyWithProcessedAssets} />
-  ) : (
-    <CuscoTemplate property={propertyWithProcessedAssets} />
+  // Get the favicon URL from the property's agency settings
+  const faviconUrl = property?.agency_settings?.branding?.favicon;
+  
+  // Ensure favicon URL is absolute
+  const baseUrl = property?.custom_domain || 
+                  property?.deployment_url || 
+                  process.env.NEXT_PUBLIC_BASE_URL || 
+                  'https://digipropshow.com';
+                  
+  const absoluteFaviconUrl = faviconUrl 
+    ? (faviconUrl.startsWith('http') ? faviconUrl : `https://${baseUrl.replace(/^https?:\/\//, '')}${faviconUrl}`)
+    : undefined;
+
+  return (
+    <>
+      <DynamicFavicon faviconUrl={absoluteFaviconUrl} />
+      
+      {template === 'dubai' ? (
+        <DubaiTemplate property={propertyWithProcessedAssets} />
+      ) : (
+        <CuscoTemplate property={propertyWithProcessedAssets} />
+      )}
+    </>
   );
 } 

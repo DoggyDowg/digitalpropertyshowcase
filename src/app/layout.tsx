@@ -14,10 +14,6 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="fb:app_id" content={siteConfig.facebookAppId} />
-        {/* Prevent any default favicon behavior */}
-        <link rel="icon" href="data:," />
-        <link rel="shortcut icon" href="data:," />
-        <link rel="apple-touch-icon" href="data:," />
         <script src="//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" async></script>
       </head>
       <body>
