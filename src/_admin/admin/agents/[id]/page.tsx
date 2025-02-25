@@ -43,37 +43,57 @@ export default function AgentEditPage() {
   }>({})
 
   useEffect(() => {
-    async function loadAgent() {
-      if (params.id === 'new') {
-        setLoading(false)
-        return
-      }
+    if (!params?.id) {
+      setError(new Error('No agent ID provided'));
+      setLoading(false);
+      return;
+    }
 
+    async function loadAgent() {
       try {
-        setLoading(true)
-        setError(null)
+        const id = params?.id;
+        if (!id) {
+          setError(new Error('No agent ID provided'));
+          setLoading(false);
+          return;
+        }
+        
+        if (id === 'new') {
+          setAgent({
+            id: '',
+            name: '',
+            position: '',
+            email: '',
+            phone: '',
+            avatar_url: '',
+            agency_id: '',
+            created_at: '',
+            updated_at: '',
+            status: 'active',
+            metadata: {}
+          });
+          setLoading(false);
+          return;
+        }
 
         const { data, error } = await supabase
           .from('agents')
           .select('*')
-          .eq('id', params.id)
-          .single()
+          .eq('id', id)
+          .single();
 
-        if (error) throw error
-
-        if (data) {
-          setAgent(data)
-        }
+        if (error) throw error;
+        setAgent(data);
+        setLoading(false);
       } catch (err) {
-        console.error('Error loading agent:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load agent'))
-      } finally {
-        setLoading(false)
+        console.error('Error loading agent:', err);
+        setError(err instanceof Error ? err : new Error('Failed to load agent'));
+        setLoading(false);
       }
     }
 
-    loadAgent()
-  }, [supabase, params.id])
+    loadAgent();
+  }, [supabase, params?.id]);
 
   const validateForm = () => {
     const errors: typeof validationErrors = {}
@@ -148,6 +168,10 @@ export default function AgentEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!agent) return
+    if (!params?.id) {
+      setError(new Error('No agent ID provided'))
+      return
+    }
 
     // Clear previous validation errors
     setValidationErrors({})
@@ -256,7 +280,7 @@ export default function AgentEditPage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
-          {params.id === 'new' ? 'New Agent' : 'Edit Agent'}
+          {params?.id === 'new' ? 'New Agent' : 'Edit Agent'}
         </h1>
         <button
           onClick={() => setIsScraperOpen(true)}

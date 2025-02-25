@@ -1869,6 +1869,11 @@ function PropertyEditContent({ id }: { id: string }) {
 
 // Server Component
 export default function PropertyEditPage() {
-  const params = useParams()
-  return <PropertyEditContent id={params.id as string} />
+  const params = useParams<{ id: string }>();
+  
+  if (!params?.id) {
+    return <div>No property ID provided</div>;
+  }
+  
+  return <PropertyEditContent id={params.id} />;
 }

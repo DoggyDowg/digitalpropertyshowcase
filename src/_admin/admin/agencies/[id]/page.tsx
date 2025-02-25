@@ -99,7 +99,14 @@ export default function AgencyEditPage() {
 
     async function loadAgency() {
       try {
-        if (params.id === 'new') {
+        const id = params?.id;
+        if (!id) {
+          setError(new Error('No agency ID provided'));
+          setLoading(false);
+          return;
+        }
+        
+        if (id === 'new') {
           setAgency({
             ...defaultAgency,
             menu_items: {
@@ -108,8 +115,7 @@ export default function AgencyEditPage() {
               viewings: 'Viewings',
               lifestyle: 'Lifestyle',
               neighbourhood: 'Neighbourhood'
-            },
-            footer_links: []
+            }
           });
           setLoading(false);
           return;
@@ -383,20 +389,30 @@ export default function AgencyEditPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!agency) return
-
+    e.preventDefault();
+    
+    if (!params?.id) {
+      setError(new Error('No agency ID provided'));
+      return;
+    }
+    
+    if (!agency) {
+      setError(new Error('No agency data available'));
+      return;
+    }
+    
+    const isNew = params.id === 'new';
+    
     try {
-      setSaving(true)
-      setError(null)
-
-      const isNew = params.id === 'new'
+      setSaving(true);
+      setError(null);
+      
       const updatedAgency = {
         ...agency,
         id: isNew ? uuidv4() : agency.id,
         updated_at: new Date().toISOString(),
         created_at: isNew ? new Date().toISOString() : agency.created_at
-      }
+      };
 
       const { data, error } = isNew
         ? await supabase.from('agency_settings').insert([updatedAgency]).select()
@@ -622,7 +638,7 @@ export default function AgencyEditPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
-          {params.id === 'new' ? 'New Agency' : 'Edit Agency'}
+          {params?.id === 'new' ? 'New Agency' : 'Edit Agency'}
         </h1>
         <div className="flex gap-4">
           <button
@@ -720,8 +736,8 @@ export default function AgencyEditPage() {
                     accept="image/*"
                     value={agency.branding?.logo?.dark ?? ''}
                     onChange={handleDarkLogoUpload}
-                    disabled={params.id === 'new'}
-                    helperText={params.id === 'new' ? 'Save agency first to upload logos' : 'Upload a dark version of your logo (for light backgrounds)'}
+                    disabled={params?.id === 'new'}
+                    helperText={params?.id === 'new' ? 'Save agency first to upload logos' : 'Upload a dark version of your logo (for light backgrounds)'}
                   />
                 </div>
                 <div>
@@ -731,8 +747,8 @@ export default function AgencyEditPage() {
                     accept="image/*"
                     value={agency.branding?.logo?.light ?? ''}
                     onChange={handleLightLogoUpload}
-                    disabled={params.id === 'new'}
-                    helperText={params.id === 'new' ? 'Save agency first to upload logos' : 'Upload a light version of your logo (for dark backgrounds)'}
+                    disabled={params?.id === 'new'}
+                    helperText={params?.id === 'new' ? 'Save agency first to upload logos' : 'Upload a light version of your logo (for dark backgrounds)'}
                   />
                 </div>
                 <div>
@@ -745,8 +761,8 @@ export default function AgencyEditPage() {
                       const file = e.target.files?.[0];
                       if (file) handleStoreFavicon(file);
                     }}
-                    disabled={params.id === 'new'}
-                    helperText={params.id === 'new' ? 'Save agency first to upload favicon' : 'Upload your favicon (.ico or .png format)'}
+                    disabled={params?.id === 'new'}
+                    helperText={params?.id === 'new' ? 'Save agency first to upload favicon' : 'Upload your favicon (.ico or .png format)'}
                   />
                 </div>
               </div>
@@ -799,8 +815,8 @@ export default function AgencyEditPage() {
                         const file = e.target.files?.[0];
                         if (file) handleStoreFontFile(file, 'heading');
                       }}
-                      disabled={params.id === 'new'}
-                      helperText={params.id === 'new' ? "Save agency first to upload fonts" : undefined}
+                      disabled={params?.id === 'new'}
+                      helperText={params?.id === 'new' ? "Save agency first to upload fonts" : undefined}
                       isFont
                     />
                   </div>
@@ -815,8 +831,8 @@ export default function AgencyEditPage() {
                         const file = e.target.files?.[0];
                         if (file) handleStoreFontFile(file, 'body');
                       }}
-                      disabled={params.id === 'new'}
-                      helperText={params.id === 'new' ? "Save agency first to upload fonts" : undefined}
+                      disabled={params?.id === 'new'}
+                      helperText={params?.id === 'new' ? "Save agency first to upload fonts" : undefined}
                       isFont
                     />
                   </div>
