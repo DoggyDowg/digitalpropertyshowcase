@@ -10,10 +10,17 @@ export async function middleware(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams.toString()
   const fullUrl = searchParams ? `${request.url}?${searchParams}` : request.url
 
+  // Handle favicon.ico requests specially
+  if (pathname === '/favicon.ico') {
+    // Redirect to our API route for dynamic favicons
+    const redirectUrl = new URL('/api/favicon', request.url)
+    return NextResponse.rewrite(redirectUrl)
+  }
+
   // Skip middleware for Next.js internals and static files
   if (
     pathname.startsWith('/_next') || 
-    pathname.includes('favicon') ||
+    pathname.includes('favicon.ico') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/api') ||
     pathname.includes('.')  // Skip files with extensions
