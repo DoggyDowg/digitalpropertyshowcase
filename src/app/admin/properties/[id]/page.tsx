@@ -33,6 +33,7 @@ const initialProperty: Omit<Property, 'id'> = {
   state: '',
   price: '',
   status: 'draft',
+  sale_type: 'private_sale',
   agency_id: null,
   agency_name: null,
   agent_id: null,
@@ -393,6 +394,8 @@ function PropertyEditContent({ id }: { id: string }) {
         state: property.state,
         price: property.price,
         status: property.status,
+        sale_type: property.sale_type,
+        auction_datetime: property.auction_datetime,
         agency_id: property.agency_id,
         office_id: property.office_id,
         agent_id: property.agent_id,
@@ -979,6 +982,118 @@ function PropertyEditContent({ id }: { id: string }) {
                         placeholder="e.g., $1,500,000"
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Sale Type</label>
+                      <select
+                        value={property.sale_type || 'private_sale'}
+                        onChange={(e) => handlePropertyChange('sale_type', e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      >
+                        <option value="private_sale">Private Sale</option>
+                        <option value="auction">Auction</option>
+                      </select>
+                    </div>
+                    {property.sale_type === 'auction' && (
+                      <div className="sm:col-span-2 bg-gray-50 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Auction Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction Date</label>
+                            <input
+                              type="date"
+                              value={property.auction_datetime ? new Date(property.auction_datetime).toISOString().split('T')[0] : ''}
+                              onChange={(e) => {
+                                try {
+                                  const date = e.target.value;
+                                  // If no date is selected, don't proceed
+                                  if (!date) return;
+                                  
+                                  // Get the current time or default to noon
+                                  let time = '12:00';
+                                  if (property.auction_datetime) {
+                                    const auctionDate = new Date(property.auction_datetime);
+                                    // Format hours and minutes with leading zeros
+                                    const hours = auctionDate.getHours().toString().padStart(2, '0');
+                                    const minutes = auctionDate.getMinutes().toString().padStart(2, '0');
+                                    time = `${hours}:${minutes}`;
+                                  }
+                                  
+                                  // Create a new date object using the local timezone
+                                  const dateObj = new Date(`${date}T${time}`);
+                                  if (isNaN(dateObj.getTime())) {
+                                    throw new Error('Invalid date or time');
+                                  }
+                                  
+                                  setProperty(prev => ({
+                                    ...prev,
+                                    auction_datetime: dateObj.toISOString(),
+                                    updated_at: new Date().toISOString()
+                                  }));
+                                } catch (error) {
+                                  console.error('Error setting auction date:', error);
+                                  toast.error('Invalid date format. Please try again.');
+                                }
+                              }}
+                              className="w-full p-2 border rounded"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction Time</label>
+                            <input
+                              type="time"
+                              value={property.auction_datetime ? 
+                                (() => {
+                                  const date = new Date(property.auction_datetime);
+                                  const hours = date.getHours().toString().padStart(2, '0');
+                                  const minutes = date.getMinutes().toString().padStart(2, '0');
+                                  return `${hours}:${minutes}`;
+                                })() : 
+                                '12:00'
+                              }
+                              onChange={(e) => {
+                                try {
+                                  const timeValue = e.target.value;
+                                  // If no time is selected, don't proceed
+                                  if (!timeValue) return;
+                                  
+                                  // Get the current date or today's date
+                                  let dateValue = new Date().toISOString().split('T')[0];
+                                  if (property.auction_datetime) {
+                                    dateValue = new Date(property.auction_datetime).toISOString().split('T')[0];
+                                  }
+                                  
+                                  // Parse the time value
+                                  const [hours, minutes] = timeValue.split(':').map(Number);
+                                  
+                                  // Create a new date object using the local timezone
+                                  const dateObj = new Date();
+                                  dateObj.setFullYear(
+                                    parseInt(dateValue.split('-')[0], 10),
+                                    parseInt(dateValue.split('-')[1], 10) - 1, // Month is 0-indexed
+                                    parseInt(dateValue.split('-')[2], 10)
+                                  );
+                                  dateObj.setHours(hours, minutes, 0, 0);
+                                  
+                                  if (isNaN(dateObj.getTime())) {
+                                    throw new Error('Invalid date or time');
+                                  }
+                                  
+                                  setProperty(prev => ({
+                                    ...prev,
+                                    auction_datetime: dateObj.toISOString(),
+                                    updated_at: new Date().toISOString()
+                                  }));
+                                } catch (error) {
+                                  console.error('Error setting auction time:', error);
+                                  toast.error('Invalid time format. Please try again.');
+                                }
+                              }}
+                              className="w-full p-2 border rounded"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

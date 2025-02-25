@@ -129,6 +129,8 @@ export interface Property {
   state: string
   price: string
   status: 'draft' | 'published' | 'archived'
+  sale_type?: 'private_sale' | 'auction'
+  auction_datetime?: string
   agency_id: string | null
   agency_name: string | null
   agent_id: string | null

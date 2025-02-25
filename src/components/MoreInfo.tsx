@@ -8,6 +8,7 @@ import { PlayIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useMoreInfoVideo } from '@/hooks/useMoreInfoVideo'
 import { useMoreInfoFloorplans } from '@/hooks/useMoreInfoFloorplans'
 import { PDFPreview } from '@/components/shared/PDFPreview'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { Asset } from '@/types/assets'
 import type { Property } from '@/types/property'
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
@@ -26,6 +27,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const [isVisible, setIsVisible] = useState(false)
   const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo)
   const { floorplans } = useMoreInfoFloorplans(property.id, property.is_demo)
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const [demoContent, setDemoContent] = useState<{
     documents: Array<{ label: string; url: string }>;
     additionalInfo: Array<{ info: string; detail: string }>;
@@ -128,6 +130,51 @@ export function MoreInfo({ property }: MoreInfoProps) {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Auction Information - Only show for auction properties */}
+        {property.sale_type === 'auction' && property.auction_datetime && (
+          <div 
+            className={`mb-16 text-center transition-all duration-1000 ${
+              isVisible 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <h2 className="text-4xl font-light mb-4 text-brand-dark">Auction</h2>
+            <p className="text-3xl text-brand-dark font-medium">
+              {(() => {
+                try {
+                  const auctionDate = new Date(property.auction_datetime);
+                  
+                  // Check if date is valid
+                  if (isNaN(auctionDate.getTime())) {
+                    return 'Date to be announced';
+                  }
+                  
+                  // Format day - full name for desktop, 3-letter abbreviation for mobile
+                  const dayOptions = { weekday: isMobile ? 'short' : 'long' } as Intl.DateTimeFormatOptions;
+                  const day = new Intl.DateTimeFormat('en-US', dayOptions).format(auctionDate);
+                  
+                  // Format month and date
+                  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(auctionDate);
+                  const date = auctionDate.getDate();
+                  
+                  // Format time
+                  const hours = auctionDate.getHours();
+                  const minutes = auctionDate.getMinutes();
+                  const ampm = hours >= 12 ? 'pm' : 'am';
+                  const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+                  const formattedMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+                  
+                  return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
+                } catch (error) {
+                  console.error('Error formatting auction date:', error);
+                  return 'Date to be announced';
+                }
+              })()}
+            </p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Column - Information */}
           <div 

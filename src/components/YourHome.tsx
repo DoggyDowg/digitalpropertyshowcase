@@ -7,6 +7,7 @@ import { ParallaxBanner } from './shared/ParallaxBanner'
 import { HomeGallery } from './HomeGallery'
 import { useFeaturesBanner } from '@/hooks/useFeaturesBanner'
 import { useYourHomeImage } from '@/hooks/useYourHomeImage'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import styles from '@/styles/Hero.module.css'
 import type { Property } from '@/types/property'
 
@@ -21,6 +22,7 @@ export function YourHome({ property }: YourHomeProps) {
   const [isFeaturesVisible, setIsFeaturesVisible] = useState(false)
   const { imageUrl: bannerUrl, loading: bannerLoading } = useFeaturesBanner(property.id, property.is_demo)
   const { imageUrl: homeImageUrl, loading: homeImageLoading } = useYourHomeImage(property.id, property.is_demo)
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const { content } = property
   
   const featuresData = useMemo(() => 
@@ -101,6 +103,45 @@ export function YourHome({ property }: YourHomeProps) {
             >
               <h3 className="text-3xl font-light mb-6 text-brand-dark">{featuresData.headline}</h3>
               <p className="text-brand-dark mb-8">{featuresData.description || featuresData.header}</p>
+              
+              {/* Auction Information - Only show for auction properties */}
+              {property.sale_type === 'auction' && property.auction_datetime && (
+                <>
+                  <h4 className="text-2xl font-light mb-2 text-brand-dark">Auction:</h4>
+                  <p className="text-brand-dark mb-8">
+                    {(() => {
+                      try {
+                        const auctionDate = new Date(property.auction_datetime);
+                        
+                        // Check if date is valid
+                        if (isNaN(auctionDate.getTime())) {
+                          return 'Date to be announced';
+                        }
+                        
+                        // Format day - full name for desktop, 3-letter abbreviation for mobile
+                        const dayOptions = { weekday: isMobile ? 'short' : 'long' } as Intl.DateTimeFormatOptions;
+                        const day = new Intl.DateTimeFormat('en-US', dayOptions).format(auctionDate);
+                        
+                        // Format month and date
+                        const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(auctionDate);
+                        const date = auctionDate.getDate();
+                        
+                        // Format time
+                        const hours = auctionDate.getHours();
+                        const minutes = auctionDate.getMinutes();
+                        const ampm = hours >= 12 ? 'pm' : 'am';
+                        const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+                        const formattedMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+                        
+                        return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
+                      } catch (error) {
+                        console.error('Error formatting auction date:', error);
+                        return 'Date to be announced';
+                      }
+                    })()}
+                  </p>
+                </>
+              )}
               
               {/* Virtual Tour Button */}
               {showVirtualTour && (
