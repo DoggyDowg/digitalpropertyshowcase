@@ -3,7 +3,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { Viewing } from '@/types/property'
 
 export function useUpcomingViewing(propertyId?: string) {
-  const [upcomingViewing, setUpcomingViewing] = useState<Viewing | null>(null)
+  const [upcomingViewing, setUpcomingViewing] = useState<Viewing[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const supabase = createClientComponentClient()
@@ -19,7 +19,7 @@ export function useUpcomingViewing(propertyId?: string) {
       try {
         setLoading(true)
         setError(null)
-        console.log('Fetching upcoming viewing for property:', propertyId)
+        console.log('Fetching upcoming viewings for property:', propertyId)
 
         const now = new Date().toISOString()
         
@@ -29,25 +29,19 @@ export function useUpcomingViewing(propertyId?: string) {
           .eq('property_id', propertyId)
           .eq('status', 'scheduled')
           .gt('viewing_datetime', now) // Only get future viewings
-          .order('viewing_datetime', { ascending: true }) // Get the next upcoming viewing
-          .limit(1)
-          .single()
+          .order('viewing_datetime', { ascending: true }) // Get the next upcoming viewings
+          .limit(3) // Limit to 3 viewings
 
         if (error) {
-          if (error.code === 'PGRST116') {
-            console.log('No upcoming viewings found')
-            setUpcomingViewing(null)
-            return
-          }
           console.error('Supabase error:', error)
           throw error
         }
 
-        console.log('Viewing data:', data)
-        setUpcomingViewing(data)
+        console.log('Viewings data:', data)
+        setUpcomingViewing(data || [])
       } catch (err) {
         console.error('Detailed error:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load upcoming viewing'))
+        setError(err instanceof Error ? err : new Error('Failed to load upcoming viewings'))
       } finally {
         setLoading(false)
       }

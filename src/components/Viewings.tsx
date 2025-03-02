@@ -49,19 +49,38 @@ export function Viewings({ property }: ViewingsProps) {
     preferredTime: ''
   })
   const { upcomingViewing: fetchedViewing, loading } = useUpcomingViewing(property.id)
-  const [demoViewing, setDemoViewing] = useState<Viewing | null>(null)
+  const [demoViewing, setDemoViewing] = useState<Viewing[]>([])
 
-  // Set up demo viewing if needed
+  // Set up demo viewings if needed
   useEffect(() => {
     if (property.is_demo) {
-      setDemoViewing({
-        viewing_datetime: new Date('2026-03-08T09:30:00').toISOString()
-      })
+      console.log('Setting up demo viewings');
+      const demoViewings = [
+        {
+          viewing_datetime: new Date('2026-03-08T09:30:00').toISOString()
+        },
+        {
+          viewing_datetime: new Date('2026-03-09T14:00:00').toISOString()
+        },
+        {
+          viewing_datetime: new Date('2026-03-10T11:30:00').toISOString()
+        }
+      ];
+      console.log('Demo viewings:', demoViewings);
+      setDemoViewing(demoViewings);
     }
   }, [property.is_demo])
 
-  // Use demo viewing if it's a demo property, otherwise use fetched viewing
-  const upcomingViewing = property.is_demo ? demoViewing : fetchedViewing
+  // Use demo viewings if it's a demo property, otherwise use fetched viewings
+  const upcomingViewings = property.is_demo 
+    ? demoViewing 
+    : Array.isArray(fetchedViewing) 
+      ? fetchedViewing 
+      : fetchedViewing 
+        ? [fetchedViewing] 
+        : []
+  
+  console.log('Current upcomingViewings:', upcomingViewings);
 
   // Get current date
   const now = new Date()
@@ -195,12 +214,6 @@ export function Viewings({ property }: ViewingsProps) {
     }
   }
 
-  // Format the viewing date and time if available
-  const formattedViewing = upcomingViewing ? {
-    date: format(new Date(upcomingViewing.viewing_datetime), 'EEEE, MMMM do'),
-    time: format(new Date(upcomingViewing.viewing_datetime), 'h:mm a')
-  } : null
-
   // Format the viewing date for the calendar
   const formatViewingForCalendar = useCallback((viewingDatetime: string) => {
     try {
@@ -248,28 +261,44 @@ export function Viewings({ property }: ViewingsProps) {
     }
   }, [property.street_address, property.suburb, property.maps_address, property.local_timezone])
 
-  // If there's an upcoming viewing, show the Add to Calendar button
-  const renderUpcomingViewing = () => {
-    if (!upcomingViewing) return null
+  // If there are upcoming viewings, show them (up to 3)
+  const renderUpcomingViewings = () => {
+    if (upcomingViewings.length === 0) {
+      console.log('No upcoming viewings to display');
+      return null;
+    }
 
-    const calendarData = formatViewingForCalendar(upcomingViewing.viewing_datetime)
-    if (!calendarData) return null
-
+    console.log('Rendering viewings:', upcomingViewings);
     return (
-      <div className="mb-6 p-4 bg-brand-primary/10 rounded-lg">
-        <h3 className="text-lg font-semibold mb-2">Next Available Viewing</h3>
-        <p className="mb-3">
-          {calendarData.formattedDate} at {calendarData.formattedTime}
-        </p>
-        <AddToCalendar
-          name={calendarData.title}
-          description={calendarData.description}
-          location={calendarData.location}
-          startDate={calendarData.date}
-          startTime={calendarData.time}
-          endTime={calendarData.endTime}
-          timezone={calendarData.timezone}
-        />
+      <div className="mb-12 p-4 bg-brand-primary/10 rounded-lg text-center">
+        <h3 className="text-4xl font-light text-brand-light mb-6">Next Available Viewings</h3>
+        <div className="space-y-4">
+          {upcomingViewings.slice(0, 3).map((viewing, index) => {
+            console.log('Processing viewing:', viewing, 'at index:', index);
+            const calendarData = formatViewingForCalendar(viewing.viewing_datetime)
+            if (!calendarData) {
+              console.log('Failed to format calendar data for viewing:', viewing);
+              return null;
+            }
+
+            return (
+              <div key={index} className="flex items-center justify-center gap-6">
+                <p className="text-brand-light text-xl">
+                  {calendarData.formattedDate} at {calendarData.formattedTime}
+                </p>
+                <AddToCalendar
+                  name={calendarData.title}
+                  description={calendarData.description}
+                  location={calendarData.location}
+                  startDate={calendarData.date}
+                  startTime={calendarData.time}
+                  endTime={calendarData.endTime}
+                  timezone={calendarData.timezone}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
   }
@@ -278,10 +307,6 @@ export function Viewings({ property }: ViewingsProps) {
     <section id="viewings" className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
       <div className="absolute inset-0 bg-brand-dark/90" />
       <div className="max-w-7xl mx-auto relative">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h2 className="text-4xl font-light text-brand-light mb-4">{viewings.title}</h2>
-        </div>
-
         {/* Upcoming Viewing Display */}
         {loading ? (
           <div className="max-w-2xl mx-auto backdrop-blur-[12px] rounded-lg p-6 mb-8 text-center" style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.7)' }}>
@@ -290,7 +315,11 @@ export function Viewings({ property }: ViewingsProps) {
               <div className="h-6 bg-gray-200/20 rounded w-64 mx-auto"></div>
             </div>
           </div>
-        ) : renderUpcomingViewing()}
+        ) : renderUpcomingViewings()}
+
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h2 className="text-4xl font-light text-brand-light mb-4">{viewings.title}</h2>
+        </div>
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto backdrop-blur-[12px] rounded-lg p-8 shadow-lg" style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.7)' }}>

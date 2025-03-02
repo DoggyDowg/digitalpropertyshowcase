@@ -180,9 +180,9 @@ export function Viewings({ property }: ViewingsProps) {
   }
 
   // Format the viewing date and time if available
-  const formattedViewing = upcomingViewing ? {
-    date: format(new Date(upcomingViewing.viewing_datetime), 'EEEE, MMMM do'),
-    time: format(new Date(upcomingViewing.viewing_datetime), 'h:mm a')
+  const formattedViewing = upcomingViewing && upcomingViewing.length > 0 ? {
+    date: format(new Date(upcomingViewing[0].viewing_datetime), 'EEEE, MMMM do'),
+    time: format(new Date(upcomingViewing[0].viewing_datetime), 'h:mm a')
   } : null
 
   return (
@@ -216,14 +216,18 @@ export function Viewings({ property }: ViewingsProps) {
               <div className="h-6 bg-gray-200/20 rounded w-64 mx-auto"></div>
             </div>
           </div>
-        ) : formattedViewing && (
+        ) : upcomingViewing && upcomingViewing.length > 0 ? (
           <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 text-center">
-            <h3 className="text-2xl font-semibold text-white mb-2">Next Available Viewing</h3>
-            <p className="text-xl text-gray-200">
-              {formattedViewing.date} at {formattedViewing.time}
-            </p>
+            <h3 className="text-2xl font-semibold text-white mb-4">Next Available Viewings</h3>
+            <div className="space-y-4">
+              {upcomingViewing.map((viewing, index) => (
+                <p key={index} className="text-xl text-gray-200">
+                  {format(new Date(viewing.viewing_datetime), 'EEEE, MMMM do')} at {format(new Date(viewing.viewing_datetime), 'h:mm a')}
+                </p>
+              ))}
+            </div>
           </div>
-        )}
+        ) : null}
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg p-8">
