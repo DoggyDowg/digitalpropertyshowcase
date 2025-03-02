@@ -12,6 +12,7 @@ import type { Landmark } from '@/types/maps'
 import type { Property as DBProperty } from '@/types/property'
 import type { Property as MapProperty } from '@/types/maps'
 import { AerialGallery } from './AerialGallery'
+import { useAerialImages } from '@/hooks/useAerialImages'
 
 interface YourNeighbourhoodProps {
   property: DBProperty
@@ -21,6 +22,7 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   const { isLoaded } = useGoogleMaps()
   const { imageUrl, loading } = useNeighbourhoodBanner(property.id, property.is_demo)
   const { images: neighbourhoodImages, loading: imagesLoading } = useNeighbourhoodImages(property.id, property.is_demo)
+  const { images: aerialImages } = useAerialImages(property.id, property.is_demo)
   const bannerTitle = property.content?.neighbourhood?.banner_title || 'YOUR NEIGHBOURHOOD'
   
   // Map state
@@ -242,11 +244,13 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
                 )}
               </div>
 
-              {/* Aerial Gallery */}
-              <div className="mt-12 text-center">
-                <h4 className="text-2xl font-light mb-6 text-brand-dark text-center">Aerial Views</h4>
-                <AerialGallery property={property} />
-              </div>
+              {/* Aerial Gallery - Only show if there are aerial images */}
+              {aerialImages.length > 0 && (
+                <div className="mt-12 text-center">
+                  <h4 className="text-2xl font-light mb-6 text-brand-dark text-center">Aerial Views</h4>
+                  <AerialGallery property={property} />
+                </div>
+              )}
             </div>
           </section>
         </div>
