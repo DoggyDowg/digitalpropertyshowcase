@@ -80,24 +80,46 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   // Load landmarks data
   useEffect(() => {
     async function loadLandmarks() {
+      if (!property?.id) {
+        console.error('No property ID available');
+        setError('Property information not available');
+        return;
+      }
+
       try {
-        const data = await getLandmarks()
-        setLandmarks(data.landmarks)
+        const data = await getLandmarks(property.id);
+        
+        if (!data.landmarks) {
+          console.error('Invalid landmarks data received:', data);
+          setError('Invalid landmarks data received');
+          return;
+        }
+
         setMapProperty({
           name: property.name,
-          position: data.property.position,
-          address: data.property.address,
+          position: {
+            lat: property.latitude ?? 0,
+            lng: property.longitude ?? 0
+          },
+          address: property.maps_address || '',
           id: property.id,
           is_demo: property.is_demo
-        })
+        });
+
+        if (property.latitude && property.longitude) {
+          setLandmarks(data.landmarks);
+        } else {
+          console.warn('Property coordinates are missing');
+          setLandmarks([]);
+        }
       } catch (err) {
-        console.error('Error loading landmarks:', err)
-        setError('Failed to load neighbourhood data')
+        console.error('Error loading landmarks:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load neighbourhood data');
       }
     }
 
-    loadLandmarks()
-  }, [property])
+    loadLandmarks();
+  }, [property]);
 
   if (error) {
     return (

@@ -27,18 +27,20 @@ const initialProperty: Omit<Property, 'id'> = {
   updated_at: new Date().toISOString(),
   name: '',
   is_demo: false,
-  template_name: 'dubai',
+  template_name: '',
   street_address: '',
+  maps_address: '',
   suburb: '',
   state: '',
   price: '',
-  status: 'draft',
+  status: 'draft' as const,
   agency_id: null,
   agency_name: null,
-  agent_id: null,
   office_id: null,
+  agent_id: null,
   custom_domain: null,
   deployment_url: null,
+  template_version: '1.0.0',
   footer_links: [
     { id: 'home', title: 'Visit Us', url: '' },
     { id: 'phone', title: 'Call Us', url: '' },
@@ -50,13 +52,21 @@ const initialProperty: Omit<Property, 'id'> = {
     { id: 'link3', title: 'Buy a Home', url: '' }
   ],
   metadata: {
-    template_version: '1.0.0'
+    template_version: '1.0.0',
+    more_info: {
+      additionalInfo: Array.from({ length: 5 }, () => ({ info: '', detail: '' })),
+      ctaButtons: {
+        primary: { label: '', type: 'link', url: '' },
+        secondary: { label: '', type: 'link', url: '' }
+      },
+      documents: Array.from({ length: 5 }, () => ({ label: '', url: '' }))
+    }
   },
-  template_version: '1.0.0',
+  local_timezone: 'Australia/Melbourne',
   content: {
     hero: {
       headline: '',
-      subheadline: ''
+      subheadline: '',
     },
     features: {
       items: Array.from({ length: 15 }, (_, i) => ({
@@ -93,7 +103,7 @@ const initialProperty: Omit<Property, 'id'> = {
       description: ''
     }
   }
-}
+};
 
 type Tab = 'content' | 'visual_assets' | 'viewings' | 'locations' | 'more_info' | 'deployment'
 

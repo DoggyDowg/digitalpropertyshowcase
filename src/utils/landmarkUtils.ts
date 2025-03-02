@@ -5,13 +5,24 @@ export interface LandmarkData {
   landmarks: Landmark[];
 }
 
-export async function getLandmarks(): Promise<LandmarkData> {
+export async function getLandmarks(propertyId: string): Promise<LandmarkData> {
   try {
-    const response = await fetch('/api/get-landmarks');
+    console.log('Fetching landmarks for property:', propertyId);
+    const response = await fetch(`/api/get-landmarks?propertyId=${propertyId}`);
+    
     if (!response.ok) {
-      throw new Error('Failed to fetch landmarks');
+      const errorData = await response.json().catch(() => null);
+      console.error('API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData
+      });
+      throw new Error(`Failed to fetch landmarks: ${response.status} ${response.statusText}`);
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log('Landmarks data received:', data);
+    return data;
   } catch (error) {
     console.error('Error fetching landmarks:', error);
     throw error;

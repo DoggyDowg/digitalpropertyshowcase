@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { siteContent } from '@/config/content'
 import styles from '@/styles/DocumentLink.module.css'
@@ -9,12 +9,49 @@ import { useMoreInfoVideo } from '@/hooks/useMoreInfoVideo'
 import { useMoreInfoFloorplans } from '@/hooks/useMoreInfoFloorplans'
 import { PDFPreview } from '@/components/shared/PDFPreview'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { AddToCalendar } from './AddToCalendar'
 import type { Asset } from '@/types/assets'
-import type { Property } from '@/types/property'
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
+import { format } from 'date-fns'
+import { useAgent } from '@/hooks/useAgent'
 
 interface MoreInfoProps {
-  property: Property;
+  property: PropertyType;
+}
+
+interface PropertyType {
+  id: string;
+  title?: string;
+  name?: string;
+  address?: string;
+  street_address?: string;
+  suburb?: string;
+  sale_type?: string;
+  auction_datetime?: string;
+  price?: string;
+  is_demo?: boolean;
+  agent_id?: string | null;
+  metadata?: {
+    more_info?: {
+      documents?: Array<{ label: string; url: string }>;
+      additionalInfo?: Array<{ info: string; detail: string }>;
+    };
+    locations?: {
+      coordinates?: {
+        lat: number;
+        lng: number;
+      };
+    };
+  };
+  agency_settings?: {
+    branding?: {
+      colors?: {
+        accent?: string;
+      };
+    };
+  };
+  local_timezone: string;
+  maps_address?: string | null;
 }
 
 export function MoreInfo({ property }: MoreInfoProps) {
@@ -25,12 +62,24 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const imageRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo)
-  const { floorplans } = useMoreInfoFloorplans(property.id, property.is_demo)
+  const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo ?? false)
+  const { floorplans } = useMoreInfoFloorplans(property.id, property.is_demo ?? false)
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [demoContent, setDemoContent] = useState<{
     documents: Array<{ label: string; url: string }>;
     additionalInfo: Array<{ info: string; detail: string }>;
+  } | null>(null)
+  const { agent } = useAgent(property.agent_id)
+
+  // State to store calendar data
+  const [calendarData, setCalendarData] = useState<{
+    date: string;
+    time: string;
+    endTime: string;
+    timezone: string;
+    description: string;
+    title: string;
+    location: string;
   } | null>(null)
 
   // Set up demo content if needed
@@ -109,6 +158,88 @@ export function MoreInfo({ property }: MoreInfoProps) {
     }
   }, [property.is_demo, property.metadata])
 
+  // Debug logging for auction properties
+  useEffect(() => {
+    const debugInfo = {
+      component: 'MoreInfo',
+      propertyId: property.id,
+      saleType: property.sale_type,
+      auctionDateTime: property.auction_datetime,
+      isAuctionDateValid: property.auction_datetime ? !isNaN(new Date(property.auction_datetime).getTime()) : false,
+      showingAuctionSection: property.sale_type === 'auction' && property.auction_datetime,
+    }
+    
+    console.log('🎯 MoreInfo Component Debug:', debugInfo)
+  }, [property.id, property.sale_type, property.auction_datetime])
+
+  // Format auction date for calendar
+  const formatAuctionForCalendar = useCallback(async (auctionDatetime: string) => {
+    try {
+      const date = new Date(auctionDatetime)
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date')
+      }
+
+      // Format the date and time strings
+      const formattedDate = format(date, 'yyyy-MM-dd')
+      const formattedTime = format(date, 'HH:mm')
+      
+      // Calculate end time (30 minutes after start)
+      const endDate = new Date(date.getTime() + 30 * 60000)
+      const endTime = format(endDate, 'HH:mm')
+
+      // Format the address for title and description
+      const formattedAddress = property.street_address && property.suburb
+        ? `${property.street_address}, ${property.suburb}`
+        : property.maps_address || property.address || property.name || ''
+
+      // Format event title with street address and suburb
+      const eventTitle = `Auction - ${formattedAddress}`
+
+      // Format a detailed description
+      const formattedDateTime = format(date, 'EEEE, MMMM do, yyyy h:mm a')
+      let description = `Auction for ${formattedAddress}\n\n`
+      description += `📅 Date & Time: ${formattedDateTime}\n`
+      description += `📍 Location: ${formattedAddress}\n\n`
+
+      // Add agent information if available
+      if (agent) {
+        description += `Contact Information:\n`
+        description += `${agent.name} - ${agent.position}\n`
+        description += `📞 ${agent.phone}\n`
+        description += `📧 ${agent.email}\n`
+      }
+
+      // Create location string with coordinates if available
+      let location = property.maps_address || formattedAddress
+      if (property.metadata?.locations?.coordinates) {
+        location = `${location}@${property.metadata.locations.coordinates.lat},${property.metadata.locations.coordinates.lng}`
+      }
+      
+      return {
+        date: formattedDate,
+        time: formattedTime,
+        endTime: endTime,
+        timezone: property.local_timezone,
+        description,
+        title: eventTitle,
+        location
+      }
+    } catch (error) {
+      console.error('Error formatting auction date:', error)
+      return null
+    }
+  }, [property.name, property.address, property.maps_address, property.street_address, property.suburb, property.metadata?.locations?.coordinates, property.local_timezone, agent])
+
+  // Update calendar data when auction datetime changes
+  useEffect(() => {
+    if (property.auction_datetime) {
+      formatAuctionForCalendar(property.auction_datetime).then(data => {
+        setCalendarData(data)
+      })
+    }
+  }, [property.auction_datetime, formatAuctionForCalendar])
+
   // Guard against undefined content
   if (!moreInfo) return null
 
@@ -119,6 +250,19 @@ export function MoreInfo({ property }: MoreInfoProps) {
 
   // Determine if video is from YouTube
   const isYouTubeVideo = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')
+
+  // Add debug logging right before render
+  console.log('%c MoreInfo Debug 🔍', 'background: #222; color: #bada55; padding: 2px;')
+  console.table({
+    'Sale Type': property.sale_type,
+    'Auction Date': property.auction_datetime,
+    'Property Coordinates': property.metadata?.locations?.coordinates 
+      ? `${property.metadata.locations.coordinates.lat}, ${property.metadata.locations.coordinates.lng}`
+      : 'Not available',
+    'Is Auction': property.sale_type === 'auction',
+    'Has Date': Boolean(property.auction_datetime),
+    'Valid Date': property.auction_datetime ? !isNaN(new Date(property.auction_datetime).getTime()) : false
+  })
 
   return (
     <section 
@@ -140,38 +284,55 @@ export function MoreInfo({ property }: MoreInfoProps) {
             }`}
           >
             <h2 className="text-4xl font-light mb-4 text-brand-dark">Auction</h2>
-            <p className="text-3xl text-brand-dark font-medium">
-              {(() => {
-                try {
-                  const auctionDate = new Date(property.auction_datetime);
-                  
-                  // Check if date is valid
-                  if (isNaN(auctionDate.getTime())) {
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-3xl text-brand-dark font-medium">
+                {(() => {
+                  try {
+                    const auctionDate = new Date(property.auction_datetime);
+                    
+                    // Check if date is valid
+                    if (isNaN(auctionDate.getTime())) {
+                      return 'Date to be announced';
+                    }
+                    
+                    // Format day - full name for desktop, 3-letter abbreviation for mobile
+                    const dayOptions = { weekday: isMobile ? 'short' : 'long' } as Intl.DateTimeFormatOptions;
+                    const day = new Intl.DateTimeFormat('en-US', dayOptions).format(auctionDate);
+                    
+                    // Format month and date
+                    const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(auctionDate);
+                    const date = auctionDate.getDate();
+                    
+                    // Format time
+                    const hours = auctionDate.getHours();
+                    const minutes = auctionDate.getMinutes();
+                    const ampm = hours >= 12 ? 'pm' : 'am';
+                    const formattedHours = hours % 12 || 12;
+                    const formattedMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+                    
+                    return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
+                  } catch (error) {
+                    console.error('Error formatting auction date:', error);
                     return 'Date to be announced';
                   }
-                  
-                  // Format day - full name for desktop, 3-letter abbreviation for mobile
-                  const dayOptions = { weekday: isMobile ? 'short' : 'long' } as Intl.DateTimeFormatOptions;
-                  const day = new Intl.DateTimeFormat('en-US', dayOptions).format(auctionDate);
-                  
-                  // Format month and date
-                  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(auctionDate);
-                  const date = auctionDate.getDate();
-                  
-                  // Format time
-                  const hours = auctionDate.getHours();
-                  const minutes = auctionDate.getMinutes();
-                  const ampm = hours >= 12 ? 'pm' : 'am';
-                  const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-                  const formattedMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
-                  
-                  return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
-                } catch (error) {
-                  console.error('Error formatting auction date:', error);
-                  return 'Date to be announced';
-                }
-              })()}
-            </p>
+                })()}
+              </p>
+              {property.auction_datetime && !isNaN(new Date(property.auction_datetime).getTime()) && (
+                <div className="transform hover:scale-105 transition-transform" style={{ position: 'relative', isolation: 'isolate' }}>
+                  {calendarData && (
+                    <AddToCalendar
+                      name={calendarData.title}
+                      description={calendarData.description}
+                      location={calendarData.location}
+                      startDate={calendarData.date}
+                      startTime={calendarData.time}
+                      endTime={calendarData.endTime}
+                      timezone={calendarData.timezone}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

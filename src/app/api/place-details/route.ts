@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     
     if (!apiKey) {
       console.error('Server-side Google Maps API key is not configured');

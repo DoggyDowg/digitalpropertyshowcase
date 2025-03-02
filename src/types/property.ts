@@ -137,6 +137,10 @@ export interface Property {
   office_id: string | null
   custom_domain: string | null
   deployment_url: string | null
+  maps_address: string | null
+  local_timezone: string
+  latitude?: number | null
+  longitude?: number | null
   footer_links: FooterLink[]
   metadata: {
     template_version: string

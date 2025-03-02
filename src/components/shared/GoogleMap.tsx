@@ -441,23 +441,22 @@ export function GoogleMap({
             <div 
               ref={listViewRef}
               className={`
-                w-80 rounded-lg shadow-lg overflow-hidden
-                bg-white md:block md:flex-col
-                hidden
+                w-80 rounded-lg shadow-lg
+                bg-white md:block
+                flex flex-col
                 ${allowTransitions ? 'transition-transform duration-300 ease-in-out' : ''}
               `}
-              style={{ 
-                height: '600px'
-              }}
+              style={{ height: '600px', display: 'flex', overflow: 'hidden' }}
             >
-              <div className="p-4 bg-gray-50 border-b">
+              {/* Header - No fixed height, will take natural height */}
+              <div className="flex-none p-4 bg-gray-50 border-b">
                 {property && (
                   <button 
                     onClick={() => {
                       setSelectedLandmark(null);
                       map?.panTo(property.position);
                       setShowPropertyInfo(true);
-                      setIsListOpen(false); // Close panel on mobile after selection
+                      setIsListOpen(false);
                     }}
                     className="w-full text-left group"
                   >
@@ -465,13 +464,13 @@ export function GoogleMap({
                       {property.name}
                     </div>
                     <div className="font-paragraph text-sm text-brand-dark group-hover:text-blue-600 transition-colors">
-                      {property.address.split(',')[1].trim()}
+                      {property.address?.split(',').length > 1 ? property.address.split(',')[1].trim() : property.address}
                     </div>
                   </button>
                 )}
                 <div className="h-px bg-gray-200 my-3" />
                 <div className="font-paragraph text-sm text-brand-dark mb-3">Nearby Places</div>
-                <div className="flex flex-wrap gap-2 relative">
+                <div className="flex flex-wrap gap-2">
                   {LANDMARK_TYPES.map((config) => {
                     const Icon = config.icon;
                     const type = config.type.toLowerCase() as LandmarkType;
@@ -523,45 +522,50 @@ export function GoogleMap({
                   )}
                 </div>
               </div>
-              <div className="divide-y overflow-auto flex-1">
-                {filteredLandmarks.map((landmark, index) => {
-                  const type = landmark.type.toLowerCase() as LandmarkType;
-                  const typeConfig = getLandmarkTypeConfig(type);
-                  const Icon = typeConfig.icon;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSelectedLandmark(landmark);
-                        setIsListOpen(false); // Close panel on mobile after selection
-                      }}
-                      className={`w-full text-left hover:bg-gray-50 transition-colors flex items-center gap-3 relative ${
-                        selectedLandmark?.name === landmark.name ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      {selectedLandmark?.name === landmark.name && (
-                        <div 
-                          className="absolute left-0 top-0 bottom-0 w-1"
-                          style={{ backgroundColor: typeConfig.markerColor }}
-                        />
-                      )}
-                      <div className="p-4 flex items-center gap-3 w-full">
-                        <Icon className="w-5 h-5 text-brand-dark shrink-0" />
-                        <div>
-                          <div className="!font-paragraph !text-base !not-italic text-brand-dark">{landmark.name}</div>
-                          <div className="!font-paragraph text-sm text-brand-dark mt-1">
-                            {landmark.details?.shortDescription} • {formatDistance(calculateDistance(
-                              property!.position.lat,
-                              property!.position.lng,
-                              landmark.position.lat,
-                              landmark.position.lng
-                            ))} away
+
+              {/* Scrollable Content - Takes remaining height */}
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="divide-y">
+                  {filteredLandmarks.map((landmark, index) => {
+                    const type = landmark.type.toLowerCase() as LandmarkType;
+                    const typeConfig = getLandmarkTypeConfig(type);
+                    const Icon = typeConfig.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setSelectedLandmark(landmark);
+                          setIsListOpen(false);
+                        }}
+                        className={`w-full text-left hover:bg-gray-50 transition-colors flex items-center gap-3 relative ${
+                          selectedLandmark?.name === landmark.name ? 'bg-blue-50' : ''
+                        }`}
+                      >
+                        {selectedLandmark?.name === landmark.name && (
+                          <div 
+                            className="absolute left-0 top-0 bottom-0 w-1"
+                            style={{ backgroundColor: typeConfig.markerColor }}
+                          />
+                        )}
+                        <div className="p-4 flex items-center gap-3 w-full">
+                          <Icon className="w-5 h-5 text-brand-dark shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="!font-paragraph !text-base !not-italic text-brand-dark truncate">{landmark.name}</div>
+                            <div className="!font-paragraph text-sm text-brand-dark mt-1">
+                              {landmark.details?.shortDescription} • {formatDistance(calculateDistance(
+                                property!.position.lat,
+                                property!.position.lng,
+                                landmark.position.lat,
+                                landmark.position.lng
+                              ))} away
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="h-16" />
               </div>
             </div>
           )}
@@ -572,17 +576,19 @@ export function GoogleMap({
               ref={listViewRef}
               className={`
                 fixed top-[88px] right-0 bottom-0 w-80
-                bg-white shadow-lg overflow-hidden md:hidden
+                bg-white shadow-lg md:hidden
                 flex-col
                 z-30
                 ${allowTransitions ? 'transition-transform duration-300 ease-in-out' : ''}
                 ${isListOpen ? 'translate-x-0' : 'translate-x-full'}
               `}
               style={{ 
-                height: 'calc(100vh - 88px)'
+                height: 'calc(100vh - 88px)',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
-              <div className="p-4 bg-gray-50 border-b">
+              <div className="p-4 bg-gray-50 border-b flex-shrink-0">
                 {property && (
                   <button 
                     onClick={() => {
@@ -597,7 +603,7 @@ export function GoogleMap({
                       {property.name}
                     </div>
                     <div className="font-paragraph text-sm text-brand-dark group-hover:text-blue-600 transition-colors">
-                      {property.address.split(',')[1].trim()}
+                      {property.address?.split(',').length > 1 ? property.address.split(',')[1].trim() : property.address}
                     </div>
                   </button>
                 )}
@@ -655,7 +661,7 @@ export function GoogleMap({
                   )}
                 </div>
               </div>
-              <div className="divide-y overflow-auto flex-1">
+              <div className="divide-y overflow-y-auto flex-1 pb-6">
                 {filteredLandmarks.map((landmark, index) => {
                   const type = landmark.type.toLowerCase() as LandmarkType;
                   const typeConfig = getLandmarkTypeConfig(type);
@@ -665,7 +671,7 @@ export function GoogleMap({
                       key={index}
                       onClick={() => {
                         setSelectedLandmark(landmark);
-                        setIsListOpen(false); // Close panel on mobile after selection
+                        setIsListOpen(false);
                       }}
                       className={`w-full text-left hover:bg-gray-50 transition-colors flex items-center gap-3 relative ${
                         selectedLandmark?.name === landmark.name ? 'bg-blue-50' : ''
@@ -679,8 +685,8 @@ export function GoogleMap({
                       )}
                       <div className="p-4 flex items-center gap-3 w-full">
                         <Icon className="w-5 h-5 text-brand-dark shrink-0" />
-                        <div>
-                          <div className="!font-paragraph !text-base !not-italic text-brand-dark">{landmark.name}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="!font-paragraph !text-base !not-italic text-brand-dark truncate">{landmark.name}</div>
                           <div className="!font-paragraph text-sm text-brand-dark mt-1">
                             {landmark.details?.shortDescription} • {formatDistance(calculateDistance(
                               property!.position.lat,
@@ -694,6 +700,8 @@ export function GoogleMap({
                     </button>
                   );
                 })}
+                {/* Add bottom padding spacer */}
+                <div className="h-16" />
               </div>
             </div>
           )}

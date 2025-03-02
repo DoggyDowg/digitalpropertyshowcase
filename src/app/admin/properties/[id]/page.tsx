@@ -20,6 +20,7 @@ import type { MoreInfoData } from '@/components/admin/PropertyMoreInfo'
 import { PropertyScraperModal } from '@/components/admin/property-scraper/PropertyScraperModal'
 import { AlertCircle } from 'lucide-react'
 import type { PostgrestError } from '@supabase/supabase-js'
+import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader'
 
 // Initial property state without ID
 const initialProperty: Omit<Property, 'id'> = {
@@ -40,6 +41,8 @@ const initialProperty: Omit<Property, 'id'> = {
   office_id: null,
   custom_domain: null,
   deployment_url: null,
+  maps_address: null,
+  local_timezone: 'UTC',
   footer_links: [
     { id: 'home', title: 'Visit Us', url: '' },
     { id: 'phone', title: 'Call Us', url: '' },
@@ -110,6 +113,10 @@ function PropertyEditContent({ id }: { id: string }) {
   const moreInfoRef = useRef<{ handleSave: () => Promise<void> }>(null)
   const [isScraperOpen, setIsScraperOpen] = useState(false)
   const [validationErrors, setValidationErrors] = useState<Record<string, string | undefined>>({})
+  const autocompleteInputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
+  const { isLoaded } = useGoogleMaps()
+  const coordsRef = useRef<{ latitude: number; longitude: number } | null>(null)
 
   // Load existing property if editing
   useEffect(() => {
@@ -403,6 +410,13 @@ function PropertyEditContent({ id }: { id: string }) {
         metadata: property.metadata,
         is_demo: property.is_demo,
         template_name: property.template_name,
+        maps_address: property.maps_address,
+        local_timezone: property.local_timezone,
+        // Include coordinates from ref in save data
+        ...(coordsRef.current && {
+          latitude: coordsRef.current.latitude,
+          longitude: coordsRef.current.longitude
+        }),
         updated_at: new Date().toISOString()
       }
 
@@ -725,6 +739,116 @@ function PropertyEditContent({ id }: { id: string }) {
     }
   }
 
+  // Initialize Places Autocomplete
+  useEffect(() => {
+    if (!isLoaded || !autocompleteInputRef.current) return;
+
+    try {
+      console.log('Initializing Places Autocomplete...', {
+        inputRef: autocompleteInputRef.current,
+        isLoaded
+      });
+      
+      const autocomplete = new google.maps.places.Autocomplete(autocompleteInputRef.current, {
+        fields: ['address_components', 'formatted_address', 'geometry'],
+        types: ['address']
+      });
+
+      // Add place_changed event listener
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        
+        if (!place.geometry?.location) {
+          toast.error('No location found for this address');
+          return;
+        }
+
+        const formattedAddress = place.formatted_address || '';
+        
+        // Extract suburb and state from address components
+        let suburb = '';
+        let state = '';
+        let streetAddress = '';
+        
+        place.address_components?.forEach((component) => {
+          const types = component.types;
+          if (types.includes('street_number')) {
+            streetAddress = component.long_name;
+          }
+          if (types.includes('route')) {
+            streetAddress = streetAddress ? `${streetAddress} ${component.long_name}` : component.long_name;
+          }
+          if (types.includes('locality') || types.includes('sublocality')) {
+            suburb = component.long_name;
+          }
+          if (types.includes('administrative_area_level_1')) {
+            state = component.long_name;
+          }
+        });
+
+        // Determine timezone based on Australian state
+        let timezone = property.local_timezone; // Default to current timezone
+        const australianStates: Record<string, string> = {
+          'Victoria': 'Australia/Melbourne',
+          'New South Wales': 'Australia/Sydney',
+          'Queensland': 'Australia/Brisbane',
+          'South Australia': 'Australia/Adelaide',
+          'Western Australia': 'Australia/Perth',
+          'Tasmania': 'Australia/Hobart',
+          'Northern Territory': 'Australia/Darwin',
+          'Australian Capital Territory': 'Australia/Sydney'
+        };
+
+        if (state && australianStates[state]) {
+          timezone = australianStates[state];
+        }
+
+        // Extract coordinates from the place
+        const latitude = place.geometry.location.lat();
+        const longitude = place.geometry.location.lng();
+
+        // Update property state with address details (without coordinates)
+        setProperty(prev => ({
+          ...prev,
+          maps_address: formattedAddress,
+          street_address: streetAddress || formattedAddress.split(',')[0],
+          suburb: suburb || prev.suburb,
+          state: state || prev.state,
+          local_timezone: timezone,
+          updated_at: new Date().toISOString()
+        }));
+
+        // Store coordinates in a ref for saving later
+        coordsRef.current = { latitude, longitude };
+
+        // Clear validation errors
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          street_address: undefined,
+          suburb: undefined,
+          state: undefined
+        }));
+
+        console.log('Place selected:', { formattedAddress, streetAddress, suburb, state, timezone });
+      });
+
+      autocompleteRef.current = autocomplete;
+      console.log('Places Autocomplete initialized successfully');
+    } catch (err) {
+      console.error('Error initializing Places Autocomplete:', err);
+      toast.error('Failed to initialize address search');
+    }
+
+    // Cleanup function
+    return () => {
+      if (autocompleteRef.current) {
+        console.log('Cleaning up Places Autocomplete...');
+        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        autocompleteRef.current = null;
+      }
+    };
+  }, [isLoaded, property.local_timezone]); // Remove autocompleteInputRef.current from dependencies
+
   if (loading) {
     return (
       <div className="p-6">
@@ -824,6 +948,177 @@ function PropertyEditContent({ id }: { id: string }) {
       <div className="max-w-4xl mx-auto p-6">
         {activeTab === 'content' && (
           <div className="space-y-8">
+            {/* Property Location Section */}
+            <section className="bg-white rounded-lg shadow">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Property Location</h2>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-9">
+                      <label htmlFor="maps_address" className="block text-sm font-medium text-gray-700 mb-2">
+                        Search Address
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="maps_address"
+                          name="maps_address"
+                          ref={autocompleteInputRef}
+                          defaultValue={property.maps_address || ''}
+                          placeholder="Search for an address..."
+                          className={`block w-full px-4 py-3 text-base rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${validationErrors.street_address ? 'border-red-300' : ''}`}
+                        />
+                        {!isLoaded && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="animate-spin h-5 w-5 border-2 border-indigo-500 rounded-full border-t-transparent"></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="col-span-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Timezone
+                      </label>
+                      <select
+                        value={property.local_timezone}
+                        onChange={(e) => handlePropertyChange('local_timezone', e.target.value)}
+                        className="block w-full px-3 py-3 text-base rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      >
+                        <option value="UTC">UTC</option>
+                        <optgroup label="Africa">
+                          <option value="Africa/Cairo">Cairo</option>
+                          <option value="Africa/Johannesburg">Johannesburg</option>
+                          <option value="Africa/Lagos">Lagos</option>
+                          <option value="Africa/Nairobi">Nairobi</option>
+                        </optgroup>
+                        <optgroup label="America">
+                          <option value="America/Anchorage">Anchorage</option>
+                          <option value="America/Chicago">Chicago</option>
+                          <option value="America/Los_Angeles">Los Angeles</option>
+                          <option value="America/Mexico_City">Mexico City</option>
+                          <option value="America/New_York">New York</option>
+                          <option value="America/Sao_Paulo">São Paulo</option>
+                          <option value="America/Toronto">Toronto</option>
+                          <option value="America/Vancouver">Vancouver</option>
+                        </optgroup>
+                        <optgroup label="Asia">
+                          <option value="Asia/Bangkok">Bangkok</option>
+                          <option value="Asia/Dubai">Dubai</option>
+                          <option value="Asia/Hong_Kong">Hong Kong</option>
+                          <option value="Asia/Jakarta">Jakarta</option>
+                          <option value="Asia/Kolkata">Kolkata</option>
+                          <option value="Asia/Seoul">Seoul</option>
+                          <option value="Asia/Shanghai">Shanghai</option>
+                          <option value="Asia/Singapore">Singapore</option>
+                          <option value="Asia/Tokyo">Tokyo</option>
+                        </optgroup>
+                        <optgroup label="Australia">
+                          <option value="Australia/Adelaide">Adelaide</option>
+                          <option value="Australia/Brisbane">Brisbane</option>
+                          <option value="Australia/Darwin">Darwin</option>
+                          <option value="Australia/Hobart">Hobart</option>
+                          <option value="Australia/Melbourne">Melbourne</option>
+                          <option value="Australia/Perth">Perth</option>
+                          <option value="Australia/Sydney">Sydney</option>
+                        </optgroup>
+                        <optgroup label="Europe">
+                          <option value="Europe/Amsterdam">Amsterdam</option>
+                          <option value="Europe/Berlin">Berlin</option>
+                          <option value="Europe/London">London</option>
+                          <option value="Europe/Madrid">Madrid</option>
+                          <option value="Europe/Moscow">Moscow</option>
+                          <option value="Europe/Paris">Paris</option>
+                          <option value="Europe/Rome">Rome</option>
+                        </optgroup>
+                        <optgroup label="Pacific">
+                          <option value="Pacific/Auckland">Auckland</option>
+                          <option value="Pacific/Fiji">Fiji</option>
+                          <option value="Pacific/Honolulu">Honolulu</option>
+                        </optgroup>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-5">
+                      <label className="block text-sm font-medium mb-1">
+                        Street Address <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={property.street_address}
+                        onChange={(e) => {
+                          handlePropertyChange('street_address', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, street_address: undefined }))
+                        }}
+                        className={`w-full p-2 border rounded ${
+                          validationErrors.street_address 
+                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                            : 'border-gray-300'
+                        }`}
+                        placeholder="Enter street address"
+                      />
+                      {validationErrors.street_address && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {validationErrors.street_address}
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-span-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Suburb <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={property.suburb}
+                        onChange={(e) => {
+                          handlePropertyChange('suburb', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, suburb: undefined }))
+                        }}
+                        className={`w-full p-2 border rounded ${
+                          validationErrors.suburb 
+                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                            : 'border-gray-300'
+                        }`}
+                        placeholder="Enter suburb"
+                      />
+                      {validationErrors.suburb && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {validationErrors.suburb}
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-span-3">
+                      <label className="block text-sm font-medium mb-1">
+                        State <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={property.state}
+                        onChange={(e) => {
+                          handlePropertyChange('state', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, state: undefined }))
+                        }}
+                        className={`w-full p-2 border rounded ${
+                          validationErrors.state 
+                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                            : 'border-gray-300'
+                        }`}
+                        placeholder="Enter state"
+                      />
+                      {validationErrors.state && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {validationErrors.state}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Basic Property Info */}
             <section className="bg-white rounded-lg shadow">
               <div className="p-6">
@@ -868,31 +1163,6 @@ function PropertyEditContent({ id }: { id: string }) {
                       </label>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Street Address <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={property.street_address}
-                      onChange={(e) => {
-                        handlePropertyChange('street_address', e.target.value)
-                        setValidationErrors(prev => ({ ...prev, street_address: undefined }))
-                      }}
-                      className={`w-full p-2 border rounded ${
-                        validationErrors.street_address 
-                          ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                          : 'border-gray-300'
-                      }`}
-                      placeholder="Enter street address"
-                    />
-                    {validationErrors.street_address && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
-                        <AlertCircle className="w-4 h-4 mr-1" />
-                        {validationErrors.street_address}
-                      </p>
-                    )}
-                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="template" className="block text-sm font-medium mb-1">
@@ -908,58 +1178,6 @@ function PropertyEditContent({ id }: { id: string }) {
                         <option value="cusco">Cusco</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Suburb <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={property.suburb}
-                        onChange={(e) => {
-                          handlePropertyChange('suburb', e.target.value)
-                          setValidationErrors(prev => ({ ...prev, suburb: undefined }))
-                        }}
-                        className={`w-full p-2 border rounded ${
-                          validationErrors.suburb 
-                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                            : 'border-gray-300'
-                        }`}
-                        placeholder="Enter suburb"
-                      />
-                      {validationErrors.suburb && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {validationErrors.suburb}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        State <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={property.state}
-                        onChange={(e) => {
-                          handlePropertyChange('state', e.target.value)
-                          setValidationErrors(prev => ({ ...prev, state: undefined }))
-                        }}
-                        className={`w-full p-2 border rounded ${
-                          validationErrors.state 
-                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                            : 'border-gray-300'
-                        }`}
-                        placeholder="Enter state"
-                      />
-                      {validationErrors.state && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {validationErrors.state}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Status</label>
                       <select
@@ -1430,7 +1648,7 @@ function PropertyEditContent({ id }: { id: string }) {
                   <div>
                     <label className="block text-sm font-medium mb-1">Description</label>
                     <textarea
-                      value={property.content.features.description || ''}
+                      value={property.content.features.description}
                       onChange={(e) => handleContentChange('features', 'description', e.target.value)}
                       className="w-full p-2 border rounded h-24"
                       placeholder="Describe the key features and highlights of the property..."

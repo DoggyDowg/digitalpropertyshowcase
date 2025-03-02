@@ -40,6 +40,7 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const { isLoaded } = useGoogleMaps();
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Toast helper function
   const showToast = useCallback((message: string, type: 'info' | 'success' = 'info') => {
@@ -52,19 +53,21 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
 
   // Load existing data when component mounts
   useEffect(() => {
-    async function loadExistingData() {
+    const loadExistingData = async () => {
       try {
+        setLoading(true);
         const response = await fetch(`/api/get-landmarks?propertyId=${propertyId}`);
+        
         if (!response.ok) {
           throw new Error('Failed to load landmarks');
         }
+
         const data = await response.json();
         
-        // Update state with existing data
         setState(prev => ({
           ...prev,
           property: data.property,
-          landmarks: data.landmarks
+          landmarks: data.landmarks || []
         }));
 
         // Update the autocomplete input with the property address
@@ -73,9 +76,11 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         }
       } catch (err) {
         console.error('Error loading existing landmarks:', err);
-        // Don't show error to user since this is optional pre-population
+        setError('Failed to load existing landmarks');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     if (propertyId) {
       loadExistingData();
@@ -191,7 +196,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         },
         body: JSON.stringify({
           propertyId,
-          property: state.property,
           landmarks: state.landmarks,
         }),
       });

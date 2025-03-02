@@ -1,7 +1,7 @@
 'use client'
 
 import { siteContent } from '@/config/content'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useUpcomingViewing } from '@/hooks/useUpcomingViewing'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import type { Property } from '@/types/property'
 import emailjs from '@emailjs/browser'
+import { AddToCalendar } from './AddToCalendar'
 
 // Initialize EmailJS
 emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_USER_ID!);
@@ -200,6 +201,79 @@ export function Viewings({ property }: ViewingsProps) {
     time: format(new Date(upcomingViewing.viewing_datetime), 'h:mm a')
   } : null
 
+  // Format the viewing date for the calendar
+  const formatViewingForCalendar = useCallback((viewingDatetime: string) => {
+    try {
+      const date = new Date(viewingDatetime)
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date')
+      }
+
+      // Format the date and time strings
+      const formattedDate = format(date, 'yyyy-MM-dd')
+      const formattedTime = format(date, 'HH:mm')
+      
+      // Calculate end time (30 minutes after start)
+      const endDate = new Date(date.getTime() + 30 * 60000)
+      const endTime = format(endDate, 'HH:mm')
+
+      // Create location string
+      const formattedAddress = property.street_address && property.suburb
+        ? `${property.street_address}, ${property.suburb}`
+        : property.maps_address || ''
+
+      // Format event title with street address and suburb
+      const eventTitle = `Viewing - ${formattedAddress}`
+
+      // Format a detailed description
+      const formattedDateTime = format(date, 'EEEE, MMMM do, yyyy h:mm a')
+      let description = `Property viewing at ${formattedAddress}\n\n`
+      description += `📅 Date & Time: ${formattedDateTime}\n`
+      description += `📍 Location: ${formattedAddress}\n`
+      
+      return {
+        date: formattedDate,
+        time: formattedTime,
+        endTime,
+        timezone: property.local_timezone,
+        description,
+        title: eventTitle,
+        location: formattedAddress,
+        formattedDate: format(date, 'EEEE, MMMM do, yyyy'),
+        formattedTime: format(date, 'h:mm a')
+      }
+    } catch (error) {
+      console.error('Error formatting viewing date:', error)
+      return null
+    }
+  }, [property.street_address, property.suburb, property.maps_address, property.local_timezone])
+
+  // If there's an upcoming viewing, show the Add to Calendar button
+  const renderUpcomingViewing = () => {
+    if (!upcomingViewing) return null
+
+    const calendarData = formatViewingForCalendar(upcomingViewing.viewing_datetime)
+    if (!calendarData) return null
+
+    return (
+      <div className="mb-6 p-4 bg-brand-primary/10 rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">Next Available Viewing</h3>
+        <p className="mb-3">
+          {calendarData.formattedDate} at {calendarData.formattedTime}
+        </p>
+        <AddToCalendar
+          name={calendarData.title}
+          description={calendarData.description}
+          location={calendarData.location}
+          startDate={calendarData.date}
+          startTime={calendarData.time}
+          endTime={calendarData.endTime}
+          timezone={calendarData.timezone}
+        />
+      </div>
+    )
+  }
+
   return (
     <section id="viewings" className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
       <div className="absolute inset-0 bg-brand-dark/90" />
@@ -216,14 +290,7 @@ export function Viewings({ property }: ViewingsProps) {
               <div className="h-6 bg-gray-200/20 rounded w-64 mx-auto"></div>
             </div>
           </div>
-        ) : formattedViewing && (
-          <div className="max-w-2xl mx-auto backdrop-blur-[12px] rounded-lg p-6 mb-8 text-center" style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.7)' }}>
-            <h3 className="text-2xl font-light text-brand-dark mb-2">Next Available Viewing</h3>
-            <p className="text-xl text-brand-dark">
-              {formattedViewing.date} at {formattedViewing.time}
-            </p>
-          </div>
-        )}
+        ) : renderUpcomingViewing()}
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto backdrop-blur-[12px] rounded-lg p-8 shadow-lg" style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.7)' }}>

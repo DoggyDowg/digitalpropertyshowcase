@@ -114,7 +114,7 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   useEffect(() => {
     async function loadLandmarks() {
       try {
-        const data = await getLandmarks()
+        const data = await getLandmarks(property.id)
         setLandmarks(data.landmarks)
         setMapProperty({
           name: property.name,
