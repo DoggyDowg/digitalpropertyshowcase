@@ -36,8 +36,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
   const [error, setError] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const autocompleteInputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const { isLoaded } = useGoogleMaps();
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [loading, setLoading] = useState(false);
@@ -69,11 +67,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
           property: data.property,
           landmarks: data.landmarks || []
         }));
-
-        // Update the autocomplete input with the property address
-        if (autocompleteInputRef.current && data.property) {
-          autocompleteInputRef.current.value = data.property.address;
-        }
       } catch (err) {
         console.error('Error loading existing landmarks:', err);
         setError('Failed to load existing landmarks');
@@ -86,83 +79,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       loadExistingData();
     }
   }, [propertyId]);
-
-  // Initialize Places Autocomplete
-  useEffect(() => {
-    if (!isLoaded || !autocompleteInputRef.current || autocompleteRef.current) return;
-
-    try {
-      const autocomplete = new google.maps.places.Autocomplete(autocompleteInputRef.current, {
-        fields: ['formatted_address', 'geometry', 'name'],
-        types: ['address']
-      });
-
-      // Add place_changed event listener
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (!place.geometry?.location) {
-          setError('No location found for this address');
-          return;
-        }
-
-        const property: Property = {
-          name: place.name || place.formatted_address || '',
-          position: {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng()
-          },
-          address: place.formatted_address || '',
-          id: place.place_id || crypto.randomUUID(),
-          is_demo: false
-        };
-
-        setState(prev => ({
-          ...prev,
-          property
-        }));
-      });
-
-      autocompleteRef.current = autocomplete;
-    } catch (err) {
-      console.error('Error initializing Places Autocomplete:', err);
-      setError('Failed to initialize address search');
-    }
-
-    return () => {
-      if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current);
-        autocompleteRef.current = null;
-      }
-    };
-  }, [isLoaded]);
-
-  // Handle enter key in search input
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && autocompleteRef.current) {
-      // Prevent form submission
-      e.preventDefault();
-      
-      // Get the first suggestion if available
-      const place = autocompleteRef.current.getPlace();
-      if (place?.geometry?.location) {
-        const property: Property = {
-          name: place.name || place.formatted_address || '',
-          position: {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng()
-          },
-          address: place.formatted_address || '',
-          id: place.place_id || crypto.randomUUID(),
-          is_demo: false
-        };
-
-        setState(prev => ({
-          ...prev,
-          property
-        }));
-      }
-    }
-  };
 
   // Landmark addition handlers
   const startAddingLandmark = (type: LandmarkType) => {
@@ -266,18 +182,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
         </button>
-      </div>
-
-      {/* Property Search */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Property Address</label>
-        <input
-          ref={autocompleteInputRef}
-          type="text"
-          className="w-full p-2 border rounded"
-          placeholder="Enter property address..."
-          onKeyDown={handleSearchKeyDown}
-        />
       </div>
 
       {/* Map */}

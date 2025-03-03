@@ -184,4 +184,6 @@ export interface Property {
   }
   assets?: PropertyAssets
   virtual_tour_enabled?: boolean
+  ig_enabled?: boolean
+  ig_hashtag?: string
 }

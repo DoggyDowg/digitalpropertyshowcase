@@ -193,7 +193,7 @@ export function Hero({ property }: HeroProps) {
                 alt={property.agency_name || 'Agency Logo'}
                 width={160}
                 height={40}
-                className="h-auto w-[140px] sm:w-[160px] object-contain"
+                className="h-auto w-[140px] sm:w-[160px] max-h-[60px] object-contain"
                 priority
               />
             )}

@@ -103,7 +103,43 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
   const [heroVideo, setHeroVideo] = useState<{ url: string; type: 'upload' | 'youtube' } | null>(null);
   const [promoVideo, setPromoVideo] = useState<{ url: string; type: 'upload' | 'youtube' } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [property, setProperty] = useState<{ ig_enabled: boolean; ig_hashtag: string | null }>({
+    ig_enabled: false,
+    ig_hashtag: null
+  });
+  const [localIgSettings, setLocalIgSettings] = useState<{ ig_enabled: boolean; ig_hashtag: string | null }>({
+    ig_enabled: false,
+    ig_hashtag: null
+  });
+  const [isIgSettingsSaved, setIsIgSettingsSaved] = useState(true);
   const supabase = createClientComponentClient();
+
+  // Fetch property data
+  useEffect(() => {
+    async function fetchProperty() {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('ig_enabled, ig_hashtag')
+        .eq('id', propertyId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching property:', error);
+        return;
+      }
+
+      if (data) {
+        const settings = {
+          ig_enabled: data.ig_enabled || false,
+          ig_hashtag: data.ig_hashtag || null
+        };
+        setProperty(settings);
+        setLocalIgSettings(settings);
+      }
+    }
+
+    fetchProperty();
+  }, [propertyId, supabase]);
 
   // Move loadData outside of useEffect and wrap in useCallback
   const loadData = useCallback(async () => {
@@ -779,6 +815,39 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
     }
   }
 
+  // Add this new function to handle Instagram settings save
+  const handleSaveIgSettings = async () => {
+    try {
+      // If Instagram is disabled, ensure hashtag is null
+      const settingsToSave = {
+        ig_enabled: localIgSettings.ig_enabled,
+        ig_hashtag: localIgSettings.ig_enabled ? localIgSettings.ig_hashtag : null
+      };
+
+      const { data, error } = await supabase
+        .from('properties')
+        .update(settingsToSave)
+        .eq('id', propertyId)
+        .select()
+        .single();
+
+      if (error) {
+        toast.error('Failed to update Instagram integration settings');
+        return;
+      }
+
+      if (data) {
+        setProperty(settingsToSave);
+        setLocalIgSettings(settingsToSave);
+        setIsIgSettingsSaved(true);
+        toast.success('Instagram integration settings updated');
+        onSave?.();
+      }
+    } catch (err) {
+      toast.error('An error occurred while saving settings');
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-8">
@@ -1211,6 +1280,85 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Instagram Integration Section */}
+      <section className="border-t pt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Instagram Integration</h3>
+          <div className="flex items-center space-x-2">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={localIgSettings.ig_enabled}
+                onChange={(e) => {
+                  setLocalIgSettings(prev => ({
+                    ...prev,
+                    ig_enabled: e.target.checked,
+                    // Clear hashtag when disabling integration
+                    ig_hashtag: e.target.checked ? prev.ig_hashtag : null
+                  }));
+                  setIsIgSettingsSaved(false);
+                }}
+                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm font-medium text-gray-700">
+                Enable Instagram Feed
+              </span>
+            </label>
+          </div>
+        </div>
+
+        {localIgSettings.ig_enabled && (
+          <div className="mt-4">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Hashtag to Track
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={localIgSettings.ig_hashtag || ''}
+                    onChange={(e) => {
+                      const hashtag = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+                      setLocalIgSettings(prev => ({
+                        ...prev,
+                        ig_hashtag: hashtag
+                      }));
+                      setIsIgSettingsSaved(false);
+                    }}
+                    placeholder="Enter hashtag (without #)"
+                    className="flex-1 px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  Enter a single hashtag without the # symbol. This will be used to fetch relevant Instagram posts.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isIgSettingsSaved && (
+          <div className="mt-4 flex justify-end space-x-2">
+            <button
+              onClick={() => {
+                setLocalIgSettings(property);
+                setIsIgSettingsSaved(true);
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveIgSettings}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Save Changes
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

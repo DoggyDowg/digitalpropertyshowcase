@@ -3,7 +3,7 @@
 import { ClientLayout } from '@/components/layouts/ClientLayout'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
-import { TransitionGallery } from './components/TransitionGallery'
+import { GallerySection } from '@/components/GallerySection'
 import { YourHome } from './components/YourHome'
 import { YourLifestyle } from './components/YourLifestyle'
 import { YourNeighbourhood } from './components/YourNeighbourhood'
@@ -12,7 +12,6 @@ import { Viewings } from './components/Viewings'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import CustomChat from '@/components/shared/CustomChat'
-import { GridGallery } from './components/ScrollerTransition'
 import type { Property } from '@/types/property'
 
 interface DubaiTemplateProps {
@@ -37,8 +36,7 @@ export function DubaiTemplate({ property }: DubaiTemplateProps) {
         <div className="dubai-template overflow-x-hidden">
           <Header property={property} />
           <Hero property={property} />
-          <GridGallery propertyId={property.id} />
-          <TransitionGallery property={property} />
+          <GallerySection property={property} />
           <YourHome property={property} />
           <YourLifestyle property={property} />
           <YourNeighbourhood property={property} />

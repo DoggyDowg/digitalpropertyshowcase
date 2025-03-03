@@ -11,7 +11,15 @@ const nextConfig = {
         hostname: 'urguvlckmcehdiibsiwf.supabase.co'
       }
     ],
-    domains: ['ckqbqxqvxgvxqgzc.public.blob.vercel-storage.com'],
+    domains: [
+      'urguvlckmcehdiibsiwf.supabase.co',
+      'instagram.fmnl17-1.fna.fbcdn.net',
+      'scontent.cdninstagram.com',
+      'scontent-lhr8-1.cdninstagram.com',
+      'scontent-lhr8-2.cdninstagram.com',
+      'instagram.fcgk30-1.fna.fbcdn.net',
+      'instagram.fmnl17-2.fna.fbcdn.net'
+    ],
   },
   webpack: (config, { isServer }) => {
     // Handle PDF.js in server environment

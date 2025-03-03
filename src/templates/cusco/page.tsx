@@ -8,7 +8,7 @@ import { YourLifestyle } from '@/components/YourLifestyle'
 import { YourNeighbourhood } from '@/components/YourNeighbourhood'
 import { Viewings } from '@/components/Viewings'
 import { Footer } from '@/components/Footer'
-import { TransitionGallery } from '@/components/TransitionGallery'
+import { GallerySection } from '@/components/GallerySection'
 import { MoreInfo } from '@/components/MoreInfo'
 import { ClientLayout } from '@/components/layouts/ClientLayout'
 import { Contact } from '@/components/Contact'
@@ -39,7 +39,7 @@ export function CuscoTemplate({ property, templateStyle = 'cusco' }: CuscoTempla
       <main className="min-h-screen overflow-x-hidden">
         <Header property={property} />
         <HeroComponent property={property} />
-        <TransitionGallery property={property} />
+        <GallerySection property={property} />
         <YourHome property={property} />
         <YourLifestyle property={property} />
         <YourNeighbourhood property={property} />

@@ -21,6 +21,7 @@ import { PropertyScraperModal } from '@/components/admin/property-scraper/Proper
 import { AlertCircle } from 'lucide-react'
 import type { PostgrestError } from '@supabase/supabase-js'
 import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader'
+import { GooglePlacesAutocomplete } from '@/components/shared/GooglePlacesAutocomplete'
 
 // Initial property state without ID
 const initialProperty: Omit<Property, 'id'> = {
@@ -57,6 +58,8 @@ const initialProperty: Omit<Property, 'id'> = {
     template_version: '1.0.0'
   },
   template_version: '1.0.0',
+  ig_enabled: false,
+  ig_hashtag: '',
   content: {
     hero: {
       headline: '',
@@ -808,18 +811,29 @@ function PropertyEditContent({ id }: { id: string }) {
         const longitude = place.geometry.location.lng();
 
         // Update property state with address details (without coordinates)
-        setProperty(prev => ({
-          ...prev,
-          maps_address: formattedAddress,
-          street_address: streetAddress || formattedAddress.split(',')[0],
-          suburb: suburb || prev.suburb,
-          state: state || prev.state,
-          local_timezone: timezone,
-          updated_at: new Date().toISOString()
-        }));
+        setProperty(prev => {
+          // Always use the new timezone if provided
+          const newTimezone = timezone || prev.local_timezone;
+          console.log('Setting timezone to:', newTimezone);
 
-        // Store coordinates in a ref for saving later
+          const updatedProperty = {
+            ...prev,
+            maps_address: formattedAddress,
+            street_address: streetAddress,
+            suburb: suburb || prev.suburb,
+            state: state || prev.state,
+            local_timezone: newTimezone,
+            updated_at: new Date().toISOString()
+          };
+
+          console.log('Updated property data:', updatedProperty);
+
+          return updatedProperty;
+        });
+
+        // Store coordinates in ref for saving later
         coordsRef.current = { latitude, longitude };
+        console.log('Stored coordinates:', coordsRef.current);
 
         // Clear validation errors
         setValidationErrors(prev => ({ 
@@ -828,8 +842,6 @@ function PropertyEditContent({ id }: { id: string }) {
           suburb: undefined,
           state: undefined
         }));
-
-        console.log('Place selected:', { formattedAddress, streetAddress, suburb, state, timezone });
       });
 
       autocompleteRef.current = autocomplete;
@@ -958,22 +970,54 @@ function PropertyEditContent({ id }: { id: string }) {
                       <label htmlFor="maps_address" className="block text-sm font-medium text-gray-700 mb-2">
                         Search Address
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="maps_address"
-                          name="maps_address"
-                          ref={autocompleteInputRef}
-                          defaultValue={property.maps_address || ''}
-                          placeholder="Search for an address..."
-                          className={`block w-full px-4 py-3 text-base rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${validationErrors.street_address ? 'border-red-300' : ''}`}
-                        />
-                        {!isLoaded && (
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                            <div className="animate-spin h-5 w-5 border-2 border-indigo-500 rounded-full border-t-transparent"></div>
-                          </div>
-                        )}
-                      </div>
+                      <GooglePlacesAutocomplete
+                        value={property.maps_address || ''}
+                        onChange={({ formattedAddress, streetAddress, suburb, state, latitude, longitude, timezone }) => {
+                          console.log('Address changed with data:', {
+                            formattedAddress,
+                            streetAddress,
+                            suburb,
+                            state,
+                            latitude,
+                            longitude,
+                            timezone
+                          });
+
+                          // Update property state with address details
+                          setProperty(prev => {
+                            // Always use the new timezone if provided
+                            const newTimezone = timezone || prev.local_timezone;
+                            console.log('Setting timezone to:', newTimezone);
+
+                            const updatedProperty = {
+                              ...prev,
+                              maps_address: formattedAddress,
+                              street_address: streetAddress,
+                              suburb: suburb || prev.suburb,
+                              state: state || prev.state,
+                              local_timezone: newTimezone,
+                              updated_at: new Date().toISOString()
+                            };
+
+                            console.log('Updated property data:', updatedProperty);
+
+                            return updatedProperty;
+                          });
+
+                          // Store coordinates in ref for saving later
+                          coordsRef.current = { latitude, longitude };
+                          console.log('Stored coordinates:', coordsRef.current);
+
+                          // Clear validation errors
+                          setValidationErrors(prev => ({ 
+                            ...prev, 
+                            street_address: undefined,
+                            suburb: undefined,
+                            state: undefined
+                          }));
+                        }}
+                        error={!!validationErrors.street_address}
+                      />
                     </div>
                     <div className="col-span-3">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
