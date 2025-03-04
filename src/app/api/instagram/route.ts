@@ -1,5 +1,8 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import type { InstagramMedia, InstagramHashtagResponse, InstagramError } from '@/types/instagram'
+
+// Mark route as dynamic
+export const dynamic = 'force-dynamic'
 
 const INSTAGRAM_API_URL = 'https://graph.instagram.com'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
@@ -47,9 +50,7 @@ async function fetchInstagramPosts(hashtagId: string): Promise<InstagramMedia[]>
   }
 }
 
-export const dynamic = 'force-dynamic'
-
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const hashtagId = searchParams.get('hashtagId')

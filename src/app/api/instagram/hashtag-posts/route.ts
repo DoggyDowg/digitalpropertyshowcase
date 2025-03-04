@@ -1,12 +1,20 @@
-import { NextResponse, NextRequest } from 'next/server'
-import { readCache, writeCache } from '@/lib/cache'
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { getInstagramToken } from '@/lib/instagram'
 
+// Mark route as dynamic
 export const dynamic = 'force-dynamic'
 
-const CACHE_DURATION = 60 * 60 * 1000 // 1 hour in milliseconds
 const INSTAGRAM_BUSINESS_ACCOUNT_ID = '17841439447143231'
+const POSTS_CACHE_KEY = 'instagram_hashtag_posts'
 
-export async function GET(request: NextRequest) {
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const hashtag = searchParams.get('hashtag')
@@ -15,60 +23,60 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Hashtag parameter is required' }, { status: 400 })
     }
 
-    // Try to get data from cache first
-    const cache = await readCache()
-    const cacheKey = `hashtag-${hashtag}`
-    const cachedData = cache[cacheKey]
+    // Try to get posts from Supabase cache
+    const { data: cachedPosts, error: cacheError } = await supabase
+      .from('instagram_post_cache')
+      .select('posts, cached_at')
+      .eq('hashtag', hashtag)
+      .single()
 
-    if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
-      console.log('Returning cached data for hashtag:', hashtag)
-      return NextResponse.json(cachedData.data)
+    // If we have recent cached posts (less than 5 minutes old), return them
+    if (cachedPosts && Date.now() - new Date(cachedPosts.cached_at).getTime() < 5 * 60 * 1000) {
+      return NextResponse.json(cachedPosts.posts)
     }
 
-    // If not in cache or expired, fetch from Instagram API
-    console.log('Fetching fresh data for hashtag:', hashtag)
+    // Get fresh access token
+    const accessToken = await getInstagramToken()
 
-    // First, get the hashtag ID
-    const hashtagResponse = await fetch(
-      `https://graph.facebook.com/v18.0/ig_hashtag_search?q=${encodeURIComponent(hashtag)}&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`
-    )
-
+    // Get hashtag ID
+    const hashtagUrl = `https://graph.facebook.com/v18.0/ig_hashtag_search?q=${encodeURIComponent(hashtag)}&user_id=${INSTAGRAM_BUSINESS_ACCOUNT_ID}&access_token=${accessToken}`
+    const hashtagResponse = await fetch(hashtagUrl)
+    
     if (!hashtagResponse.ok) {
-      const error = await hashtagResponse.json()
-      throw new Error(error.error?.message || 'Failed to fetch hashtag ID')
+      throw new Error(`Failed to get hashtag ID: ${hashtagResponse.statusText}`)
     }
 
     const hashtagData = await hashtagResponse.json()
-    const hashtagId = hashtagData.data[0]?.id
+    const hashtagId = hashtagData.data[0].id
 
-    if (!hashtagId) {
-      throw new Error('Hashtag not found')
-    }
-
-    // Then, get the media for this hashtag
-    const mediaResponse = await fetch(
-      `https://graph.facebook.com/v18.0/${hashtagId}/recent_media?fields=id,caption,media_type,media_url,permalink,timestamp&user_id=${INSTAGRAM_BUSINESS_ACCOUNT_ID}&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}&limit=8`
-    )
+    // Get media for hashtag
+    const mediaUrl = `https://graph.facebook.com/v18.0/${hashtagId}/recent_media?fields=id,caption,media_type,media_url,permalink,timestamp&user_id=${INSTAGRAM_BUSINESS_ACCOUNT_ID}&access_token=${accessToken}&limit=8`
+    const mediaResponse = await fetch(mediaUrl)
 
     if (!mediaResponse.ok) {
-      const error = await mediaResponse.json()
-      throw new Error(error.error?.message || 'Failed to fetch hashtag media')
+      throw new Error(`Failed to get media: ${mediaResponse.statusText}`)
     }
 
     const mediaData = await mediaResponse.json()
 
-    // Cache the results
-    cache[cacheKey] = {
-      data: mediaData.data,
-      timestamp: Date.now()
-    }
-    await writeCache(cache)
+    // Cache the results in Supabase
+    const { error: upsertError } = await supabase
+      .from('instagram_post_cache')
+      .upsert({
+        hashtag,
+        posts: mediaData,
+        cached_at: new Date().toISOString()
+      })
 
-    return NextResponse.json(mediaData.data)
+    if (upsertError) {
+      console.error('Failed to cache posts:', upsertError)
+    }
+
+    return NextResponse.json(mediaData)
   } catch (error) {
-    console.error('Instagram API error:', error)
+    console.error('Instagram API Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: 'Failed to fetch Instagram posts' },
       { status: 500 }
     )
   }
