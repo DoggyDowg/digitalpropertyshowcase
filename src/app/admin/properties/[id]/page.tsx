@@ -14,7 +14,7 @@ import {
   PropertyDeployment
 } from '@/components/admin'
 import { templateManager } from '@/lib/templateManager'
-import { toast } from 'sonner'
+import { toast } from 'react-hot-toast'
 import { OfficeSelect } from '@/components/shared/OfficeSelect'
 import type { MoreInfoData } from '@/components/admin/PropertyMoreInfo'
 import { PropertyScraperModal } from '@/components/admin/property-scraper/PropertyScraperModal'
@@ -1260,35 +1260,71 @@ function PropertyEditContent({ id }: { id: string }) {
                         <h4 className="text-sm font-medium text-gray-700 mb-3">Auction Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction Date</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Auction Date (Timezone: {property.local_timezone})
+                            </label>
                             <input
                               type="date"
-                              value={property.auction_datetime ? new Date(property.auction_datetime).toISOString().split('T')[0] : ''}
+                              value={property.auction_datetime ? 
+                                new Intl.DateTimeFormat('en-CA', { 
+                                  timeZone: property.local_timezone,
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit'
+                                }).format(new Date(property.auction_datetime))
+                                : ''
+                              }
                               onChange={(e) => {
                                 try {
                                   const date = e.target.value;
-                                  // If no date is selected, don't proceed
                                   if (!date) return;
                                   
-                                  // Get the current time or default to noon
+                                  // Keep the existing time or default to noon
                                   let time = '12:00';
                                   if (property.auction_datetime) {
-                                    const auctionDate = new Date(property.auction_datetime);
-                                    // Format hours and minutes with leading zeros
-                                    const hours = auctionDate.getHours().toString().padStart(2, '0');
-                                    const minutes = auctionDate.getMinutes().toString().padStart(2, '0');
-                                    time = `${hours}:${minutes}`;
+                                    const existingDate = new Date(property.auction_datetime);
+                                    const formatter = new Intl.DateTimeFormat('en-US', {
+                                      timeZone: property.local_timezone,
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                      hour12: false
+                                    });
+                                    time = formatter.format(existingDate);
                                   }
+
+                                  // Create a date object in the property's timezone
+                                  const propertyTzDate = new Date(`${date}T${time}`);
                                   
-                                  // Create a new date object using the local timezone
-                                  const dateObj = new Date(`${date}T${time}`);
-                                  if (isNaN(dateObj.getTime())) {
-                                    throw new Error('Invalid date or time');
-                                  }
-                                  
+                                  // Convert to UTC for storage
+                                  const formatter = new Intl.DateTimeFormat('en-US', {
+                                    timeZone: property.local_timezone,
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: false
+                                  });
+
+                                  const parts = formatter.formatToParts(propertyTzDate);
+                                  const dateParts: Record<string, string> = {};
+                                  parts.forEach(part => {
+                                    dateParts[part.type] = part.value;
+                                  });
+
+                                  const utcDate = new Date(Date.UTC(
+                                    parseInt(dateParts.year),
+                                    parseInt(dateParts.month) - 1,
+                                    parseInt(dateParts.day),
+                                    parseInt(dateParts.hour),
+                                    parseInt(dateParts.minute),
+                                    0
+                                  ));
+
                                   setProperty(prev => ({
                                     ...prev,
-                                    auction_datetime: dateObj.toISOString(),
+                                    auction_datetime: utcDate.toISOString(),
                                     updated_at: new Date().toISOString()
                                   }));
                                 } catch (error) {
@@ -1300,49 +1336,73 @@ function PropertyEditContent({ id }: { id: string }) {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Auction Time</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Auction Time (Timezone: {property.local_timezone})
+                            </label>
                             <input
                               type="time"
                               value={property.auction_datetime ? 
-                                (() => {
-                                  const date = new Date(property.auction_datetime);
-                                  const hours = date.getHours().toString().padStart(2, '0');
-                                  const minutes = date.getMinutes().toString().padStart(2, '0');
-                                  return `${hours}:${minutes}`;
-                                })() : 
-                                '12:00'
+                                new Intl.DateTimeFormat('en-US', {
+                                  timeZone: property.local_timezone,
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: false
+                                }).format(new Date(property.auction_datetime))
+                                : '12:00'
                               }
                               onChange={(e) => {
                                 try {
                                   const timeValue = e.target.value;
-                                  // If no time is selected, don't proceed
                                   if (!timeValue) return;
                                   
-                                  // Get the current date or today's date
-                                  let dateValue = new Date().toISOString().split('T')[0];
+                                  // Get the current date or keep existing date
+                                  let dateValue;
                                   if (property.auction_datetime) {
-                                    dateValue = new Date(property.auction_datetime).toISOString().split('T')[0];
+                                    dateValue = new Intl.DateTimeFormat('en-CA', {
+                                      timeZone: property.local_timezone,
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit'
+                                    }).format(new Date(property.auction_datetime));
+                                  } else {
+                                    dateValue = new Intl.DateTimeFormat('en-CA', {
+                                      timeZone: property.local_timezone
+                                    }).format(new Date());
                                   }
                                   
-                                  // Parse the time value
-                                  const [hours, minutes] = timeValue.split(':').map(Number);
+                                  // Create a date object in the property's timezone
+                                  const propertyTzDate = new Date(`${dateValue}T${timeValue}`);
                                   
-                                  // Create a new date object using the local timezone
-                                  const dateObj = new Date();
-                                  dateObj.setFullYear(
-                                    parseInt(dateValue.split('-')[0], 10),
-                                    parseInt(dateValue.split('-')[1], 10) - 1, // Month is 0-indexed
-                                    parseInt(dateValue.split('-')[2], 10)
-                                  );
-                                  dateObj.setHours(hours, minutes, 0, 0);
-                                  
-                                  if (isNaN(dateObj.getTime())) {
-                                    throw new Error('Invalid date or time');
-                                  }
-                                  
+                                  // Convert to UTC for storage
+                                  const formatter = new Intl.DateTimeFormat('en-US', {
+                                    timeZone: property.local_timezone,
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: false
+                                  });
+
+                                  const parts = formatter.formatToParts(propertyTzDate);
+                                  const dateParts: Record<string, string> = {};
+                                  parts.forEach(part => {
+                                    dateParts[part.type] = part.value;
+                                  });
+
+                                  const utcDate = new Date(Date.UTC(
+                                    parseInt(dateParts.year),
+                                    parseInt(dateParts.month) - 1,
+                                    parseInt(dateParts.day),
+                                    parseInt(dateParts.hour),
+                                    parseInt(dateParts.minute),
+                                    0
+                                  ));
+
                                   setProperty(prev => ({
                                     ...prev,
-                                    auction_datetime: dateObj.toISOString(),
+                                    auction_datetime: utcDate.toISOString(),
                                     updated_at: new Date().toISOString()
                                   }));
                                 } catch (error) {
@@ -2041,7 +2101,10 @@ function PropertyEditContent({ id }: { id: string }) {
 
         {activeTab === 'viewings' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <ViewingsManager propertyId={id} />
+            <ViewingsManager 
+              propertyId={id} 
+              propertyTimezone={property.local_timezone}
+            />
           </div>
         )}
 

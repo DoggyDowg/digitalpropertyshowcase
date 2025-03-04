@@ -1675,7 +1675,10 @@ function PropertyEditContent({ id }: { id: string }) {
 
         {activeTab === 'viewings' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <ViewingsManager propertyId={id} />
+            <ViewingsManager 
+              propertyId={id} 
+              propertyTimezone={property.local_timezone} 
+            />
           </div>
         )}
 

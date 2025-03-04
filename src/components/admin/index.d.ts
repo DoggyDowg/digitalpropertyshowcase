@@ -2,7 +2,10 @@ import type { Property } from '@/types/property'
 import type { MoreInfoData } from './PropertyMoreInfo'
 
 declare module '@/components/admin' {
-  export function ViewingsManager(props: { propertyId: string }): JSX.Element
+  export function ViewingsManager(props: { 
+    propertyId: string;
+    propertyTimezone: string;
+  }): JSX.Element
   
   export function PropertyLocations(props: { 
     propertyId: string

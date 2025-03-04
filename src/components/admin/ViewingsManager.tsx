@@ -17,9 +17,10 @@ interface Viewing {
 
 interface ViewingsManagerProps {
   propertyId: string
+  propertyTimezone: string
 }
 
-export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
+export default function ViewingsManager({ propertyId, propertyTimezone }: ViewingsManagerProps) {
   const supabase = createClientComponentClient()
   const [viewings, setViewings] = useState<Viewing[]>([])
   const [loading, setLoading] = useState(true)
@@ -75,22 +76,78 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
     try {
       const date = (document.getElementById('viewing-date') as HTMLInputElement).value
       const time = (document.getElementById('viewing-time') as HTMLInputElement).value
-      const viewing_datetime = new Date(`${date}T${time}`).toISOString()
+      
+      console.log('Input values:', { date, time, propertyTimezone })
+      
+      // Parse the input date and time as being in the property's timezone
+      const [year, month, day] = date.split('-').map(Number)
+      const [hours, minutes] = time.split(':').map(Number)
+      
+      console.log('Parsed values:', { year, month, day, hours, minutes })
+      
+      // Create a UTC date by adjusting for the property's timezone offset
+      const tempDate = new Date(Date.UTC(year, month - 1, day, hours, minutes))
+      console.log('Initial UTC date:', tempDate.toISOString())
+      
+      // Get the timezone offset for the property's timezone at this date
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: propertyTimezone,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+        timeZoneName: 'shortOffset'
+      })
+      
+      const parts = formatter.formatToParts(tempDate)
+      console.log('Formatter parts:', parts)
+      
+      const timeZonePart = parts.find(part => part.type === 'timeZoneName')
+      console.log('Timezone part:', timeZonePart)
+      
+      if (!timeZonePart?.value) {
+        throw new Error(`Invalid timezone: ${propertyTimezone}`)
+      }
+      
+      // Handle both GMT+11 and GMT+1100 formats
+      const offsetMatch = timeZonePart.value.match(/GMT([+-])(\d{1,2})(?:(\d{2})|)/)
+      console.log('Offset match:', offsetMatch)
+      
+      if (!offsetMatch) {
+        throw new Error(`Could not parse timezone offset from: ${timeZonePart.value}`)
+      }
+      
+      const [, offsetSign, offsetHours, offsetMinutes = '00'] = offsetMatch
+      const offset = (parseInt(offsetHours) * 60 + parseInt(offsetMinutes)) * (offsetSign === '+' ? -1 : 1)
+      console.log('Calculated offset (minutes):', offset)
+      
+      // Adjust the UTC time by the offset to get the correct UTC time
+      const utcDate = new Date(Date.UTC(
+        year,
+        month - 1,
+        day,
+        hours + Math.floor(offset / 60),
+        minutes + (offset % 60)
+      ))
+      console.log('Final UTC date to store:', utcDate.toISOString())
 
       const { data, error } = await supabase
         .from('viewings')
         .insert([{
           ...newViewing,
           property_id: propertyId,
-          viewing_datetime
+          viewing_datetime: utcDate.toISOString()
         }])
         .select()
 
       if (error) {
-        console.error('Error adding viewing:', error)
+        console.error('Supabase error:', error)
         throw error
       }
 
+      console.log('Saved viewing:', data)
       setViewings([...viewings, data[0]])
       setIsAddingViewing(false)
       setNewViewing({
@@ -99,8 +156,8 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
         status: 'scheduled'
       })
     } catch (err) {
-      console.error('Error adding viewing:', err)
-      alert('Failed to add viewing. Please try again.')
+      console.error('Error details:', err)
+      alert(`Failed to add viewing: ${err instanceof Error ? err.message : 'Unknown error'}`)
     }
   }
 
@@ -139,7 +196,7 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <h3 className="text-red-800 font-medium">Error</h3>
-        <p className="text-red-600 mt-1">{error.message}</p>
+        <p className="text-red-600">{error.message}</p>
       </div>
     )
   }
@@ -161,7 +218,9 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
         <form onSubmit={handleAddViewing} className="mb-8 bg-gray-50 p-4 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date (Timezone: {propertyTimezone})
+              </label>
               <input
                 id="viewing-date"
                 type="date"
@@ -170,7 +229,9 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time (Timezone: {propertyTimezone})
+              </label>
               <input
                 id="viewing-time"
                 type="time"
@@ -267,30 +328,45 @@ export default function ViewingsManager({ propertyId }: ViewingsManagerProps) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {viewings.map((viewing) => (
-                <tr key={viewing.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(viewing.viewing_datetime).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {viewing.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {viewing.status}
-                  </td>
-                  <td className="px-6 py-4">
-                    {viewing.notes}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button
-                      onClick={() => handleDeleteViewing(viewing.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {viewings.map((viewing) => {
+                // Format the viewing time in the property's timezone
+                const viewingDate = new Date(viewing.viewing_datetime);
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                  timeZone: propertyTimezone,
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
+                });
+                const formattedDateTime = formatter.format(viewingDate);
+
+                return (
+                  <tr key={viewing.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {formattedDateTime}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {viewing.type}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {viewing.status}
+                    </td>
+                    <td className="px-6 py-4">
+                      {viewing.notes}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <button
+                        onClick={() => handleDeleteViewing(viewing.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
