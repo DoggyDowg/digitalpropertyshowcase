@@ -25,6 +25,10 @@ interface InstagramPost {
   }
 }
 
+interface InstagramApiResponse {
+  data: InstagramPost[]
+}
+
 interface InstagramGalleryProps {
   property: Property
 }
@@ -116,12 +120,21 @@ function VideoThumbnail({ post }: { post: InstagramPost }) {
 }
 
 const fetcher = async (url: string) => {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.error || 'Failed to fetch Instagram posts')
+  try {
+    console.log('[IG_GALLERY] Fetching posts from:', url)
+    const res = await fetch(url)
+    if (!res.ok) {
+      const error = await res.json()
+      console.error('[IG_GALLERY] API error response:', error)
+      throw new Error(error.error || 'Failed to fetch Instagram posts')
+    }
+    const data = await res.json()
+    console.log('[IG_GALLERY] API response:', data)
+    return data
+  } catch (error) {
+    console.error('[IG_GALLERY] Fetcher error:', error)
+    throw error
   }
-  return res.json()
 }
 
 export function InstagramGallery({ property }: InstagramGalleryProps) {
@@ -129,7 +142,7 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
   const { registerAsset, markAssetAsLoaded } = useAssetLoading()
   const [canScroll, setCanScroll] = useState(false)
   
-  const { data: posts, error, isLoading } = useSWR<InstagramPost[]>(
+  const { data: response, error, isLoading } = useSWR<InstagramApiResponse>(
     property.ig_enabled && property.ig_hashtag
       ? `/api/instagram/hashtag-posts?hashtag=${encodeURIComponent(property.ig_hashtag)}`
       : null,
@@ -139,13 +152,25 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
       revalidateOnReconnect: false,
       dedupingInterval: 60000,
       refreshInterval: 300000,
-      onSuccess: (data: InstagramPost[]) => {
-        if (Array.isArray(data)) {
-          data.forEach(() => registerAsset())
+      onSuccess: (data: InstagramApiResponse) => {
+        console.log('[IG_GALLERY] SWR success, received data:', data)
+        if (data?.data && Array.isArray(data.data)) {
+          data.data.forEach(() => registerAsset())
+        } else {
+          console.warn('[IG_GALLERY] Unexpected data structure:', data)
         }
+      },
+      onError: (err) => {
+        console.error('[IG_GALLERY] SWR error:', err)
       }
     }
   )
+
+  const posts = response?.data || []
+  
+  useEffect(() => {
+    console.log('[IG_GALLERY] Posts data updated:', posts)
+  }, [posts])
 
   // Check if scrolling is possible whenever the container or posts change
   useEffect(() => {
@@ -204,8 +229,8 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     )
   }
 
-  // Show TransitionGallery if we have no posts to display
-  if (!posts || posts.length === 0 || error) {
+  if (error) {
+    console.error('[IG_GALLERY] Gallery Error:', error)
     return <TransitionGallery property={property} />
   }
 
