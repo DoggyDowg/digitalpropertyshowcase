@@ -192,18 +192,25 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     if (!scrollContainerRef.current) return
 
     const container = scrollContainerRef.current
-    const itemWidth = container.firstElementChild?.clientWidth || 0
+    const containerWidth = container.clientWidth
+    const scrollWidth = container.scrollWidth
+    const currentScroll = container.scrollLeft
     const gap = 16 // gap-4 = 1rem = 16px
-    const scrollAmount = itemWidth + gap
+
+    // Calculate how many items are visible
+    const firstItem = container.firstElementChild as HTMLElement
+    const itemWidth = firstItem?.offsetWidth || 0
+    const itemsPerView = Math.floor(containerWidth / (itemWidth + gap))
+    const scrollAmount = itemsPerView * (itemWidth + gap)
 
     let newScroll = direction === 'left'
-      ? container.scrollLeft - scrollAmount
-      : container.scrollLeft + scrollAmount
+      ? currentScroll - scrollAmount
+      : currentScroll + scrollAmount
 
     // Handle endless scrolling
     if (direction === 'left' && newScroll < 0) {
-      newScroll = container.scrollWidth - container.clientWidth
-    } else if (direction === 'right' && newScroll + container.clientWidth > container.scrollWidth) {
+      newScroll = Math.max(0, scrollWidth - containerWidth)
+    } else if (direction === 'right' && newScroll + containerWidth >= scrollWidth) {
       newScroll = 0
     }
 
@@ -260,9 +267,9 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
             {/* Images */}
             <div
               ref={scrollContainerRef}
-              className="flex justify-center gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth py-2 px-1"
+              className="flex justify-start gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth py-2 px-1"
             >
-              {posts.map((post) => (
+              {posts.filter(post => post.media_url || post.thumbnail_url).map((post) => (
                 <a
                   key={post.id}
                   href={post.permalink}
@@ -276,14 +283,14 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
                     <VideoThumbnail post={post} />
                   ) : (
                     <Image
-                      src={post.media_url}
-                      alt="Instagram post"
+                      src={post.media_url || post.thumbnail_url!}
+                      alt={post.caption || 'Instagram post'}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-110"
                       onLoad={() => markAssetAsLoaded()}
                       onError={(e) => {
-                        console.error('Failed to load image:', post.media_url)
+                        console.error('[IG_GALLERY] Failed to load image:', post.media_url || post.thumbnail_url)
                         markAssetAsLoaded()
                         const target = e.target as HTMLImageElement
                         target.parentElement?.classList.add('bg-gray-800')
