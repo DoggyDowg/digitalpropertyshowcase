@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import type { Property } from '@/types/property'
@@ -140,7 +140,8 @@ const fetcher = async (url: string) => {
 export function InstagramGallery({ property }: InstagramGalleryProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { registerAsset, markAssetAsLoaded } = useAssetLoading()
-  const [canScroll, setCanScroll] = useState(false)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
   
   const { data: response, error, isLoading } = useSWR<InstagramApiResponse>(
     property.ig_enabled && property.ig_hashtag
@@ -155,7 +156,9 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
       onSuccess: (data: InstagramApiResponse) => {
         console.log('[IG_GALLERY] SWR success, received data:', data)
         if (data?.data && Array.isArray(data.data)) {
-          data.data.forEach(() => registerAsset())
+          const validPosts = data.data.filter(post => post.media_url || post.thumbnail_url)
+          console.log('[IG_GALLERY] Valid posts count:', validPosts.length)
+          validPosts.forEach(() => registerAsset())
         } else {
           console.warn('[IG_GALLERY] Unexpected data structure:', data)
         }
@@ -166,25 +169,50 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     }
   )
 
-  const posts = response?.data || []
-  
-  useEffect(() => {
-    console.log('[IG_GALLERY] Posts data updated:', posts)
-  }, [posts])
+  // Filter posts that have media URLs
+  const posts = useMemo(() => {
+    const validPosts = (response?.data || []).filter(post => {
+      const isValid = Boolean(post.media_url || post.thumbnail_url)
+      if (!isValid) {
+        console.log('[IG_GALLERY] Filtered out post due to missing media:', post)
+      }
+      return isValid
+    })
+    console.log('[IG_GALLERY] Total valid posts:', validPosts.length)
+    return validPosts
+  }, [response?.data])
 
-  // Check if scrolling is possible whenever the container or posts change
+  // Check scroll possibilities whenever the container or posts change
   useEffect(() => {
     const checkScrollable = () => {
       if (scrollContainerRef.current) {
         const container = scrollContainerRef.current
-        setCanScroll(container.scrollWidth > container.clientWidth)
+        const isAtStart = container.scrollLeft <= 0
+        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1 // -1 for rounding
+        
+        setCanScrollLeft(!isAtStart)
+        setCanScrollRight(!isAtEnd)
+        
+        console.log('[IG_GALLERY] Scroll state:', {
+          scrollLeft: container.scrollLeft,
+          clientWidth: container.clientWidth,
+          scrollWidth: container.scrollWidth,
+          canScrollLeft: !isAtStart,
+          canScrollRight: !isAtEnd
+        })
       }
     }
 
     checkScrollable()
     // Add resize listener to recheck on window resize
     window.addEventListener('resize', checkScrollable)
-    return () => window.removeEventListener('resize', checkScrollable)
+    // Add scroll listener to update button states
+    scrollContainerRef.current?.addEventListener('scroll', checkScrollable)
+    
+    return () => {
+      window.removeEventListener('resize', checkScrollable)
+      scrollContainerRef.current?.removeEventListener('scroll', checkScrollable)
+    }
   }, [posts])
 
   // Scroll the gallery left or right
@@ -192,27 +220,16 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     if (!scrollContainerRef.current) return
 
     const container = scrollContainerRef.current
-    const containerWidth = container.clientWidth
-    const scrollWidth = container.scrollWidth
-    const currentScroll = container.scrollLeft
-    const gap = 16 // gap-4 = 1rem = 16px
-
-    // Calculate how many items are visible
     const firstItem = container.firstElementChild as HTMLElement
     const itemWidth = firstItem?.offsetWidth || 0
-    const itemsPerView = Math.floor(containerWidth / (itemWidth + gap))
-    const scrollAmount = itemsPerView * (itemWidth + gap)
-
-    let newScroll = direction === 'left'
-      ? currentScroll - scrollAmount
-      : currentScroll + scrollAmount
-
-    // Handle endless scrolling
-    if (direction === 'left' && newScroll < 0) {
-      newScroll = Math.max(0, scrollWidth - containerWidth)
-    } else if (direction === 'right' && newScroll + containerWidth >= scrollWidth) {
-      newScroll = 0
-    }
+    const gap = 16 // gap-4 = 1rem = 16px
+    
+    // Scroll by one item width plus gap
+    const scrollAmount = itemWidth + gap
+    
+    const newScroll = direction === 'left'
+      ? container.scrollLeft - scrollAmount
+      : container.scrollLeft + scrollAmount
 
     container.scrollTo({
       left: newScroll,
@@ -252,12 +269,12 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
           <div className="relative">
             {/* Left Chevron */}
             <button
-              onClick={() => canScroll && scroll('left')}
-              className={`absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-brand-light hover:bg-brand-light/90 text-brand-dark w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                !canScroll ? 'opacity-20 cursor-not-allowed hover:bg-brand-light' : ''
+              onClick={() => canScrollLeft && scroll('left')}
+              className={`absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-brand-light hover:bg-brand-light/90 text-brand-dark w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg ${
+                !canScrollLeft ? 'opacity-20 cursor-not-allowed hover:bg-brand-light' : ''
               }`}
               aria-label="Scroll left"
-              aria-disabled={!canScroll}
+              aria-disabled={!canScrollLeft}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -269,7 +286,7 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
               ref={scrollContainerRef}
               className="flex justify-start gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth py-2 px-1"
             >
-              {posts.filter(post => post.media_url || post.thumbnail_url).map((post) => (
+              {posts.map((post) => (
                 <a
                   key={post.id}
                   href={post.permalink}
@@ -309,12 +326,12 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
 
             {/* Right Chevron */}
             <button
-              onClick={() => canScroll && scroll('right')}
-              className={`absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-brand-light hover:bg-brand-light/90 text-brand-dark w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                !canScroll ? 'opacity-20 cursor-not-allowed hover:bg-brand-light' : ''
+              onClick={() => canScrollRight && scroll('right')}
+              className={`absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-brand-light hover:bg-brand-light/90 text-brand-dark w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg ${
+                !canScrollRight ? 'opacity-20 cursor-not-allowed hover:bg-brand-light' : ''
               }`}
               aria-label="Scroll right"
-              aria-disabled={!canScroll}
+              aria-disabled={!canScrollRight}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
