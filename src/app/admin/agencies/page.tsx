@@ -65,11 +65,23 @@ export default function AgenciesPage() {
 
       const { data, error } = await supabase
         .from('agency_settings')
-        .select('*')
+        .select(`
+          *,
+          agents:agents(count),
+          properties:properties(count)
+        `)
         .order('name', { ascending: true })
 
       if (error) throw error
-      setAgencies(data || [])
+
+      // Transform the data to match our interface
+      const agenciesWithCounts = (data || []).map(agency => ({
+        ...agency,
+        propertyCount: agency.properties?.[0]?.count || 0,
+        agentCount: agency.agents?.[0]?.count || 0
+      }))
+
+      setAgencies(agenciesWithCounts)
     } catch (err) {
       console.error('Error loading agencies:', err)
       setError(err instanceof Error ? err : new Error('Failed to load agencies'))
@@ -183,22 +195,26 @@ export default function AgenciesPage() {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-medium">{agency.name}</h3>
-                    <div className="h-8 w-auto">
-                      {/* Replace img tags with Next.js Image component */}
-                      <Image 
-                        src={agency.branding?.logo?.dark || '/placeholder-logo.png'}
-                        alt={`${agency.name} logo`}
-                        width={32}
-                        height={32}
-                        className="h-full w-auto object-contain"
-                      />
-                      {!agency.branding?.logo?.dark && (
+                    <div className="h-12 w-auto max-w-[60px] relative">
+                      {agency.branding?.logo?.dark ? (
+                        <Image 
+                          src={agency.branding.logo.dark}
+                          alt={`${agency.name} logo`}
+                          width={60}
+                          height={48}
+                          className="h-full w-auto object-contain"
+                          quality={100}
+                          priority={true}
+                          unoptimized={true} // Skip Next.js image optimization for Supabase URLs
+                        />
+                      ) : (
                         <Image 
                           src="/placeholder-logo.png"
                           alt="Placeholder logo"
-                          width={32}
-                          height={32}
+                          width={60}
+                          height={48}
                           className="h-full w-auto object-contain opacity-50"
+                          priority={true}
                         />
                       )}
                     </div>
@@ -208,7 +224,16 @@ export default function AgenciesPage() {
                     <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span className="text-gray-600">{agency.propertyCount || 0} Properties</span>
+                    {agency.propertyCount > 0 ? (
+                      <Link 
+                        href={`/admin/properties?agency=${encodeURIComponent(agency.name)}`}
+                        className="text-gray-600 hover:text-blue-600 transition-colors"
+                      >
+                        {agency.propertyCount} Properties
+                      </Link>
+                    ) : (
+                      <span className="text-gray-600">{agency.propertyCount} Properties</span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
