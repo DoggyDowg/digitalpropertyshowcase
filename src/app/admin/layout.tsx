@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Home,
   Building2,
-  Settings,
   Menu,
   X,
   LogOut,
@@ -22,7 +21,6 @@ const navigation = [
   { name: 'Properties', href: '/admin/properties', icon: Home },
   { name: 'Agencies', href: '/admin/agencies', icon: Building2 },
   { name: 'Agents', href: '/admin/agents', icon: Users },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 export default function AdminLayout({
@@ -38,6 +36,11 @@ export default function AdminLayout({
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/admin/login')
+  }
+
+  // If we're on the login page, don't show the admin layout
+  if (pathname === '/admin/login') {
+    return children
   }
 
   return (
@@ -93,6 +96,17 @@ export default function AdminLayout({
                   )
                 })}
               </nav>
+
+              {/* Logout button for mobile */}
+              <div className="px-2 mt-auto pb-4">
+                <button
+                  onClick={handleLogout}
+                  className="group flex w-full items-center px-2 py-2 text-sm font-medium rounded-md text-red-700 hover:bg-red-50"
+                >
+                  <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-red-500" />
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -101,7 +115,7 @@ export default function AdminLayout({
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-          <div className="flex-1 flex flex-col pt-5 pb-4">
+          <div className="flex flex-col pt-5 pb-4 h-full">
             <div className="flex items-center flex-shrink-0 px-4">
               <Image
                 src="/logos/dps_whitebg.png"
@@ -134,6 +148,17 @@ export default function AdminLayout({
                 )
               })}
             </nav>
+
+            {/* Logout button for desktop */}
+            <div className="px-2 mt-auto border-t border-gray-200 pt-4 pb-4">
+              <button
+                onClick={handleLogout}
+                className="group flex w-full items-center px-2 py-2 text-sm font-medium rounded-md text-red-700 hover:bg-red-50"
+              >
+                <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-red-500" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -166,14 +191,6 @@ export default function AdminLayout({
             </div>
           </div>
         </main>
-
-        {/* Logout button */}
-        <button
-          onClick={handleLogout}
-          className="fixed bottom-4 right-4 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-        >
-          <LogOut className="h-6 w-6 text-gray-600" />
-        </button>
       </div>
     </div>
   )
