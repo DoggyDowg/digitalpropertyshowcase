@@ -60,6 +60,89 @@ export default function FloorplanViewer({ propertyId, floorplanAsset, onClose }:
   const imageRef = useRef<HTMLImageElement | null>(null);
   const supabase = createClientComponentClient();
 
+  // Define drawCanvas before any useEffect that references it
+  const drawCanvas = React.useCallback(() => {
+    if (!canvasRef.current || !imageRef.current || !isImageLoaded) {
+      console.log('FloorplanViewer - drawCanvas: Not ready to draw', {
+        hasCanvas: !!canvasRef.current,
+        hasImage: !!imageRef.current,
+        isImageLoaded
+      });
+      return;
+    }
+
+    console.log('FloorplanViewer - Drawing canvas...');
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('FloorplanViewer - Failed to get canvas context');
+      return;
+    }
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw image
+    console.log('FloorplanViewer - Drawing image with:', { pan, zoom });
+    ctx.save();
+    ctx.translate(pan.x, pan.y);
+    ctx.scale(zoom, zoom);
+    ctx.drawImage(imageRef.current, 0, 0);
+    ctx.restore();
+
+    // Draw regions
+    if (floorplanData?.regions?.length) {
+      console.log('FloorplanViewer - Drawing regions:', floorplanData.regions);
+      ctx.save();
+      ctx.translate(pan.x, pan.y);
+      ctx.scale(zoom, zoom);
+
+      floorplanData.regions.forEach(region => {
+        if (region.points.length < 2) return;
+
+        ctx.beginPath();
+        ctx.moveTo(region.points[0].x, region.points[0].y);
+        
+        for (let i = 1; i < region.points.length; i++) {
+          ctx.lineTo(region.points[i].x, region.points[i].y);
+        }
+        
+        if (region.points.length > 2) {
+          ctx.closePath();
+        }
+        
+        ctx.fillStyle = 'rgba(0, 128, 255, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
+        ctx.lineWidth = 2 / zoom;
+        ctx.stroke();
+
+        // Draw region name and dimensions
+        const centerX = region.points.reduce((sum, p) => sum + p.x, 0) / region.points.length;
+        const centerY = region.points.reduce((sum, p) => sum + p.y, 0) / region.points.length;
+        
+        ctx.fillStyle = 'black';
+        ctx.font = `${14 / zoom}px Arial`;
+        ctx.textAlign = 'center';
+        
+        ctx.fillText(region.name, centerX, centerY);
+        
+        if (region.metadata?.dimensions) {
+          const dims = region.metadata.dimensions;
+          ctx.font = `${12 / zoom}px Arial`;
+          ctx.fillText(`${dims.width}m × ${dims.height}m`, centerX, centerY + 20 / zoom);
+          ctx.fillText(`Area: ${dims.area}m²`, centerX, centerY + 40 / zoom);
+        }
+      });
+
+      ctx.restore();
+    }
+  }, [pan, zoom, floorplanData, isImageLoaded]);
+
   // Load image first
   useEffect(() => {
     const img = new Image();
@@ -173,88 +256,6 @@ export default function FloorplanViewer({ propertyId, floorplanAsset, onClose }:
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
-
-  const drawCanvas = React.useCallback(() => {
-    if (!canvasRef.current || !imageRef.current || !isImageLoaded) {
-      console.log('FloorplanViewer - drawCanvas: Not ready to draw', {
-        hasCanvas: !!canvasRef.current,
-        hasImage: !!imageRef.current,
-        isImageLoaded
-      });
-      return;
-    }
-
-    console.log('FloorplanViewer - Drawing canvas...');
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.error('FloorplanViewer - Failed to get canvas context');
-      return;
-    }
-
-    const dpr = window.devicePixelRatio || 1;
-    ctx.resetTransform();
-    ctx.scale(dpr, dpr);
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw image
-    console.log('FloorplanViewer - Drawing image with:', { pan, zoom });
-    ctx.save();
-    ctx.translate(pan.x, pan.y);
-    ctx.scale(zoom, zoom);
-    ctx.drawImage(imageRef.current, 0, 0);
-    ctx.restore();
-
-    // Draw regions
-    if (floorplanData?.regions?.length) {
-      console.log('FloorplanViewer - Drawing regions:', floorplanData.regions);
-      ctx.save();
-      ctx.translate(pan.x, pan.y);
-      ctx.scale(zoom, zoom);
-
-      floorplanData.regions.forEach(region => {
-        if (region.points.length < 2) return;
-
-        ctx.beginPath();
-        ctx.moveTo(region.points[0].x, region.points[0].y);
-        
-        for (let i = 1; i < region.points.length; i++) {
-          ctx.lineTo(region.points[i].x, region.points[i].y);
-        }
-        
-        if (region.points.length > 2) {
-          ctx.closePath();
-        }
-        
-        ctx.fillStyle = 'rgba(0, 128, 255, 0.2)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
-        ctx.lineWidth = 2 / zoom;
-        ctx.stroke();
-
-        // Draw region name and dimensions
-        const centerX = region.points.reduce((sum, p) => sum + p.x, 0) / region.points.length;
-        const centerY = region.points.reduce((sum, p) => sum + p.y, 0) / region.points.length;
-        
-        ctx.fillStyle = 'black';
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.textAlign = 'center';
-        
-        ctx.fillText(region.name, centerX, centerY);
-        
-        if (region.metadata?.dimensions) {
-          const dims = region.metadata.dimensions;
-          ctx.font = `${12 / zoom}px Arial`;
-          ctx.fillText(`${dims.width}m × ${dims.height}m`, centerX, centerY + 20 / zoom);
-          ctx.fillText(`Area: ${dims.area}m²`, centerX, centerY + 40 / zoom);
-        }
-      });
-
-      ctx.restore();
-    }
-  }, [pan, zoom, floorplanData, isImageLoaded]);
 
   // Mouse event handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {

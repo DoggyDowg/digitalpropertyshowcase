@@ -92,6 +92,227 @@ export default function FloorplanEditorWindow({
   const [drawingMode, setDrawingMode] = useState<DrawingMode>('freeform');
   const [rectangleStart, setRectangleStart] = useState<Point | null>(null);
 
+  // Define drawCanvas before it's used in any useEffect
+  const drawCanvas = useCallback(() => {
+    if (!canvasRef.current || !imageSize || !imageRef.current) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear the entire canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Set up the canvas for proper DPI
+    const dpr = window.devicePixelRatio || 1;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    // Draw checkerboard pattern
+    const squareSize = 8;
+    const width = canvas.width / dpr;
+    const height = canvas.height / dpr;
+
+    for (let x = 0; x < width; x += squareSize) {
+      for (let y = 0; y < height; y += squareSize) {
+        ctx.fillStyle = (x + y) % (squareSize * 2) === 0 ? '#f0f0f0' : '#ffffff';
+        ctx.fillRect(x, y, squareSize, squareSize);
+      }
+    }
+
+    // Apply zoom and pan transformations
+    ctx.save();
+    ctx.translate(pan.x, pan.y);
+    ctx.scale(zoom, zoom);
+
+    // Draw the cached image
+    ctx.drawImage(imageRef.current, 0, 0, imageSize.width, imageSize.height);
+
+    // Draw crop overlay if in crop mode
+    if (mode === 'crop') {
+      // Create a path for the entire image EXCEPT the crop area
+      ctx.beginPath();
+      ctx.rect(0, 0, imageSize.width, imageSize.height); // Outer rectangle
+      
+      if (cropArea) {
+        // Cut out the crop area from the overlay path
+        ctx.rect(cropArea.x + cropArea.width, cropArea.y, -cropArea.width, cropArea.height);
+      }
+      
+      // Fill the overlay path with semi-transparent black
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fill();
+
+      if (cropArea) {
+        // Draw border around crop area
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2 / zoom;
+        ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+
+        // Draw handles
+        const handleSize = 8 / zoom;
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = '#2563eb';
+        
+        // Corner handles
+        [
+          ['nw', cropArea.x, cropArea.y],
+          ['ne', cropArea.x + cropArea.width, cropArea.y],
+          ['sw', cropArea.x, cropArea.y + cropArea.height],
+          ['se', cropArea.x + cropArea.width, cropArea.y + cropArea.height]
+        ].forEach(([, x, y]) => {
+          ctx.beginPath();
+          ctx.arc(x as number, y as number, handleSize, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+
+        // Edge handles
+        [
+          ['n', cropArea.x + cropArea.width/2, cropArea.y],
+          ['s', cropArea.x + cropArea.width/2, cropArea.y + cropArea.height],
+          ['w', cropArea.x, cropArea.y + cropArea.height/2],
+          ['e', cropArea.x + cropArea.width, cropArea.y + cropArea.height/2]
+        ].forEach(([, x, y]) => {
+          ctx.beginPath();
+          ctx.arc(x as number, y as number, handleSize, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+      }
+    } else {
+      // Only draw the cropped area if it exists
+      if (cropArea) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+        ctx.clip();
+      }
+
+      // Draw scale points and regions
+      if (scalePoints.length > 0) {
+        ctx.beginPath();
+        scalePoints.forEach((point, index) => {
+          ctx.fillStyle = 'red';
+          // Scale the point markers inversely to maintain size
+          const markerSize = 5 / zoom;
+          ctx.arc(point.x, point.y, markerSize, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Draw line between points
+          if (index > 0) {
+            ctx.beginPath();
+            ctx.moveTo(scalePoints[index - 1].x, scalePoints[index - 1].y);
+            ctx.lineTo(point.x, point.y);
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2 / zoom; // Scale line width inversely
+            ctx.stroke();
+            
+            // Draw distance if scale is set
+            if (scale) {
+              const dx = point.x - scalePoints[index - 1].x;
+              const dy = point.y - scalePoints[index - 1].y;
+              const distance = Math.sqrt(dx * dx + dy * dy) / scale;
+              const midX = (point.x + scalePoints[index - 1].x) / 2;
+              const midY = (point.y + scalePoints[index - 1].y) / 2;
+              
+              // Scale the text background inversely
+              const padding = 10 / zoom;
+              ctx.fillStyle = 'white';
+              ctx.fillRect(midX - 40 / zoom, midY - padding, 80 / zoom, padding * 2);
+              
+              // Scale the text size inversely
+              ctx.fillStyle = 'red';
+              ctx.font = `${14 / zoom}px Arial`;
+              ctx.textAlign = 'center';
+              ctx.fillText(`${distance.toFixed(2)}m`, midX, midY + 5 / zoom);
+            }
+          }
+        });
+      }
+
+      // Draw regions
+      regions.forEach(region => {
+        if (region.points.length < 2) return;
+
+        ctx.beginPath();
+        ctx.moveTo(region.points[0].x, region.points[0].y);
+        
+        for (let i = 1; i < region.points.length; i++) {
+          ctx.lineTo(region.points[i].x, region.points[i].y);
+        }
+        
+        if (region.points.length > 2) {
+          ctx.closePath();
+        }
+        
+        ctx.fillStyle = 'rgba(0, 128, 255, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
+        ctx.lineWidth = 2 / zoom;
+        ctx.stroke();
+
+        // Draw region name and dimensions
+        const centerX = region.points.reduce((sum, p) => sum + p.x, 0) / region.points.length;
+        const centerY = region.points.reduce((sum, p) => sum + p.y, 0) / region.points.length;
+        
+        ctx.fillStyle = 'black';
+        ctx.font = `${14 / zoom}px Arial`;
+        ctx.textAlign = 'center';
+        
+        // Draw name
+        ctx.fillText(region.name, centerX, centerY);
+        
+        // Draw dimensions if available
+        if (scale && region.metadata?.dimensions) {
+          const dims = region.metadata.dimensions as { width: number; height: number; area: number };
+          ctx.font = `${12 / zoom}px Arial`;
+          ctx.fillText(`${dims.width}m × ${dims.height}m`, centerX, centerY + 20 / zoom);
+          ctx.fillText(`Area: ${dims.area}m²`, centerX, centerY + 40 / zoom);
+        }
+      });
+
+      // Draw current region if drawing
+      if (isDrawing && currentRegion && currentRegion.points.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(currentRegion.points[0].x, currentRegion.points[0].y);
+        
+        for (let i = 1; i < currentRegion.points.length; i++) {
+          ctx.lineTo(currentRegion.points[i].x, currentRegion.points[i].y);
+        }
+        
+        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
+        ctx.lineWidth = 2 / zoom;
+        ctx.stroke();
+
+        // Draw the first point as a dot
+        const startPoint = currentRegion.points[0];
+        ctx.beginPath();
+        ctx.arc(startPoint.x, startPoint.y, 5 / zoom, 0, Math.PI * 2);
+        
+        // Check if mouse is near the start point to show hover effect
+        if (mode === 'region' && currentRegion.points.length > 2) {
+          const mousePoint = ctx.getTransform().invertSelf().transformPoint(new DOMPoint(lastMousePos.x, lastMousePos.y));
+          const isNearStart = isNearPoint(
+            { x: mousePoint.x, y: mousePoint.y },
+            startPoint,
+            10 / zoom
+          );
+          ctx.fillStyle = isNearStart ? 'rgba(0, 255, 0, 0.8)' : 'rgba(0, 128, 255, 0.8)';
+        } else {
+          ctx.fillStyle = 'rgba(0, 128, 255, 0.8)';
+        }
+        ctx.fill();
+      }
+
+      if (cropArea) {
+        ctx.restore();
+      }
+    }
+
+    ctx.restore();
+  }, [imageSize, zoom, pan, mode, cropArea, scalePoints, scale, regions, isDrawing, currentRegion, lastMousePos]);
+
   // Update previous mode when changing modes
   const handleModeChange = (newMode: EditorMode) => {
     if (newMode !== 'pan') {
@@ -316,227 +537,6 @@ export default function FloorplanEditorWindow({
 
     drawCanvas();
   };
-
-  // Draw everything on canvas
-  const drawCanvas = useCallback(() => {
-    if (!canvasRef.current || !imageSize || !imageRef.current) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear the entire canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Set up the canvas for proper DPI
-    const dpr = window.devicePixelRatio || 1;
-    ctx.resetTransform();
-    ctx.scale(dpr, dpr);
-
-    // Draw checkerboard pattern
-    const squareSize = 8;
-    const width = canvas.width / dpr;
-    const height = canvas.height / dpr;
-
-    for (let x = 0; x < width; x += squareSize) {
-      for (let y = 0; y < height; y += squareSize) {
-        ctx.fillStyle = (x + y) % (squareSize * 2) === 0 ? '#f0f0f0' : '#ffffff';
-        ctx.fillRect(x, y, squareSize, squareSize);
-      }
-    }
-
-    // Apply zoom and pan transformations
-    ctx.save();
-    ctx.translate(pan.x, pan.y);
-    ctx.scale(zoom, zoom);
-
-    // Draw the cached image
-    ctx.drawImage(imageRef.current, 0, 0, imageSize.width, imageSize.height);
-
-    // Draw crop overlay if in crop mode
-    if (mode === 'crop') {
-      // Create a path for the entire image EXCEPT the crop area
-      ctx.beginPath();
-      ctx.rect(0, 0, imageSize.width, imageSize.height); // Outer rectangle
-      
-      if (cropArea) {
-        // Cut out the crop area from the overlay path
-        ctx.rect(cropArea.x + cropArea.width, cropArea.y, -cropArea.width, cropArea.height);
-      }
-      
-      // Fill the overlay path with semi-transparent black
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.fill();
-
-      if (cropArea) {
-        // Draw border around crop area
-        ctx.strokeStyle = '#2563eb';
-        ctx.lineWidth = 2 / zoom;
-        ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-
-        // Draw handles
-        const handleSize = 8 / zoom;
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = '#2563eb';
-        
-        // Corner handles
-        [
-          ['nw', cropArea.x, cropArea.y],
-          ['ne', cropArea.x + cropArea.width, cropArea.y],
-          ['sw', cropArea.x, cropArea.y + cropArea.height],
-          ['se', cropArea.x + cropArea.width, cropArea.y + cropArea.height]
-        ].forEach(([, x, y]) => {
-          ctx.beginPath();
-          ctx.arc(x as number, y as number, handleSize, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        });
-
-        // Edge handles
-        [
-          ['n', cropArea.x + cropArea.width/2, cropArea.y],
-          ['s', cropArea.x + cropArea.width/2, cropArea.y + cropArea.height],
-          ['w', cropArea.x, cropArea.y + cropArea.height/2],
-          ['e', cropArea.x + cropArea.width, cropArea.y + cropArea.height/2]
-        ].forEach(([, x, y]) => {
-          ctx.beginPath();
-          ctx.arc(x as number, y as number, handleSize, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        });
-      }
-    } else {
-      // Only draw the cropped area if it exists
-      if (cropArea) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-        ctx.clip();
-      }
-
-      // Draw scale points and regions
-      if (scalePoints.length > 0) {
-        ctx.beginPath();
-        scalePoints.forEach((point, index) => {
-          ctx.fillStyle = 'red';
-          // Scale the point markers inversely to maintain size
-          const markerSize = 5 / zoom;
-          ctx.arc(point.x, point.y, markerSize, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Draw line between points
-          if (index > 0) {
-            ctx.beginPath();
-            ctx.moveTo(scalePoints[index - 1].x, scalePoints[index - 1].y);
-            ctx.lineTo(point.x, point.y);
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2 / zoom; // Scale line width inversely
-            ctx.stroke();
-            
-            // Draw distance if scale is set
-            if (scale) {
-              const dx = point.x - scalePoints[index - 1].x;
-              const dy = point.y - scalePoints[index - 1].y;
-              const distance = Math.sqrt(dx * dx + dy * dy) / scale;
-              const midX = (point.x + scalePoints[index - 1].x) / 2;
-              const midY = (point.y + scalePoints[index - 1].y) / 2;
-              
-              // Scale the text background inversely
-              const padding = 10 / zoom;
-              ctx.fillStyle = 'white';
-              ctx.fillRect(midX - 40 / zoom, midY - padding, 80 / zoom, padding * 2);
-              
-              // Scale the text size inversely
-              ctx.fillStyle = 'red';
-              ctx.font = `${14 / zoom}px Arial`;
-              ctx.textAlign = 'center';
-              ctx.fillText(`${distance.toFixed(2)}m`, midX, midY + 5 / zoom);
-            }
-          }
-        });
-      }
-
-      // Draw regions
-      regions.forEach(region => {
-        if (region.points.length < 2) return;
-
-        ctx.beginPath();
-        ctx.moveTo(region.points[0].x, region.points[0].y);
-        
-        for (let i = 1; i < region.points.length; i++) {
-          ctx.lineTo(region.points[i].x, region.points[i].y);
-        }
-        
-        if (region.points.length > 2) {
-          ctx.closePath();
-        }
-        
-        ctx.fillStyle = 'rgba(0, 128, 255, 0.2)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
-        ctx.lineWidth = 2 / zoom;
-        ctx.stroke();
-
-        // Draw region name and dimensions
-        const centerX = region.points.reduce((sum, p) => sum + p.x, 0) / region.points.length;
-        const centerY = region.points.reduce((sum, p) => sum + p.y, 0) / region.points.length;
-        
-        ctx.fillStyle = 'black';
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.textAlign = 'center';
-        
-        // Draw name
-        ctx.fillText(region.name, centerX, centerY);
-        
-        // Draw dimensions if available
-        if (scale && region.metadata?.dimensions) {
-          const dims = region.metadata.dimensions as { width: number; height: number; area: number };
-          ctx.font = `${12 / zoom}px Arial`;
-          ctx.fillText(`${dims.width}m × ${dims.height}m`, centerX, centerY + 20 / zoom);
-          ctx.fillText(`Area: ${dims.area}m²`, centerX, centerY + 40 / zoom);
-        }
-      });
-
-      // Draw current region if drawing
-      if (isDrawing && currentRegion && currentRegion.points.length > 0) {
-        ctx.beginPath();
-        ctx.moveTo(currentRegion.points[0].x, currentRegion.points[0].y);
-        
-        for (let i = 1; i < currentRegion.points.length; i++) {
-          ctx.lineTo(currentRegion.points[i].x, currentRegion.points[i].y);
-        }
-        
-        ctx.strokeStyle = 'rgba(0, 128, 255, 0.8)';
-        ctx.lineWidth = 2 / zoom;
-        ctx.stroke();
-
-        // Draw the first point as a dot
-        const startPoint = currentRegion.points[0];
-        ctx.beginPath();
-        ctx.arc(startPoint.x, startPoint.y, 5 / zoom, 0, Math.PI * 2);
-        
-        // Check if mouse is near the start point to show hover effect
-        if (mode === 'region' && currentRegion.points.length > 2) {
-          const mousePoint = ctx.getTransform().invertSelf().transformPoint(new DOMPoint(lastMousePos.x, lastMousePos.y));
-          const isNearStart = isNearPoint(
-            { x: mousePoint.x, y: mousePoint.y },
-            startPoint,
-            10 / zoom
-          );
-          ctx.fillStyle = isNearStart ? 'rgba(0, 255, 0, 0.8)' : 'rgba(0, 128, 255, 0.8)';
-        } else {
-          ctx.fillStyle = 'rgba(0, 128, 255, 0.8)';
-        }
-        ctx.fill();
-      }
-
-      if (cropArea) {
-        ctx.restore();
-      }
-    }
-
-    ctx.restore();
-  }, [imageSize, zoom, pan, mode, cropArea, scalePoints, scale, regions, isDrawing, currentRegion, lastMousePos]);
 
   // Load existing floorplan data
   useEffect(() => {

@@ -13,11 +13,11 @@ export default function VirtualTour({ modelPath, className = "" }: VirtualTourPr
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Remove typed refs since we can't import the types here
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const controlsRef = useRef(null);
+  // Use 'any' type for refs that will hold imported Three.js objects
+  const rendererRef = useRef<any>(null);
+  const sceneRef = useRef<any>(null);
+  const cameraRef = useRef<any>(null);
+  const controlsRef = useRef<any>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
