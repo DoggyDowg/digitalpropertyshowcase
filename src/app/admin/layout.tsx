@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Home,
   Building2,
-  Settings,
   Menu,
   X,
   LogOut,
@@ -22,7 +21,6 @@ const navigation = [
   { name: 'Properties', href: '/admin/properties', icon: Home },
   { name: 'Agencies', href: '/admin/agencies', icon: Building2 },
   { name: 'Agents', href: '/admin/agents', icon: Users },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 export default function AdminLayout({
@@ -34,10 +32,18 @@ export default function AdminLayout({
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClientComponentClient()
+  
+  // Check if we're on the login page
+  const isLoginPage = pathname === '/admin/login'
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/admin/login')
+  }
+
+  // If we're on the login page, just render the children without admin layout
+  if (isLoginPage) {
+    return <>{children}</>
   }
 
   return (
@@ -60,10 +66,10 @@ export default function AdminLayout({
               </button>
             </div>
 
-            <div className="flex-1 flex flex-col pt-5 pb-4">
-              <div className="flex-shrink-0 px-4">
+            <div className="flex flex-col h-full">
+              <div className="flex-shrink-0 px-4 pt-5">
                 <Image
-                  src="/logos/dps_whitebg.png"
+                  src={`${process.env.NEXT_PUBLIC_BASE_URL || ''}/logos/dps_whitebg.png`}
                   alt="Digital Property Showcase"
                   width={180}
                   height={40}
@@ -93,6 +99,17 @@ export default function AdminLayout({
                   )
                 })}
               </nav>
+              
+              {/* Logout button for mobile */}
+              <div className="px-2 py-4 mt-auto border-t border-gray-200">
+                <button
+                  onClick={handleLogout}
+                  className="group flex w-full items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" />
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -100,40 +117,49 @@ export default function AdminLayout({
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-          <div className="flex-1 flex flex-col pt-5 pb-4">
-            <div className="flex items-center flex-shrink-0 px-4">
-              <Image
-                src="/logos/dps_whitebg.png"
-                alt="Digital Property Showcase"
-                width={180}
-                height={40}
-                className="w-auto h-8"
-              />
-            </div>
-            <nav className="mt-5 flex-1 px-2 space-y-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        <div className="flex flex-col h-full bg-white border-r border-gray-200">
+          <div className="flex-shrink-0 px-4 pt-5">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_BASE_URL || ''}/logos/dps_whitebg.png`}
+              alt="Digital Property Showcase"
+              width={180}
+              height={40}
+              className="w-auto h-8"
+            />
+          </div>
+          <nav className="mt-5 flex-1 px-2 space-y-1">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                    isActive
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <item.icon
+                    className={`mr-3 flex-shrink-0 h-6 w-6 ${
+                      isActive ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'
                     }`}
-                  >
-                    <item.icon
-                      className={`mr-3 flex-shrink-0 h-6 w-6 ${
-                        isActive ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'
-                      }`}
-                    />
-                    {item.name}
-                  </Link>
-                )
-              })}
-            </nav>
+                  />
+                  {item.name}
+                </Link>
+              )
+            })}
+          </nav>
+          
+          {/* Logout button for desktop */}
+          <div className="px-2 py-4 border-t border-gray-200">
+            <button
+              onClick={handleLogout}
+              className="group flex w-full items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            >
+              <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" />
+              Logout
+            </button>
           </div>
         </div>
       </div>
@@ -143,7 +169,7 @@ export default function AdminLayout({
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 lg:hidden">
           <div className="flex items-center justify-between h-16 px-4">
             <Image
-              src="/logos/dps_whitebg.png"
+              src={`${process.env.NEXT_PUBLIC_BASE_URL || ''}/logos/dps_whitebg.png`}
               alt="Digital Property Showcase"
               width={180}
               height={40}
@@ -166,14 +192,6 @@ export default function AdminLayout({
             </div>
           </div>
         </main>
-
-        {/* Logout button */}
-        <button
-          onClick={handleLogout}
-          className="fixed bottom-4 right-4 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-        >
-          <LogOut className="h-6 w-6 text-gray-600" />
-        </button>
       </div>
     </div>
   )

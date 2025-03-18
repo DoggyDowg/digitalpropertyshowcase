@@ -17,7 +17,7 @@ export default function LoadingScreen() {
     <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6 z-[9999]">
       <div className="w-64 h-24 relative mb-4">
         <Image
-          src="/logos/dps_whitebg.png"
+          src={`${process.env.NEXT_PUBLIC_BASE_URL || ''}/logos/dps_whitebg.png`}
           alt="Digital Property Showcase"
           fill
           sizes="(max-width: 256px) 100vw, 256px"
