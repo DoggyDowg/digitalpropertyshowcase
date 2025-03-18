@@ -1,5 +1,9 @@
 import type { PropertyAssets } from './assets';
 
+// Styling types for the PropertyStyling component
+export type HoverEffectType = 'underline' | 'slide' | 'fade' | 'scale' | 'glow' | 'background';
+export type HeaderStyleType = 'light' | 'dark';
+
 export interface PropertyFeature {
   rank: number
   feature: string
@@ -142,6 +146,14 @@ export interface Property {
   }
   template_version: string
   content: PropertyContent
+  styling?: {
+    textLinks?: {
+      hoverEffect?: HoverEffectType
+    }
+    header?: {
+      style?: HeaderStyleType
+    }
+  }
   agency_settings?: {
     branding: {
       logo: {

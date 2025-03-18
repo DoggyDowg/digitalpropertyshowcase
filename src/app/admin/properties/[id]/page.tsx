@@ -1755,6 +1755,9 @@ function PropertyEditContent({ id }: { id: string }) {
 
 // Server Component
 export default function PropertyEditPage() {
-  const params = useParams()
-  return <PropertyEditContent id={params.id as string} />
+  const params = useParams();
+  
+  // Use type assertion to tell TypeScript that we know params has an id property
+  // This is safe in Next.js route context where [id] is in the path
+  return <PropertyEditContent id={(params?.id as string) || 'new'} />;
 }
