@@ -255,7 +255,7 @@ export default function FloorplanViewer({ propertyId, floorplanAsset, onClose }:
 
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [drawCanvas]);
 
   // Mouse event handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
