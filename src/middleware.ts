@@ -4,6 +4,10 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 
+// Get environment variables
+const MAIN_DOMAIN = process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'digitalpropertyshowcase.com'
+const ENABLE_CUSTOM_DOMAINS = process.env.NEXT_PUBLIC_ENABLE_CUSTOM_DOMAINS !== 'false'
+
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
   const pathname = request.nextUrl.pathname
@@ -36,6 +40,9 @@ export async function middleware(request: NextRequest) {
   // Create a response that we'll modify based on conditions
   const res = NextResponse.next()
 
+  // Check if we're on the main business domain
+  const isMainDomain = hostname?.includes(MAIN_DOMAIN) || false
+  
   // Handle auth for admin routes
   if (pathname.startsWith('/admin')) {
     const supabase = createMiddlewareClient({ req: request, res })
@@ -53,10 +60,26 @@ export async function middleware(request: NextRequest) {
       const redirectUrl = new URL('/admin', request.url)
       return NextResponse.redirect(redirectUrl)
     }
+    
+    // If we got here, it's an authenticated admin route - let it proceed
+    return res
+  }
+
+  // Handle main business domain
+  if (isMainDomain) {
+    if (pathname === '/') {
+      // This is the main landing page - pass through as is
+      // (we'll enhance this later with a proper landing page)
+      return res
+    }
+    
+    // For now, just let all other routes on the main domain pass through
+    // This could be enhanced later with specific business site routes
+    return res
   }
 
   // Handle custom domains
-  if (hostname && !hostname.includes('localhost') && !hostname.includes('vercel.app')) {
+  if (ENABLE_CUSTOM_DOMAINS && hostname && !hostname.includes('localhost') && !hostname.includes('vercel.app') && !isMainDomain) {
     try {
       // Create Supabase client
       const supabase = createRouteHandlerClient({ cookies })

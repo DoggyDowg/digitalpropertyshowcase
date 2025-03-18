@@ -18,7 +18,9 @@ const nextConfig = {
       'scontent-lhr8-1.cdninstagram.com',
       'scontent-lhr8-2.cdninstagram.com',
       'instagram.fcgk30-1.fna.fbcdn.net',
-      'instagram.fmnl17-2.fna.fbcdn.net'
+      'instagram.fmnl17-2.fna.fbcdn.net',
+      'digitalpropertyshowcase.com',
+      'www.digitalpropertyshowcase.com'
     ],
   },
   webpack: (config, { isServer }) => {
@@ -61,6 +63,10 @@ const nextConfig = {
       },
     ];
   },
+  // Enable experimental features that support middleware
+  experimental: {
+    instrumentationHook: true,
+  }
 }
 
 module.exports = nextConfig 
