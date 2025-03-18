@@ -50,9 +50,21 @@ const HOVER_EFFECTS: HoverEffect[] = [
   }
 ]
 
+// Define a type for the styling settings that can be updated
+type PropertyStylingUpdate = {
+  styling: {
+    textLinks?: {
+      hoverEffect?: HoverEffectType;
+    };
+    header?: {
+      style?: HeaderStyleType;
+    };
+  };
+};
+
 interface PropertyStylingProps {
   property: Property
-  onSave: (settings: any) => Promise<void>
+  onSave: (settings: PropertyStylingUpdate) => Promise<void>
 }
 
 export function PropertyStyling({ property, onSave }: PropertyStylingProps) {

@@ -110,7 +110,7 @@ export default function FloorplanViewer({ propertyId, floorplanAsset, onClose }:
     
     // Draw initial canvas
     drawCanvas();
-  }, [isImageLoaded]);
+  }, [isImageLoaded, drawCanvas]);
 
   // Add debug logging for floorplan data loading
   useEffect(() => {
@@ -315,13 +315,11 @@ export default function FloorplanViewer({ propertyId, floorplanAsset, onClose }:
     e.preventDefault();
   };
 
-  // Add effect to redraw canvas when state changes
+  // Update canvas when zoom or pan changes
   useEffect(() => {
-    if (isImageLoaded) {
-      console.log('FloorplanViewer - State changed, redrawing canvas...');
-      drawCanvas();
-    }
-  }, [drawCanvas, isImageLoaded, pan, zoom, floorplanData]);
+    console.log('FloorplanViewer - Zoom or pan changed, redrawing canvas');
+    drawCanvas();
+  }, [zoom, pan, floorplanData, drawCanvas]);
 
   if (loading) {
     return (

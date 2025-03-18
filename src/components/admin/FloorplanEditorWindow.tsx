@@ -536,7 +536,7 @@ export default function FloorplanEditorWindow({
     }
 
     ctx.restore();
-  }, [imageSize, zoom, pan, floorplanAsset.storage_path, mode, cropArea, scalePoints, scale, regions, isDrawing, currentRegion, lastMousePos]);
+  }, [imageSize, zoom, pan, mode, cropArea, scalePoints, scale, regions, isDrawing, currentRegion, lastMousePos]);
 
   // Load existing floorplan data
   useEffect(() => {
@@ -605,7 +605,13 @@ export default function FloorplanEditorWindow({
       
       drawCanvas();
     };
-  }, [floorplanAsset.storage_path]);
+
+    img.src = floorplanAsset.storage_path;
+    
+    return () => {
+      img.onload = null;
+    };
+  }, [floorplanAsset.storage_path, drawCanvas]);
 
   // Update canvas size on container resize
   useEffect(() => {
