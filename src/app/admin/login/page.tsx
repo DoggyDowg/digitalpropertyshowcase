@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 import { Eye, EyeOff } from 'lucide-react'
@@ -12,7 +11,6 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
   const supabase = createClientComponentClient()
 
   const handleLogin = async (e: React.FormEvent) => {

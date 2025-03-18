@@ -67,10 +67,6 @@ const nextConfig = {
   reactStrictMode: false,
   // Add transpilePackages for Three.js and PDF.js
   transpilePackages: ['three', 'pdfjs-dist'],
-  // Enable experimental features that support middleware
-  experimental: {
-    instrumentationHook: true,
-  }
 }
 
 module.exports = nextConfig 

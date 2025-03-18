@@ -1,0 +1,162 @@
+/* Base styles for all text links */
+.textLink {
+  position: relative;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Underline Reveal Effect */
+.hoverEffectUnderline {
+  position: relative;
+}
+
+.hoverEffectUnderline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.hoverEffectUnderline:hover::after {
+  width: 100%;
+}
+
+/* Slide Background Effect */
+.hoverEffectSlide {
+  position: relative;
+  padding: 8px 12px;
+  z-index: 1;
+  transition: color 0.3s ease;
+  border-radius: 8px;
+}
+
+.hoverEffectSlide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: currentColor;
+  opacity: 0.1;
+  transition: width 0.3s ease;
+  z-index: -1;
+  border-radius: 8px;
+}
+
+.hoverEffectSlide:hover::before {
+  width: 100%;
+  opacity: 0.15;
+}
+
+/* Fade Effect */
+.hoverEffectFade {
+  opacity: 0.8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.hoverEffectFade:hover {
+  opacity: 1;
+  color: var(--brand-accent);
+}
+
+/* Scale Transform Effect */
+.hoverEffectScale {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  transform: scale(1);
+  transition: transform 0.4s;
+}
+
+.hoverEffectScale::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  opacity: 0;
+  border-radius: 8px;
+  transform: scale(0);
+  transition: all 0.4s;
+}
+
+.hoverEffectScale > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hoverEffectScale:hover {
+  transform: scale(1.05);
+}
+
+.hoverEffectScale:hover::before {
+  opacity: 0.2;
+  transform: scale(1);
+}
+
+/* Glow Effect */
+.hoverEffectGlow {
+  padding: 8px 12px;
+  position: relative;
+  transition: text-shadow 0.5s ease-in-out;
+}
+
+.hoverEffectGlow:hover {
+  color: var(--brand-accent);
+  text-shadow: 
+    0 0 10px rgba(var(--brand-accent-rgb), 1),
+    0 0 20px rgba(var(--brand-accent-rgb), 1),
+    0 0 30px rgba(var(--brand-accent-rgb), 1),
+    0 0 40px rgba(var(--brand-accent-rgb), 1);
+}
+
+/* Background Pulse Effect */
+.hoverEffectBackground {
+  padding: 8px 12px;
+  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.hoverEffectBackground::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background-color: currentColor;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.hoverEffectBackground:hover::before {
+  opacity: 0.1;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0.1;
+  }
+} 
