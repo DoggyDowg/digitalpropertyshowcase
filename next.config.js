@@ -1,5 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io'
+      },
+      {
+        protocol: 'https',
+        hostname: 'urguvlckmcehdiibsiwf.supabase.co',
+        port: '',
+        pathname: '/**',
+      }
+    ],
+    domains: [
+      'urguvlckmcehdiibsiwf.supabase.co',
+      'instagram.fmnl17-1.fna.fbcdn.net',
+      'scontent.cdninstagram.com',
+      'scontent-lhr8-1.cdninstagram.com',
+      'scontent-lhr8-2.cdninstagram.com',
+      'instagram.fcgk30-1.fna.fbcdn.net',
+      'instagram.fmnl17-2.fna.fbcdn.net',
+      'digitalpropertyshowcase.com',
+      'www.digitalpropertyshowcase.com'
+    ],
+  },
   webpack: (config, { isServer }) => {
     // Handle GLB files
     config.module.rules.push({
@@ -40,19 +65,12 @@ const nextConfig = {
   },
   // Disable strict mode temporarily while debugging
   reactStrictMode: false,
-  // Configure image domains if needed
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'urguvlckmcehdiibsiwf.supabase.co',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-  },
   // Add transpilePackages for Three.js and PDF.js
-  transpilePackages: ['three', 'pdfjs-dist']
+  transpilePackages: ['three', 'pdfjs-dist'],
+  // Enable experimental features that support middleware
+  experimental: {
+    instrumentationHook: true,
+  }
 }
 
 module.exports = nextConfig 
