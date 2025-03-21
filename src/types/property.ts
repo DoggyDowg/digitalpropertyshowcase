@@ -1,5 +1,25 @@
 import type { PropertyAssets } from './assets';
 
+/**
+ * Defines the available hover effect types for text links in property showcases.
+ * 
+ * This type is used across the application to ensure type safety when setting
+ * and utilizing hover effects. It's referenced by:
+ * 
+ * 1. The property data model (database schema)
+ * 2. The PropertyStyling component (admin interface)
+ * 3. The StyleFixer component (dynamic CSS generation)
+ * 4. The HoverEffects.module.css file (admin preview styles)
+ * 
+ * To add a new hover effect:
+ * 1. Add the new effect name to this type definition
+ * 2. Add the effect to the HOVER_EFFECTS array in PropertyStyling.tsx
+ * 3. Add CSS for the effect in HoverEffects.module.css
+ * 4. Implement the dynamic CSS in StyleFixer
+ */
+export type HoverEffectType = 'scale' | 'underline' | 'slide' | 'fade' | 'glow';
+export type HeaderStyleType = 'light' | 'dark';
+
 export interface PropertyFeature {
   rank: number
   feature: string
@@ -148,6 +168,14 @@ export interface Property {
   }
   template_version: string
   content: PropertyContent
+  styling?: {
+    textLinks?: {
+      hoverEffect: HoverEffectType
+    }
+    header?: {
+      style: HeaderStyleType 
+    }
+  }
   agency_settings?: {
     branding: {
       logo: {

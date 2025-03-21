@@ -52,6 +52,49 @@ interface PropertyType {
   };
   local_timezone: string;
   maps_address?: string | null;
+  styling?: {
+    textLinks?: {
+      hoverEffect?: 'scale' | 'underline' | 'slide' | 'fade' | 'glow';
+    };
+  };
+}
+
+// DynamicLink component with improved hover styling
+function DynamicLink({ 
+  href, 
+  children, 
+  className = "", 
+  property, 
+  onClick 
+}: { 
+  href: string; 
+  children: React.ReactNode; 
+  className?: string; 
+  property: PropertyType;
+  onClick?: () => void;
+}) {
+  // Get hover effect from property styling
+  const hoverEffect = property.styling?.textLinks?.hoverEffect || 'scale';
+  
+  // Use CSS classes for hover effects instead of inline styles
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${styles.link} ${className} dynamic-hover ${hoverEffect}-hover`}
+      onClick={onClick}
+      data-hover="true"
+      data-hover-effect={hoverEffect}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {children}
+    </a>
+  );
 }
 
 export function MoreInfo({ property }: MoreInfoProps) {
@@ -81,6 +124,18 @@ export function MoreInfo({ property }: MoreInfoProps) {
     title: string;
     location: string;
   } | null>(null)
+
+  // Get hover effect from property styling for debugging
+  const hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
+  
+  // Debug log the hover effect
+  useEffect(() => {
+    console.log('MoreInfo Component:', {
+      hoverEffect,
+      propertyId: property.id,
+      hasStyling: !!property.styling
+    });
+  }, [property.id, property.styling, hoverEffect]);
 
   // Set up demo content if needed
   useEffect(() => {
@@ -431,11 +486,10 @@ export function MoreInfo({ property }: MoreInfoProps) {
                 <ul className="space-y-3 max-w-md mx-auto">
                   {displayDocuments?.filter((doc) => doc.label && doc.url).map((doc) => (
                     <li key={doc.label} className="flex justify-center">
-                      <a
+                      <DynamicLink
                         href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`${styles.link} text-brand-dark hover:text-brand-dark/80 hover:translate-x-1 transition-all duration-150 inline-flex items-center cursor-pointer text-sm`}
+                        property={property}
+                        className="text-brand-dark inline-flex items-center cursor-pointer text-sm"
                       >
                         <svg
                           className="w-4 h-4 mr-2 flex-shrink-0"
@@ -451,7 +505,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
                           />
                         </svg>
                         {doc.label}
-                      </a>
+                      </DynamicLink>
                     </li>
                   ))}
                 </ul>

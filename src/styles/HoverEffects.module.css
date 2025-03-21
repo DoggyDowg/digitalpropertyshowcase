@@ -1,0 +1,134 @@
+/**
+ * HOVER EFFECTS MODULE CSS
+ * 
+ * This file provides CSS classes for the admin interface to preview the various
+ * hover effects a user can select for their property showcase.
+ * 
+ * HOW IT WORKS:
+ * 1. These styles are ONLY used in the admin interface (PropertyStyling.tsx) to show previews
+ * 2. The actual hover effects on the property showcase are generated dynamically by the StyleFixer component
+ * 3. Any changes made here should be mirrored in the StyleFixer component for consistency
+ * 
+ * INTEGRATION POINTS:
+ * - The HOVER_EFFECTS array in PropertyStyling.tsx references these class names
+ * - Each effect has a matching type in HoverEffectType from src/types/property.ts
+ * - StyleFixer in PropertyClientWrapper.tsx uses the selected effect to generate matching CSS
+ * 
+ * CREATING NEW EFFECTS:
+ * 1. Add a new CSS class here prefixed with .hoverEffect (e.g., .hoverEffectNewEffect)
+ * 2. Add the effect to HoverEffectType in property.ts
+ * 3. Add a matching entry to HOVER_EFFECTS array in PropertyStyling.tsx
+ * 4. Implement the actual effect in StyleFixer
+ */
+
+/* Text Link Base Style */
+.textLink {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  padding: 2px 0;
+  transition: all 0.3s ease;
+}
+
+/* Underline Hover Effect */
+.hoverEffectUnderline {
+  position: relative;
+}
+
+.hoverEffectUnderline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.hoverEffectUnderline:hover::after {
+  width: 100%;
+}
+
+/* Slide Background Effect */
+.hoverEffectSlide {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 12px;
+  margin: -8px -12px;
+  border-radius: 4px;
+  display: inline-block;
+  z-index: 1;
+}
+
+.hoverEffectSlide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 100%;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  opacity: 0.15;
+  transition: right 0.3s ease;
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.hoverEffectSlide:hover::before {
+  right: 0;
+}
+
+/* Fade Effect */
+.hoverEffectFade {
+  opacity: 0.8;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.hoverEffectFade:hover {
+  opacity: 1;
+  color: #3b82f6;
+}
+
+/* Scale Transform Effect - SHIFT animation from bottom */
+.hoverEffectScale {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 12px;
+  margin: -8px -12px;
+  border-radius: 4px;
+  display: inline-block;
+  z-index: 1;
+}
+
+.hoverEffectScale::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  border-radius: 4px;
+  opacity: 0.15;
+  z-index: -1;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.38, 1.46), opacity 0.2s;
+}
+
+.hoverEffectScale:hover::before {
+  transform: translateY(0);
+  opacity: 0.15;
+}
+
+/* Glow Effect */
+.hoverEffectGlow {
+  transition: text-shadow 0.3s ease, color 0.3s ease;
+}
+
+.hoverEffectGlow:hover {
+  color: #3b82f6;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* End of file */ 

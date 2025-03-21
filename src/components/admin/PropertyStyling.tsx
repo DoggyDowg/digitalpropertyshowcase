@@ -1,0 +1,258 @@
+'use client'
+
+import { useState } from 'react'
+import type { Property, HoverEffectType, HeaderStyleType } from '@/types/property'
+import styles from '@/styles/HoverEffects.module.css'
+
+/**
+ * Interface defining the structure of a hover effect entry
+ * Used for displaying and selecting hover effects in the admin interface
+ */
+interface HoverEffect {
+  id: HoverEffectType      // Must match a value in the HoverEffectType enum
+  name: string             // Display name shown in the admin UI
+  description: string      // Brief description of the effect
+  preview: string          // Text used for the live preview
+}
+
+/**
+ * HOVER_EFFECTS Configuration Array
+ * 
+ * This array defines all available hover effects that can be selected in the admin UI.
+ * It provides the interface between the admin UI and the actual CSS implementations.
+ * 
+ * HOW IT WORKS:
+ * 1. Each entry represents a selectable hover effect option in the admin interface
+ * 2. The 'id' field must match a valid value in the HoverEffectType type in property.ts
+ * 3. Each effect needs a corresponding CSS class in HoverEffects.module.css for the preview
+ * 4. The StyleFixer component in PropertyClientWrapper.tsx implements the actual effect CSS
+ * 
+ * ADDING A NEW EFFECT:
+ * 1. Add a new entry to this array with a unique 'id' that matches your new HoverEffectType
+ * 2. Create the CSS for the preview in HoverEffects.module.css
+ * 3. Implement the actual effect in the StyleFixer component
+ */
+const HOVER_EFFECTS: HoverEffect[] = [
+  {
+    id: 'underline',
+    name: 'Underline Reveal',
+    description: 'Clean and minimal animated underline that reveals from left to right',
+    preview: 'Features'
+  },
+  {
+    id: 'slide',
+    name: 'Slide Background',
+    description: 'Smooth background color transition that slides in from left',
+    preview: 'Lifestyle'
+  },
+  {
+    id: 'fade',
+    name: 'Fade Effect',
+    description: 'Subtle opacity and color transition on hover',
+    preview: 'Neighbourhood'
+  },
+  {
+    id: 'scale',
+    name: 'Scale Transform',
+    description: 'Elegant fill animation that slides up from the bottom',
+    preview: 'Info'
+  },
+  {
+    id: 'glow',
+    name: 'Soft Glow',
+    description: 'Elegant glowing effect that radiates from the text',
+    preview: 'Contact'
+  }
+]
+
+/**
+ * PropertyStyling Component
+ * 
+ * This component provides the admin interface for customizing the visual styling
+ * of a property showcase, including hover effects for text links.
+ * 
+ * FUNCTIONALITY:
+ * 1. Displays selectable hover effect options with live previews
+ * 2. Allows selection of header style (light/dark)
+ * 3. Persists styling choices to the property record in the database
+ * 
+ * INTEGRATION POINTS:
+ * - Reads from and writes to the property.styling object
+ * - Uses HoverEffects.module.css for the preview styling
+ * - Selected effects are applied by StyleFixer component in the property showcase
+ */
+interface PropertyStylingProps {
+  property: Property
+  onSave: (settings: any) => Promise<void>
+}
+
+export function PropertyStyling({ property, onSave }: PropertyStylingProps) {
+  const [selectedEffect, setSelectedEffect] = useState<HoverEffectType>(
+    property.styling?.textLinks?.hoverEffect || 'scale'
+  )
+  const [selectedHeaderStyle, setSelectedHeaderStyle] = useState<HeaderStyleType>(
+    property.styling?.header?.style || 'light'
+  )
+  const [isSaving, setIsSaving] = useState(false)
+
+  // Handle effect change
+  const handleEffectChange = async (effectId: HoverEffectType) => {
+    setSelectedEffect(effectId)
+    setIsSaving(true)
+    
+    try {
+      // Create new styling object, preserving any existing styling settings
+      const updatedStyling = {
+        ...property.styling,
+        textLinks: {
+          ...property.styling?.textLinks,
+          hoverEffect: effectId
+        }
+      }
+
+      await onSave({
+        styling: updatedStyling
+      })
+    } catch (error) {
+      console.error('Error saving hover effect:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Handle header style change
+  const handleHeaderStyleChange = async (style: HeaderStyleType) => {
+    setSelectedHeaderStyle(style)
+    setIsSaving(true)
+    
+    try {
+      // Create new styling object, preserving any existing styling settings
+      const updatedStyling = {
+        ...property.styling,
+        header: {
+          ...property.styling?.header,
+          style
+        }
+      }
+
+      await onSave({
+        styling: updatedStyling
+      })
+    } catch (error) {
+      console.error('Error saving header style:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-12">
+      {/* Header Style Section */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Header Style</h2>
+        <p className="text-gray-600 mb-6">
+          Choose the color scheme for the header. This affects the background color and text/logo colors.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Light Header Option */}
+          <div
+            onClick={() => handleHeaderStyleChange('light')}
+            className={`
+              p-6 border rounded-lg cursor-pointer transition-all
+              ${selectedHeaderStyle === 'light' 
+                ? 'border-blue-500 bg-blue-50' 
+                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+              }
+            `}
+          >
+            <h3 className="font-medium text-lg mb-2">Light Header</h3>
+            <p className="text-gray-600 text-sm mb-4">Light background with dark text and logo</p>
+            
+            {/* Preview */}
+            <div className="bg-white border rounded p-4 flex items-center justify-center">
+              <div className="text-gray-900">Light Header Preview</div>
+            </div>
+          </div>
+
+          {/* Dark Header Option */}
+          <div
+            onClick={() => handleHeaderStyleChange('dark')}
+            className={`
+              p-6 border rounded-lg cursor-pointer transition-all
+              ${selectedHeaderStyle === 'dark' 
+                ? 'border-blue-500 bg-blue-50' 
+                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+              }
+            `}
+          >
+            <h3 className="font-medium text-lg mb-2">Dark Header</h3>
+            <p className="text-gray-600 text-sm mb-4">Dark background with light text and logo</p>
+            
+            {/* Preview */}
+            <div className="bg-gray-900 border rounded p-4 flex items-center justify-center">
+              <div className="text-white">Dark Header Preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Text Link Hover Effects Section */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Text Link Hover Effects</h2>
+        <p className="text-gray-600 mb-6">
+          Choose how text links animate when users hover over them. Changes will apply to all text links in the property showcase.
+        </p>
+
+        {/* Effect Selection Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {HOVER_EFFECTS.map((effect) => (
+            <div
+              key={effect.id}
+              onClick={() => handleEffectChange(effect.id)}
+              className={`
+                p-6 border rounded-lg cursor-pointer transition-all
+                ${selectedEffect === effect.id 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                }
+              `}
+            >
+              <h3 className="font-medium text-lg mb-2">{effect.name}</h3>
+              <p className="text-gray-600 text-sm mb-4">{effect.description}</p>
+              
+              {/* Preview Link */}
+              <div className="p-4 bg-white rounded border">
+                <span className={`${styles.textLink} ${styles[`hoverEffect${effect.id.charAt(0).toUpperCase() + effect.id.slice(1)}`]}`}>
+                  {effect.preview}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Live Preview Section */}
+        <div className="mt-8 p-6 bg-gray-50 rounded-lg">
+          <h3 className="text-lg font-medium mb-4">Live Preview</h3>
+          <div className="flex gap-6">
+            {['Features', 'Lifestyle', 'Neighbourhood'].map((text) => (
+              <span
+                key={text}
+                className={`${styles.textLink} ${styles[`hoverEffect${selectedEffect.charAt(0).toUpperCase() + selectedEffect.slice(1)}`]}`}
+              >
+                {text}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Saving Indicator */}
+      {isSaving && (
+        <div className="text-sm text-blue-600">
+          Saving changes...
+        </div>
+      )}
+    </div>
+  )
+} 
