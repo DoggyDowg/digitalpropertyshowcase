@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useGesture } from '@/hooks/useGesture'
+import { useProperty } from '@/contexts/PropertyContext'
 import styles from '@/styles/HeaderLink.module.css'
 
 interface HeaderLinkProps {
@@ -10,16 +11,49 @@ interface HeaderLinkProps {
   children: React.ReactNode
   className?: string
   onClick?: React.MouseEventHandler<HTMLAnchorElement>
+  isDarkHeader?: boolean
 }
 
-export function HeaderLink({ href, children, className = '', onClick }: HeaderLinkProps) {
+export function HeaderLink({ 
+  href, 
+  children, 
+  className = '', 
+  onClick,
+  isDarkHeader = false
+}: HeaderLinkProps) {
   const [isPressed, setIsPressed] = useState(false)
+  
+  // Try to get property from context, but don't crash if it's not available
+  let hoverEffect = 'scale'; // Default fallback
+  try {
+    const { property } = useProperty();
+    // Get hover effect preference from property styling with fallback
+    hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
+    
+    // Debug for Vercel preview
+    console.log('HeaderLink received property from context:', {
+      propertyId: property?.id,
+      hoverEffect,
+      hasPropertyObject: !!property
+    });
+  } catch (error) {
+    console.error('Error accessing property context in HeaderLink:', error);
+    // Continue with default hoverEffect
+  }
+  
+  // Add debugging
+  useEffect(() => {
+    console.log('HeaderLink Component:', {
+      href,
+      isDarkHeader,
+      hoverEffect,
+    })
+  }, [href, isDarkHeader, hoverEffect])
   
   const gestureRef = useGesture({
     onPress: () => setIsPressed(true),
     onPressUp: () => setIsPressed(false),
     onTap: () => {
-      // Smooth scroll for anchor links
       if (href.startsWith('#')) {
         const element = document.querySelector(href)
         if (element) {
@@ -31,7 +65,7 @@ export function HeaderLink({ href, children, className = '', onClick }: HeaderLi
 
   const isHashLink = href.startsWith('#')
 
-  const internalHandleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isHashLink) {
       e.preventDefault()
       const element = document.querySelector(href)
@@ -39,40 +73,44 @@ export function HeaderLink({ href, children, className = '', onClick }: HeaderLi
         element.scrollIntoView({ behavior: 'smooth' })
       }
     }
-  }
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    internalHandleClick(e)
     if (onClick) {
       onClick(e)
     }
   }
 
-  const linkClassName = `${styles.link} ${className || ''}`
+  // Set base classes for all links, including the hover effect class
+  const linkClassName = `${styles.link} ${className} dynamic-hover ${hoverEffect}-hover`
 
+  // Hash link implementation
   if (isHashLink) {
     return (
-      <a href={href} className={linkClassName} onClick={handleClick}>
+      <a 
+        href={href} 
+        className={linkClassName}
+        onClick={handleClick}
+        data-hover="true"
+        data-in-header="true"
+        data-dark-header={isDarkHeader ? 'true' : 'false'}
+        data-hover-effect={hoverEffect}
+      >
         {children}
       </a>
     )
   }
 
+  // Regular link implementation
   return (
     <Link
       href={href}
-      ref={(node: HTMLAnchorElement | null) => { gestureRef.current = node as HTMLAnchorElement | null; }}
-      className={`
-        relative text-brand-light hover:text-brand-light/80 transition-colors
-        after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full 
-        after:h-[2px] after:bg-brand-light after:scale-x-0 after:origin-right
-        after:transition-transform hover:after:scale-x-100 hover:after:origin-left
-        active:text-brand-light/60
-        ${isPressed ? 'scale-95' : 'scale-100'}
-        transition-transform duration-150
-        ${linkClassName}
-      `}
+      ref={(node: HTMLAnchorElement | null) => { 
+        gestureRef.current = node as HTMLAnchorElement | null
+      }}
+      className={`${linkClassName} ${isPressed ? 'scale-95' : 'scale-100'} transition-transform duration-150`}
       onClick={onClick}
+      data-hover="true"
+      data-in-header="true"
+      data-dark-header={isDarkHeader ? 'true' : 'false'}
+      data-hover-effect={hoverEffect}
     >
       {children}
     </Link>

@@ -49,11 +49,24 @@ import DynamicFavicon from '@/components/shared/DynamicFavicon'
  * 4. Add the CSS preview in HoverEffects.module.css for the admin UI
  */
 function StyleFixer({ property }: { property: Property }) {
+  // Add state to track hydration status
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Run once after hydration
   useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  
+  useEffect(() => {
+    // Skip during SSR or before hydration
+    if (!isHydrated || typeof window === 'undefined') {
+      return;
+    }
+    
     // Get the hover effect setting, with 'scale' as the default
     const hoverEffect = property.styling?.textLinks?.hoverEffect || 'scale';
     
-    console.log('StyleFixer: Applying creative hover effect:', hoverEffect);
+    console.log('StyleFixer: Applying creative hover effect:', hoverEffect, 'isHydrated:', isHydrated);
     
     // Create a style element to inject CSS
     const styleEl = document.createElement('style');
@@ -76,6 +89,16 @@ function StyleFixer({ property }: { property: Property }) {
         z-index: 1;
         transition: color 0.3s;
         text-decoration: none;
+      }
+    `;
+    
+    // Specific debug fix for Vercel preview - ensure all header links get the class
+    css += `
+      /* Ensure all header links are targeted */
+      header a {
+        /* This extra style ensures CSS specificity for header links */
+        position: relative !important;
+        z-index: 1 !important;
       }
     `;
     
@@ -253,7 +276,7 @@ function StyleFixer({ property }: { property: Property }) {
         styleEl.parentNode.removeChild(styleEl);
       }
     };
-  }, [property.styling?.textLinks?.hoverEffect, property.styling]);
+  }, [property.styling?.textLinks?.hoverEffect, property.styling, isHydrated]);
   
   return null;
 }
