@@ -13,6 +13,7 @@ import {
   PropertyMoreInfo,
   PropertyDeployment
 } from '@/components/admin'
+import { PropertyStyling } from '@/components/admin/PropertyStyling'
 import { templateManager } from '@/lib/templateManager'
 import { toast } from 'react-hot-toast'
 import { OfficeSelect } from '@/components/shared/OfficeSelect'
@@ -44,6 +45,14 @@ const initialProperty: Omit<Property, 'id'> = {
   deployment_url: null,
   maps_address: null,
   local_timezone: 'UTC',
+  styling: {
+    textLinks: {
+      hoverEffect: 'scale'
+    },
+    header: {
+      style: 'light'
+    }
+  },
   footer_links: [
     { id: 'home', title: 'Visit Us', url: '' },
     { id: 'phone', title: 'Call Us', url: '' },
@@ -102,7 +111,7 @@ const initialProperty: Omit<Property, 'id'> = {
   }
 }
 
-type Tab = 'content' | 'visual_assets' | 'viewings' | 'locations' | 'more_info' | 'deployment'
+type Tab = 'content' | 'visual_assets' | 'viewings' | 'locations' | 'more_info' | 'deployment' | 'styling'
 
 function PropertyEditContent({ id }: { id: string }) {
   const router = useRouter()
@@ -213,6 +222,16 @@ function PropertyEditContent({ id }: { id: string }) {
             }
           }
           
+          // Initialize styling with default values if missing
+          const styling = {
+            textLinks: {
+              hoverEffect: data.styling?.textLinks?.hoverEffect || 'scale'
+            },
+            header: {
+              style: data.styling?.header?.style || 'light'
+            }
+          }
+          
           // Ensure all default footer links exist
           const defaultFooterLinks: FooterLink[] = [
             { id: 'home', title: 'Visit Us', url: '' },
@@ -234,6 +253,7 @@ function PropertyEditContent({ id }: { id: string }) {
             ...data, 
             content, 
             metadata,
+            styling,
             footer_links: mergedFooterLinks,
             agency_settings: data.agency_settings,
             updated_at: new Date().toISOString() // Force refresh
@@ -411,6 +431,7 @@ function PropertyEditContent({ id }: { id: string }) {
         agent_id: property.agent_id,
         content: property.content,
         metadata: property.metadata,
+        styling: property.styling, // Add styling property
         is_demo: property.is_demo,
         template_name: property.template_name,
         maps_address: property.maps_address,
@@ -752,8 +773,14 @@ function PropertyEditContent({ id }: { id: string }) {
         isLoaded
       });
       
+      // MIGRATION NOTICE: This code uses the legacy Places Autocomplete API.
+      // As of March 1st, 2025, google.maps.places.Autocomplete will not be available to new customers.
+      // We have implemented a transition strategy in the GooglePlacesAutocomplete component.
+      // To migrate, set the useNewApi flag to true on the GooglePlacesAutocomplete component.
+      
+      // Create autocomplete instance
       const autocomplete = new google.maps.places.Autocomplete(autocompleteInputRef.current, {
-        fields: ['address_components', 'formatted_address', 'geometry'],
+        fields: ['address_components', 'formatted_address', 'geometry', 'utc_offset_minutes'],
         types: ['address']
       });
 
@@ -766,6 +793,7 @@ function PropertyEditContent({ id }: { id: string }) {
           return;
         }
 
+        // Handle both old and new property naming formats during transition
         const formattedAddress = place.formatted_address || '';
         
         // Extract suburb and state from address components
@@ -773,19 +801,24 @@ function PropertyEditContent({ id }: { id: string }) {
         let state = '';
         let streetAddress = '';
         
-        place.address_components?.forEach((component) => {
+        // Handle both old and new property naming formats during transition
+        const addressComponents = place.address_components || [];
+        
+        addressComponents.forEach((component) => {
           const types = component.types;
+          const longName = component.long_name || '';
+          
           if (types.includes('street_number')) {
-            streetAddress = component.long_name;
+            streetAddress = longName;
           }
           if (types.includes('route')) {
-            streetAddress = streetAddress ? `${streetAddress} ${component.long_name}` : component.long_name;
+            streetAddress = streetAddress ? `${streetAddress} ${longName}` : longName;
           }
           if (types.includes('locality') || types.includes('sublocality')) {
-            suburb = component.long_name;
+            suburb = longName;
           }
           if (types.includes('administrative_area_level_1')) {
-            state = component.long_name;
+            state = longName;
           }
         });
 
@@ -893,6 +926,7 @@ function PropertyEditContent({ id }: { id: string }) {
     { id: 'viewings', label: 'Viewings' },
     { id: 'locations', label: 'Locations' },
     { id: 'more_info', label: 'More Info' },
+    { id: 'styling', label: 'Styling' },
     { id: 'deployment', label: 'Deployment' }
   ]
 
@@ -1017,6 +1051,8 @@ function PropertyEditContent({ id }: { id: string }) {
                           }));
                         }}
                         error={!!validationErrors.street_address}
+                        // Enable this flag when you're ready to migrate to the new Google Maps API
+                        // useNewApi={true}
                       />
                     </div>
                     <div className="col-span-3">
@@ -2127,6 +2163,30 @@ function PropertyEditContent({ id }: { id: string }) {
               ref={moreInfoRef}
               propertyId={id}
               onSave={handleMoreInfoSave}
+            />
+          </div>
+        )}
+
+        {activeTab === 'styling' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <PropertyStyling 
+              property={property}
+              onSave={async (stylingUpdates) => {
+                try {
+                  setProperty(prev => ({
+                    ...prev,
+                    styling: {
+                      ...prev.styling,
+                      ...stylingUpdates.styling
+                    }
+                  }));
+                  await handleSave(true);
+                  toast.success('Styling settings saved successfully');
+                } catch (error) {
+                  console.error('Error saving styling settings:', error);
+                  toast.error('Failed to save styling settings');
+                }
+              }}
             />
           </div>
         )}

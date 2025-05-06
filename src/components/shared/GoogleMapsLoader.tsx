@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader } from '@googlemaps/js-api-loader'
 
+// Google Maps API key from environment variables
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
 
 interface GoogleMapsLoaderState {
@@ -10,31 +10,59 @@ interface GoogleMapsLoaderState {
   loadError: Error | null
 }
 
-export function useGoogleMaps() {
+declare global {
+  interface Window {
+    initMap?: () => void;
+  }
+}
+
+export function useGoogleMaps(useBeta = false) {
   const [state, setState] = useState<GoogleMapsLoaderState>({
     isLoaded: false,
     loadError: null,
   })
 
   useEffect(() => {
-    const loader = new Loader({
-      apiKey: GOOGLE_MAPS_API_KEY,
-      version: 'weekly',
-      libraries: ['places', 'geometry'],
-    })
+    // Skip if already loaded
+    if (typeof window !== 'undefined' && 
+        window.google && 
+        typeof window.google.maps !== 'undefined' && 
+        'importLibrary' in window.google.maps) {
+      setState({ isLoaded: true, loadError: null })
+      return
+    }
 
-    loader
-      .load()
-      .then(() => {
-        setState({ isLoaded: true, loadError: null })
-      })
-      .catch((err) => {
-        setState({ isLoaded: false, loadError: err })
-      })
-  }, [])
+    // Define the callback function
+    window.initMap = () => {
+      setState({ isLoaded: true, loadError: null })
+    }
 
-  return {
-    isLoaded: state.isLoaded,
-    loadError: state.loadError,
-  }
+    // Create script element
+    const script = document.createElement('script')
+    script.id = 'google-maps-script'
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&loading=async&callback=initMap&libraries=places${useBeta ? '&v=beta' : ''}`
+    script.async = true
+    script.defer = true
+
+    // Handle errors
+    script.onerror = () => {
+      setState({
+        isLoaded: false,
+        loadError: new Error('Failed to load Google Maps API'),
+      })
+    }
+
+    // Add script to DOM
+    document.head.appendChild(script)
+
+    // Cleanup on unmount
+    return () => {
+      // Remove the global callback
+      if (window.initMap) {
+        delete window.initMap
+      }
+    }
+  }, [useBeta])
+
+  return state
 } 
