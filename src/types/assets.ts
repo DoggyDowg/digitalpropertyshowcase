@@ -25,6 +25,9 @@ export interface Asset {
   // Video specific metadata
   video_thumbnail_path?: string;
   video_duration?: number;
+  source_type?: 'upload' | 'youtube';
+  external_url?: string;
+  video_type?: 'hero' | 'promo';
   
   // Image specific metadata
   width?: number;

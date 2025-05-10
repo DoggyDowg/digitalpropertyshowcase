@@ -178,7 +178,7 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
 
   // Show empty state
   if (!loading && (!images || images.length === 0)) {
-    console.log('No images to display')
+    // console.log('No images to display')
     return null
   }
 

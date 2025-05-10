@@ -59,19 +59,19 @@ export function YourLifestyle({ property }: YourLifestyleProps) {
 
   // Debug logs
   useEffect(() => {
-    console.log('Property suburb:', property.suburb)
-    console.log('Hashtags:', ['RealEstate', property.suburb?.replace(/\s+/g, '') || 'DreamHome'])
+    // console.log('Property suburb:', property.suburb)
+    // console.log('Hashtags:', ['RealEstate', property.suburb?.replace(/\s+/g, '') || 'DreamHome'])
   }, [property.suburb])
 
   // Debug logs for social share props
   useEffect(() => {
-    console.log('=== YourLifestyle Props to SocialShare ===');
-    console.log('Property Name:', property.name);
-    console.log('Property Suburb:', property.suburb);
-    console.log('Property OG Description:', property.content?.og?.description);
-    console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : '');
-    console.log('Footer Image:', footerImageUrl);
-    console.log('========================================');
+    // console.log('=== YourLifestyle Props to SocialShare ===');
+    // console.log('Property Name:', property.name);
+    // console.log('Property Suburb:', property.suburb);
+    // console.log('Property OG Description:', property.content?.og?.description);
+    // console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : '');
+    // console.log('Footer Image:', footerImageUrl);
+    // console.log('========================================');
   }, [property.name, property.suburb, property.content?.og?.description, footerImageUrl]);
 
   return (

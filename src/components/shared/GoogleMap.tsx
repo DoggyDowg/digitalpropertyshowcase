@@ -200,82 +200,94 @@ export function GoogleMap({
       return;
     }
 
-    console.log('Setting up admin click handlers with isAddingLandmark:', isAddingLandmark);
+    console.log('[GoogleMap] Setting up click handlers with isAddingLandmark:', isAddingLandmark);
+    
+    // This is crucial - make sure clickable icons are enabled for landmark selection
+    if (map) {
+      map.setOptions({
+        clickableIcons: true,
+        // Ensure all Google Maps UI elements are visible
+        disableDefaultUI: false,
+        zoomControl: true,
+        streetViewControl: true,
+        scaleControl: true,
+        mapTypeControl: true,
+        fullscreenControl: true
+      });
+      console.log('[GoogleMap] Map options updated to enable clickable icons');
+    }
+    
+    // Remove any existing listeners to prevent duplicates
+    google.maps.event.clearListeners(map, 'click');
 
     // Add click listener for POIs
     const clickListener = map.addListener('click', (e: google.maps.MapMouseEvent & { placeId?: string }) => {
-      console.log('Map clicked:', e);
       const placeId = e.placeId;
-      console.log('Place ID from click:', placeId);
+      console.log('[GoogleMap] Map clicked:', {
+        hasPlaceId: !!placeId,
+        placeId,
+        lat: e.latLng?.lat(),
+        lng: e.latLng?.lng(),
+        isAddingLandmark
+      });
       
       if (isAddingLandmark && placeId) {
-        console.log('Getting place details for:', placeId);
-        placesService.getDetails(
-          {
-            placeId: placeId,
-            fields: [
-              'name',
-              'geometry',
-              'formatted_address',
-              'types',
-              'place_id',
-              'photos',
-              'rating',
-              'user_ratings_total',
-              'price_level'
-            ]
-          },
-          async (place, status) => {
-            console.log('Place details response:', { status, place });
-            if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-              try {
-                if (onAddLandmark) {
-                  onAddLandmark(place);
-                } else if (onPlaceClick) {
-                  await onPlaceClick(place);
+        console.log('[GoogleMap] Processing landmark click with placeId:', placeId);
+        
+        try {
+          // Use a more comprehensive fields list to ensure we get complete place data
+          placesService.getDetails(
+            {
+              placeId: placeId,
+              fields: [
+                'name',
+                'geometry',
+                'formatted_address',
+                'types',
+                'place_id',
+                'photos',
+                'rating',
+                'user_ratings_total',
+                'price_level',
+                'vicinity'
+              ]
+            },
+            (place, status) => {
+              console.log('[GoogleMap] Place details response:', { 
+                status, 
+                placeName: place?.name,
+                placeFormatted: place?.formatted_address
+              });
+              
+              if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                try {
+                  console.log('[GoogleMap] Calling onAddLandmark with place:', place);
+                  
+                  if (onAddLandmark) {
+                    onAddLandmark(place);
+                  } else {
+                    console.warn('[GoogleMap] onAddLandmark callback is missing');
+                  }
+                } catch (callbackError) {
+                  console.error('[GoogleMap] Error in onAddLandmark callback:', callbackError);
                 }
-              } catch (err) {
-                console.error('Error handling place click:', err);
+              } else {
+                console.error('[GoogleMap] Failed to get place details:', status);
               }
-            } else {
-              console.error('Failed to get place details:', status);
             }
-          }
-        );
-      } else {
-        console.log('Click not processed:', {
-          isAddingLandmark,
-          hasOnPlaceClick: !!onPlaceClick,
-          hasOnAddLandmark: !!onAddLandmark,
-          hasService: !!placesService,
-          placeId
-        });
+          );
+        } catch (placeError) {
+          console.error('[GoogleMap] Error getting place details:', placeError);
+        }
       }
     });
 
-    // Add mouseover listener for POIs
-    const mouseoverListener = map.addListener('mouseover', (e: google.maps.MapMouseEvent & { placeId?: string }) => {
-      const placeId = e.placeId;
-      if (isAddingLandmark && placeId) {
-        setHoveredPlace(placeId);
-        map.getDiv().style.cursor = 'pointer';
-      }
-    });
-
-    // Add mouseout listener for POIs
-    const mouseoutListener = map.addListener('mouseout', () => {
-      setHoveredPlace(null);
-      map.getDiv().style.cursor = '';
-    });
-
-    // Cleanup listeners when effect re-runs or component unmounts
+    // Return cleanup function
     return () => {
-      console.log('Cleaning up map listeners');
+      console.log('[GoogleMap] Cleaning up click listener');
       google.maps.event.removeListener(clickListener);
-      google.maps.event.removeListener(mouseoverListener);
-      google.maps.event.removeListener(mouseoutListener);
     };
-  }, [map, mode, placesService, onPlaceClick, onAddLandmark, isAddingLandmark]);
+  }, [map, placesService, isAddingLandmark, onPlaceClick, onAddLandmark, mode]);
 
   const onUnmount = useCallback(() => {
     if (map) {
@@ -323,7 +335,43 @@ export function GoogleMap({
               options={{
                 ...mapOptions,
                 clickableIcons: true,
-                gestureHandling: mode === 'admin' && isAddingLandmark ? 'cooperative' : 'auto'
+                gestureHandling: 'auto',
+                zoomControl: true,
+                fullscreenControl: true,
+                streetViewControl: true
+              }}
+              onClick={(e: google.maps.MapMouseEvent & { placeId?: string }) => {
+                console.log('[GoogleMap] Direct map onClick event fired:', e);
+                if (isAddingLandmark && e.placeId && onAddLandmark) {
+                  console.log('[GoogleMap] Handling onClick directly with placeId:', e.placeId);
+                  try {
+                    placesService?.getDetails(
+                      {
+                        placeId: e.placeId,
+                        fields: [
+                          'name',
+                          'geometry',
+                          'formatted_address',
+                          'types',
+                          'place_id',
+                          'photos',
+                          'rating',
+                          'user_ratings_total',
+                          'price_level'
+                        ]
+                      },
+                      (place, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                          onAddLandmark(place);
+                        } else {
+                          console.error('[GoogleMap] Failed to get place details in onClick:', status);
+                        }
+                      }
+                    );
+                  } catch (error) {
+                    console.error('[GoogleMap] Error in onClick handler:', error);
+                  }
+                }
               }}
             >
               {/* Property Marker */}

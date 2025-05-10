@@ -135,7 +135,7 @@ export function YourHome({ property }: YourHomeProps) {
                         
                         return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
                       } catch (error) {
-                        console.error('Error formatting auction date:', error);
+                        // console.error('Error formatting auction date:', error);
                         return 'Date to be announced';
                       }
                     })()}

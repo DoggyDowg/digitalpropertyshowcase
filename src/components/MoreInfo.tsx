@@ -281,7 +281,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
         location
       }
     } catch (error) {
-      console.error('Error formatting auction date:', error)
+      // console.error('Error formatting auction date:', error)
       return null
     }
   }, [property.name, property.address, property.maps_address, property.street_address, property.suburb, property.metadata?.locations?.coordinates, property.local_timezone, agent])
@@ -307,17 +307,17 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const isYouTubeVideo = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')
 
   // Add debug logging right before render
-  console.log('%c MoreInfo Debug 🔍', 'background: #222; color: #bada55; padding: 2px;')
-  console.table({
-    'Sale Type': property.sale_type,
-    'Auction Date': property.auction_datetime,
-    'Property Coordinates': property.metadata?.locations?.coordinates 
-      ? `${property.metadata.locations.coordinates.lat}, ${property.metadata.locations.coordinates.lng}`
-      : 'Not available',
-    'Is Auction': property.sale_type === 'auction',
-    'Has Date': Boolean(property.auction_datetime),
-    'Valid Date': property.auction_datetime ? !isNaN(new Date(property.auction_datetime).getTime()) : false
-  })
+  // console.log('%c MoreInfo Debug 🔍', 'background: #222; color: #bada55; padding: 2px;')
+  // console.table({
+  //   'Sale Type': property.sale_type,
+  //   'Auction Date': property.auction_datetime,
+  //   'Property Coordinates': property.metadata?.locations?.coordinates 
+  //     ? `${property.metadata.locations.coordinates.lat}, ${property.metadata.locations.coordinates.lng}`
+  //     : 'Not available',
+  //   'Is Auction': property.sale_type === 'auction',
+  //   'Has Date': Boolean(property.auction_datetime),
+  //   'Valid Date': property.auction_datetime ? !isNaN(new Date(property.auction_datetime).getTime()) : false
+  // })
 
   return (
     <section 
@@ -367,7 +367,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
                     
                     return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
                   } catch (error) {
-                    console.error('Error formatting auction date:', error);
+                    // console.error('Error formatting auction date:', error);
                     return 'Date to be announced';
                   }
                 })()}

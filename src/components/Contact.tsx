@@ -300,7 +300,7 @@ export function Contact({ property }: ContactProps) {
               <h3 className="text-xl sm:text-2xl font-light text-brand-dark mb-4 sm:mb-6">Make an Enquiry</h3>
               <form 
                 onSubmit={(e) => {
-                  console.log('Form submission started')
+                  // console.log('Form submission started')
                   handleSubmit(e)
                 }} 
                 className="space-y-4 sm:space-y-6" 

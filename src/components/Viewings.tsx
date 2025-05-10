@@ -255,8 +255,8 @@ export function Viewings({ property }: ViewingsProps) {
         formattedDate: format(date, 'EEEE, MMMM do, yyyy'),
         formattedTime: format(date, 'h:mm a')
       }
-    } catch (error) {
-      console.error('Error formatting viewing date:', error)
+    } catch {
+      // console.error('Error formatting viewing date:', error)
       return null
     }
   }, [property.street_address, property.suburb, property.maps_address, property.local_timezone])
@@ -264,20 +264,20 @@ export function Viewings({ property }: ViewingsProps) {
   // If there are upcoming viewings, show them (up to 3)
   const renderUpcomingViewings = () => {
     if (upcomingViewings.length === 0) {
-      console.log('No upcoming viewings to display');
+      // console.log('No upcoming viewings to display');
       return null;
     }
 
-    console.log('Rendering viewings:', upcomingViewings);
+    // console.log('Rendering viewings:', upcomingViewings);
     return (
       <div className="mb-12 p-4 bg-brand-primary/10 rounded-lg text-center">
         <h3 className="text-4xl font-light text-brand-light mb-6">Next Available Viewings</h3>
         <div className="space-y-4">
           {upcomingViewings.slice(0, 3).map((viewing, index) => {
-            console.log('Processing viewing:', viewing, 'at index:', index);
+            // console.log('Processing viewing:', viewing, 'at index:', index);
             const calendarData = formatViewingForCalendar(viewing.viewing_datetime)
             if (!calendarData) {
-              console.log('Failed to format calendar data for viewing:', viewing);
+              // console.log('Failed to format calendar data for viewing:', viewing);
               return null;
             }
 

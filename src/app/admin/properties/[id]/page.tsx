@@ -1297,157 +1297,81 @@ function PropertyEditContent({ id }: { id: string }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Auction Date (Timezone: {property.local_timezone})
+                              Auction Date
                             </label>
                             <input
                               type="date"
                               value={property.auction_datetime ? 
-                                new Intl.DateTimeFormat('en-CA', { 
-                                  timeZone: property.local_timezone,
-                                  year: 'numeric',
-                                  month: '2-digit',
-                                  day: '2-digit'
-                                }).format(new Date(property.auction_datetime))
+                                new Date(property.auction_datetime).toISOString().split('T')[0]
                                 : ''
                               }
                               onChange={(e) => {
-                                try {
-                                  const date = e.target.value;
-                                  if (!date) return;
-                                  
-                                  // Keep the existing time or default to noon
-                                  let time = '12:00';
-                                  if (property.auction_datetime) {
-                                    const existingDate = new Date(property.auction_datetime);
-                                    const formatter = new Intl.DateTimeFormat('en-US', {
-                                      timeZone: property.local_timezone,
-                                      hour: '2-digit',
-                                      minute: '2-digit',
-                                      hour12: false
-                                    });
-                                    time = formatter.format(existingDate);
-                                  }
-
-                                  // Create a date object in the property's timezone
-                                  const propertyTzDate = new Date(`${date}T${time}`);
-                                  
-                                  // Convert to UTC for storage
-                                  const formatter = new Intl.DateTimeFormat('en-US', {
-                                    timeZone: property.local_timezone,
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    second: '2-digit',
-                                    hour12: false
-                                  });
-
-                                  const parts = formatter.formatToParts(propertyTzDate);
-                                  const dateParts: Record<string, string> = {};
-                                  parts.forEach(part => {
-                                    dateParts[part.type] = part.value;
-                                  });
-
-                                  const utcDate = new Date(Date.UTC(
-                                    parseInt(dateParts.year),
-                                    parseInt(dateParts.month) - 1,
-                                    parseInt(dateParts.day),
-                                    parseInt(dateParts.hour),
-                                    parseInt(dateParts.minute),
-                                    0
-                                  ));
-
-                                  setProperty(prev => ({
-                                    ...prev,
-                                    auction_datetime: utcDate.toISOString(),
-                                    updated_at: new Date().toISOString()
-                                  }));
-                                } catch (error) {
-                                  console.error('Error setting auction date:', error);
-                                  toast.error('Invalid date format. Please try again.');
-                                }
+                                // Just get the date value
+                                const dateValue = e.target.value;
+                                if (!dateValue) return;
+                                
+                                // Create a new date object - start with the current auction date or create a new one
+                                const currentDate = property.auction_datetime 
+                                  ? new Date(property.auction_datetime) 
+                                  : new Date();
+                                
+                                // Parse the date parts from the input
+                                const [year, month, day] = dateValue.split('-').map(Number);
+                                
+                                // Set just the date portions (year, month, day)
+                                currentDate.setUTCFullYear(year);
+                                currentDate.setUTCMonth(month - 1); // JavaScript months are 0-indexed
+                                currentDate.setUTCDate(day);
+                                
+                                // Update the property with the modified date
+                                setProperty(prev => ({
+                                  ...prev,
+                                  auction_datetime: currentDate.toISOString(),
+                                  updated_at: new Date().toISOString()
+                                }));
                               }}
                               className="w-full p-2 border rounded"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Auction Time (Timezone: {property.local_timezone})
+                              Auction Time (24-hour format)
                             </label>
                             <input
                               type="time"
                               value={property.auction_datetime ? 
-                                new Intl.DateTimeFormat('en-US', {
-                                  timeZone: property.local_timezone,
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  hour12: false
-                                }).format(new Date(property.auction_datetime))
+                                `${String(new Date(property.auction_datetime).getUTCHours()).padStart(2, '0')}:${String(new Date(property.auction_datetime).getUTCMinutes()).padStart(2, '0')}`
                                 : '12:00'
                               }
                               onChange={(e) => {
-                                try {
-                                  const timeValue = e.target.value;
-                                  if (!timeValue) return;
-                                  
-                                  // Get the current date or keep existing date
-                                  let dateValue;
-                                  if (property.auction_datetime) {
-                                    dateValue = new Intl.DateTimeFormat('en-CA', {
-                                      timeZone: property.local_timezone,
-                                      year: 'numeric',
-                                      month: '2-digit',
-                                      day: '2-digit'
-                                    }).format(new Date(property.auction_datetime));
-                                  } else {
-                                    dateValue = new Intl.DateTimeFormat('en-CA', {
-                                      timeZone: property.local_timezone
-                                    }).format(new Date());
-                                  }
-                                  
-                                  // Create a date object in the property's timezone
-                                  const propertyTzDate = new Date(`${dateValue}T${timeValue}`);
-                                  
-                                  // Convert to UTC for storage
-                                  const formatter = new Intl.DateTimeFormat('en-US', {
-                                    timeZone: property.local_timezone,
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    second: '2-digit',
-                                    hour12: false
-                                  });
-
-                                  const parts = formatter.formatToParts(propertyTzDate);
-                                  const dateParts: Record<string, string> = {};
-                                  parts.forEach(part => {
-                                    dateParts[part.type] = part.value;
-                                  });
-
-                                  const utcDate = new Date(Date.UTC(
-                                    parseInt(dateParts.year),
-                                    parseInt(dateParts.month) - 1,
-                                    parseInt(dateParts.day),
-                                    parseInt(dateParts.hour),
-                                    parseInt(dateParts.minute),
-                                    0
-                                  ));
-
-                                  setProperty(prev => ({
-                                    ...prev,
-                                    auction_datetime: utcDate.toISOString(),
-                                    updated_at: new Date().toISOString()
-                                  }));
-                                } catch (error) {
-                                  console.error('Error setting auction time:', error);
-                                  toast.error('Invalid time format. Please try again.');
-                                }
+                                // Just get the time value
+                                const timeValue = e.target.value;
+                                if (!timeValue) return;
+                                
+                                // Create a new date object - start with the current auction date or create a new one
+                                const currentDate = property.auction_datetime 
+                                  ? new Date(property.auction_datetime) 
+                                  : new Date();
+                                
+                                // Parse the time parts
+                                const [hours, minutes] = timeValue.split(':').map(Number);
+                                
+                                // Set just the time portions (hours, minutes)
+                                currentDate.setUTCHours(hours);
+                                currentDate.setUTCMinutes(minutes);
+                                
+                                // Update the property with the modified time
+                                setProperty(prev => ({
+                                  ...prev,
+                                  auction_datetime: currentDate.toISOString(),
+                                  updated_at: new Date().toISOString()
+                                }));
                               }}
                               className="w-full p-2 border rounded"
                             />
+                            <div className="mt-2 text-xs text-gray-500">
+                              Timezone: {property.local_timezone}
+                            </div>
                           </div>
                         </div>
                       </div>

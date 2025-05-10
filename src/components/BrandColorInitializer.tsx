@@ -17,7 +17,7 @@ const defaultColors: AgencyBranding['colors'] = {
 const BrandColorInitializer = ({ property }: BrandColorInitializerProps) => {
   useEffect(() => {
     try {
-      console.error('[BrandColor] Initializing with property:', property)
+      // console.error('[BrandColor] Initializing with property:', property)
 
       // 1. Null-safe navigation for ENTIRE chain
       const colors = property?.agency_settings?.branding?.colors
@@ -34,7 +34,7 @@ const BrandColorInitializer = ({ property }: BrandColorInitializerProps) => {
         accent = defaultColors.accent
       } = validatedColors
 
-      console.error('[BrandColor] Resolved colors:', { dark, light, accent })
+      // console.error('[BrandColor] Resolved colors:', { dark, light, accent })
 
       // Validate colors before applying
       if (!dark || !light) {
@@ -48,7 +48,7 @@ const BrandColorInitializer = ({ property }: BrandColorInitializerProps) => {
         highlight: accent
       })
 
-      console.error('[BrandColor] Colors applied successfully:', result)
+      // console.error('[BrandColor] Colors applied successfully:', result)
     } catch (error) {
       console.error('[BrandColor] Critical Error:', error)
       

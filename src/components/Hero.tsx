@@ -17,7 +17,7 @@ interface HeroProps {
 function scrollToSection(sectionId: string) {
   // Remove any leading # if present
   const targetId = sectionId.replace(/^#/, '');
-  console.log('Looking for section with ID:', targetId);
+  // console.log('Looking for section with ID:', targetId);
   
   // Try both with and without virtual- prefix
   let element = document.getElementById(targetId);
@@ -25,12 +25,12 @@ function scrollToSection(sectionId: string) {
     element = document.getElementById(`virtual-${targetId}`);
   }
   
-  console.log('Found element:', element);
+  // console.log('Found element:', element);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
     return true;
   }
-  console.warn(`No element found with id "${targetId}" or "virtual-${targetId}"`);
+  // console.warn(`No element found with id "${targetId}" or "virtual-${targetId}"`);
   return false;
 }
 

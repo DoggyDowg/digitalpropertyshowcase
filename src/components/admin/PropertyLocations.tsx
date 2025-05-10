@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GoogleMap } from '@/components/shared/GoogleMap';
-import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader';
 import type { Landmark, Property, LandmarkType } from '@/types/maps';
 import { LANDMARK_TYPES, getLandmarkTypeConfig } from '@/utils/landmarkTypes';
+import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader';
 
 interface LocationState {
   property: Property | null;
@@ -36,9 +36,8 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
   const [error, setError] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const { isLoaded } = useGoogleMaps();
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { isLoaded, loadError } = useGoogleMaps();
 
   // Toast helper function
   const showToast = useCallback((message: string, type: 'info' | 'success' = 'info') => {
@@ -53,7 +52,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
   useEffect(() => {
     const loadExistingData = async () => {
       try {
-        setLoading(true);
         const response = await fetch(`/api/get-landmarks?propertyId=${propertyId}`);
         
         if (!response.ok) {
@@ -70,8 +68,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       } catch (err) {
         console.error('Error loading existing landmarks:', err);
         setError('Failed to load existing landmarks');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -82,12 +78,21 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
 
   // Landmark addition handlers
   const startAddingLandmark = (type: LandmarkType) => {
-    setState(prev => ({
-      ...prev,
-      isAddingLandmark: true,
-      selectedType: type
-    }));
-    showToast('Click on the map to add the landmark', 'info');
+    console.log('[PropertyLocations] Starting to add landmark of type:', type);
+    
+    // Cancel any existing landmark addition first
+    setState(prev => {
+      // Only show the toast if we're not already in adding mode
+      if (!prev.isAddingLandmark) {
+        showToast(`Click directly on a point of interest icon on the map to add a ${type} landmark`, 'info');
+      }
+      
+      return {
+        ...prev,
+        isAddingLandmark: true,
+        selectedType: type
+      };
+    });
   };
 
   // Landmark deletion handler
@@ -132,12 +137,21 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
 
   // Handle landmark addition
   const handleAddLandmark = useCallback((place: google.maps.places.PlaceResult) => {
-    if (!place.geometry?.location || !state.selectedType) return;
+    console.log('[PropertyLocations] handleAddLandmark called with place:', place);
+    if (!place.geometry?.location || !state.selectedType) {
+      console.warn('[PropertyLocations] handleAddLandmark: Missing geometry or selectedType', {
+        hasGeometry: !!place.geometry?.location,
+        selectedType: state.selectedType
+      });
+      setState(prev => ({ ...prev, isAddingLandmark: false, selectedType: null }));
+      showToast('Could not add landmark - missing required data', 'info');
+      return;
+    }
     
-    console.log('Adding landmark:', {
+    console.log('[PropertyLocations] Adding landmark:', {
       name: place.name,
       type: state.selectedType,
-      location: place.geometry.location.toJSON()
+      position: place.geometry.location.toJSON()
     });
     
     const landmark: Landmark = {
@@ -147,12 +161,14 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng()
       },
+      address: place.formatted_address || place.vicinity || '',
       details: {
         shortDescription: place.types?.[0] ? formatTypeString(place.types[0]) : undefined,
         photoUrl: place.photos?.[0]?.getUrl()
       }
     };
 
+    console.log('[PropertyLocations] Successfully processed landmark, resetting isAddingLandmark.');
     setState(prev => ({
       ...prev,
       landmarks: [...prev.landmarks, landmark],
@@ -184,25 +200,101 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         </button>
       </div>
 
+      {/* Map loading status */}
+      {!isLoaded && (
+        <div className="h-[500px] rounded-lg overflow-hidden border flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="font-medium text-gray-700">Loading Google Maps...</p>
+            <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
+          </div>
+        </div>
+      )}
+
+      {/* Map load error */}
+      {loadError && (
+        <div className="h-[500px] rounded-lg overflow-hidden border flex items-center justify-center bg-red-50">
+          <div className="text-center p-6">
+            <div className="text-red-500 text-5xl mb-4">⚠️</div>
+            <p className="font-medium text-red-700">Failed to load Google Maps</p>
+            <p className="text-sm text-red-600 mt-2">Try refreshing the page or check your network connection</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Map */}
-      {state.property && (
-        <div className="h-[500px] rounded-lg overflow-hidden border">
-          <GoogleMap
-            center={state.property.position}
-            zoom={15}
-            property={state.property}
-            landmarks={state.landmarks}
-            isAddingLandmark={state.isAddingLandmark}
-            mode="admin"
-            onAddLandmark={handleAddLandmark}
-          />
+      {isLoaded && state.property && (
+        <div className="h-[500px] rounded-lg overflow-hidden border relative">
+          {state.isAddingLandmark && (
+            <div className="absolute top-4 left-0 right-0 mx-auto w-max z-10 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow">
+              <p className="text-sm flex items-center">
+                <span className="mr-2">Click directly on a {state.selectedType} icon on the map</span>
+                <button 
+                  onClick={() => setState(prev => ({ ...prev, isAddingLandmark: false, selectedType: null }))}
+                  className="ml-2 p-1 hover:bg-blue-200 rounded-full"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </p>
+            </div>
+          )}
+          <div 
+            className="w-full h-full relative" 
+            style={{ 
+              pointerEvents: 'auto',
+              zIndex: 0
+            }}
+          >
+            <GoogleMap
+              center={state.property.position}
+              zoom={15}
+              property={state.property}
+              landmarks={state.landmarks}
+              isAddingLandmark={state.isAddingLandmark}
+              mode="admin"
+              onAddLandmark={handleAddLandmark}
+            />
+          </div>
         </div>
       )}
 
       {/* Landmark Controls */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Add Landmarks</h3>
-        <div className="grid grid-cols-3 gap-4">
+        
+        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-amber-800 font-medium mb-2">How to add landmarks:</p>
+          <ol className="list-decimal pl-5 text-amber-800 space-y-1">
+            <li>Click one of the landmark type buttons below (Shopping, Dining, etc.)</li>
+            <li>Look for <strong>existing points of interest</strong> on the map (restaurants, shops, schools, etc.)</li>
+            <li>Click directly on a point of interest icon (not just anywhere on the map)</li>
+            <li>The landmark will be added to your list below</li>
+          </ol>
+          <p className="text-amber-800 mt-2 text-sm">
+            Note: You can only add landmarks that already exist in Google Maps. If you don&apos;t see 
+            icons for points of interest, try zooming in or moving the map around.
+          </p>
+        </div>
+        
+        {state.isAddingLandmark && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800">
+              <strong>Currently adding: {state.selectedType}</strong>
+              <br />
+              Look for {state.selectedType} icons on the map and click directly on one to add it.
+            </p>
+          </div>
+        )}
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {LANDMARK_TYPES.map((config) => (
             <button
               key={config.type}
@@ -212,7 +304,7 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
                 p-3 rounded-lg border text-left
                 ${state.isAddingLandmark 
                   ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-50'
+                  : 'hover:bg-gray-50 active:bg-gray-100'
                 }
               `}
             >

@@ -154,10 +154,10 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
       dedupingInterval: 60000,
       refreshInterval: 300000,
       onSuccess: (data: InstagramApiResponse) => {
-        console.log('[IG_GALLERY] SWR success, received data:', data)
+        // console.log('[IG_GALLERY] SWR success, received data:', data)
         if (data?.data && Array.isArray(data.data)) {
           const validPosts = data.data.filter(post => post.media_url || post.thumbnail_url)
-          console.log('[IG_GALLERY] Valid posts count:', validPosts.length)
+          // console.log('[IG_GALLERY] Valid posts count:', validPosts.length)
           validPosts.forEach(() => registerAsset())
         } else {
           console.warn('[IG_GALLERY] Unexpected data structure:', data)
@@ -174,11 +174,11 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     const validPosts = (response?.data || []).filter(post => {
       const isValid = Boolean(post.media_url || post.thumbnail_url)
       if (!isValid) {
-        console.log('[IG_GALLERY] Filtered out post due to missing media:', post)
+        // console.log('[IG_GALLERY] Filtered out post due to missing media:', post)
       }
       return isValid
     })
-    console.log('[IG_GALLERY] Total valid posts:', validPosts.length)
+    // console.log('[IG_GALLERY] Total valid posts:', validPosts.length)
     return validPosts
   }, [response?.data])
 
@@ -193,13 +193,13 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
         setCanScrollLeft(!isAtStart)
         setCanScrollRight(!isAtEnd)
         
-        console.log('[IG_GALLERY] Scroll state:', {
-          scrollLeft: container.scrollLeft,
-          clientWidth: container.clientWidth,
-          scrollWidth: container.scrollWidth,
-          canScrollLeft: !isAtStart,
-          canScrollRight: !isAtEnd
-        })
+        // console.log('[IG_GALLERY] Scroll state:', {
+        //   scrollLeft: container.scrollLeft,
+        //   clientWidth: container.clientWidth,
+        //   scrollWidth: container.scrollWidth,
+        //   canScrollLeft: !isAtStart,
+        //   canScrollRight: !isAtEnd
+        // })
       }
     }
 

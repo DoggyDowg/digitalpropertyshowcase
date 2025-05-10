@@ -381,34 +381,38 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
           storage_path: uploadData.path,
           status: 'active',
           title: file.name.split('.')[0].replace(/_/g, ' '),
-          alt_text: `${config.label} - ${file.name.split('.')[0].replace(/_/g, ' ')}`
+          alt_text: `${config.label} - ${file.name.split('.')[0].replace(/_/g, ' ')}`,
+          source_type: 'upload'
         };
 
         console.log('Creating asset record:', asset);
 
         try {
-          const response = await fetch('/api/assets', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(asset),
-          });
+          // Use direct Supabase query instead of API call
+          const { data: assetData, error: insertError } = await supabase
+            .from('assets')
+            .insert([asset])
+            .select()
+            .single();
 
-          if (!response.ok) {
-            const error = await response.json();
-            if (isPDF && error.message?.includes('type')) {
+          if (insertError) {
+            console.error('Database error:', {
+              error: insertError,
+              message: insertError.message,
+              code: insertError.code
+            });
+            
+            if (isPDF && insertError.message?.includes('type')) {
               throw new Error('PDF uploads are temporarily unavailable. Please contact support to enable this feature.');
             }
-            throw new Error(error.message || 'Failed to create asset record');
+            throw new Error(insertError.message || 'Failed to create asset record');
           }
 
-          const assetData = await response.json();
           console.log('Asset record created:', assetData);
 
           // Update state
           setAssets(prev => {
-            if (category === 'gallery' || category === 'neighbourhood' || category === 'floorplan') {
+            if (category === 'gallery' || category === 'neighbourhood' || category === 'floorplan' || category === 'aerials' || category === '3d_tour') {
               return {
                 ...prev,
                 [category]: [...(prev[category] || []), assetData]
@@ -470,7 +474,7 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
 
       // Update state
       setAssets(prev => {
-        if (asset.category === 'gallery' || asset.category === 'neighbourhood') {
+        if (asset.category === 'gallery' || asset.category === 'neighbourhood' || asset.category === 'floorplan' || asset.category === 'aerials' || asset.category === '3d_tour') {
           return {
             ...prev,
             [asset.category]: prev[asset.category].filter(a => a.id !== asset.id)
@@ -843,7 +847,7 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
         toast.success('Instagram integration settings updated');
         onSave?.();
       }
-    } catch (err) {
+    } catch {
       toast.error('An error occurred while saving settings');
     }
   };

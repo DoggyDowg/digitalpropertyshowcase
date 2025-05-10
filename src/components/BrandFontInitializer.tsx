@@ -71,12 +71,12 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
 
         document.head.appendChild(style)
 
-        console.log('Fonts loaded successfully:', {
-          bodyFont: bodyFont.url,
-          headingFont: headingFont.url,
-          bodyFormat: getFontFormat(bodyFont.url),
-          headingFormat: getFontFormat(headingFont.url)
-        })
+        // console.log('Fonts loaded successfully:', {
+        //   bodyFont: bodyFont.url,
+        //   headingFont: headingFont.url,
+        //   bodyFormat: getFontFormat(bodyFont.url),
+        //   headingFormat: getFontFormat(headingFont.url)
+        // })
 
         return () => {
           document.head.removeChild(style)
