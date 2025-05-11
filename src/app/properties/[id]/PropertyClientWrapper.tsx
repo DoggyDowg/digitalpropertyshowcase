@@ -293,6 +293,9 @@ type SingleCategories = 'hero_video' | 'your_home' | 'footer' | 'features_banner
 const ARRAY_CATEGORIES: ArrayCategories[] = ['gallery', 'neighbourhood', 'floorplan', '3d_tour', 'aerials'];
 
 export function PropertyClientWrapper({ property, template }: PropertyClientWrapperProps) {
+  // Add loading state to manage content visibility
+  const [isLoading, setIsLoading] = useState(true);
+  
   // State to hold processed assets
   const [processedAssets, setProcessedAssets] = useState<PropertyAssets>({
     gallery: [],
@@ -352,23 +355,53 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
   
   // Ensure favicon URL is absolute
   const baseUrl = property?.custom_domain || 
-                  property?.deployment_url || 
-                  process.env.NEXT_PUBLIC_BASE_URL || 
-                  'https://digipropshow.com';
-                  
+                 property?.deployment_url || 
+                 process.env.NEXT_PUBLIC_BASE_URL || 
+                 'https://digipropshow.com';
+                 
   const absoluteFaviconUrl = faviconUrl 
     ? (faviconUrl.startsWith('http') ? faviconUrl : `https://${baseUrl.replace(/^https?:\/\//, '')}${faviconUrl}`)
     : undefined;
+
+  // Use an effect to simulate asset loading and handle content display
+  useEffect(() => {
+    // Create a function to simulate preloading assets
+    const preloadAssets = async () => {
+      // Delay to allow all React components to initialize
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Once everything is ready, set loading to false
+      setIsLoading(false);
+    };
+    
+    preloadAssets();
+    
+    // Clean up function for when component unmounts
+    return () => {
+      // Any cleanup code if needed
+    };
+  }, []);
 
   return (
     <>
       <StyleFixer property={property} />
       <DynamicFavicon faviconUrl={absoluteFaviconUrl} />
       
+      {/* Always render the template for proper hydration, but conditionally show the loading overlay */}
       {template === 'dubai' ? (
         <DubaiTemplate property={propertyWithProcessedAssets} />
       ) : (
         <CuscoTemplate property={propertyWithProcessedAssets} />
+      )}
+      
+      {/* Add loading overlay that covers entire page */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
+          <div className="animate-pulse">
+            <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
+            <div className="h-4 w-32 bg-gray-200 rounded"></div>
+          </div>
+        </div>
       )}
     </>
   );

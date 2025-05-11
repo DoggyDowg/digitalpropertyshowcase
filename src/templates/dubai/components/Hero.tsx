@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHeroVideo } from '@/hooks/useHeroVideo'
 import styles from '@/styles/Hero.module.css'
@@ -17,6 +17,9 @@ interface HeroProps {
 
 export function Hero({ property }: HeroProps) {
   const { videoUrl } = useHeroVideo(property.id)
+  // Add loading state to coordinate animations
+  const [isReady, setIsReady] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   
   // Refs for GSAP animations
   const addressRef = useRef<HTMLHeadingElement>(null)
@@ -25,9 +28,21 @@ export function Hero({ property }: HeroProps) {
   const subheadlineRef = useRef<HTMLParagraphElement>(null)
   const logoRef = useRef<HTMLDivElement>(null)
   const topSectionRef = useRef<HTMLDivElement>(null)
+  // Add refs for CTA buttons
+  const ctaContainerRef = useRef<HTMLDivElement>(null)
+  const primaryBtnRef = useRef<HTMLButtonElement>(null)
+  const secondaryBtnRef = useRef<HTMLButtonElement>(null)
+
+  // Track hydration state
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   // Set up GSAP animations
   useEffect(() => {
+    // Skip animation setup until hydration is complete
+    if (!isHydrated) return
+    
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
     const videoElement = document.querySelector('video')
 
@@ -53,25 +68,36 @@ export function Hero({ property }: HeroProps) {
       })
     }
 
+    // Set initial states
+    gsap.set([
+      logoRef.current, 
+      addressRef.current, 
+      suburbRef.current, 
+      headlineRef.current, 
+      subheadlineRef.current,
+      primaryBtnRef.current,
+      secondaryBtnRef.current
+    ], {
+      opacity: 0,
+      y: 30,
+      filter: 'blur(10px)'
+    })
+      
+    // Video reveal animation
+    gsap.set(".video-overlay", {
+      backgroundColor: '#111111',
+      opacity: 1
+    })
+
     // Function to start initial animations
     const startAnimations = () => {
-      // Initial state - set elements to be blurred and slightly translated
-      gsap.set([logoRef.current, addressRef.current, suburbRef.current, headlineRef.current, subheadlineRef.current], {
-        opacity: 0,
-        y: 30,
-        filter: 'blur(10px)'
-      })
-
-      // Video reveal animation
-      gsap.set(".video-overlay", {
-        backgroundColor: '#111111',
-        opacity: 1
-      })
+      // Set isReady to coordinate animations
+      setIsReady(true)
 
       gsap.to(".video-overlay", {
         opacity: 0,
         duration: 3,
-        delay: 4,
+        delay: 1.5, // Reduced from 4 to 1.5 for a better user experience
         ease: "power2.inOut",
       })
 
@@ -81,7 +107,7 @@ export function Hero({ property }: HeroProps) {
         y: 0,
         filter: 'blur(0px)',
         duration: 1.2,
-        delay: 4
+        delay: 1 // Reduced from 4 to 1 for a faster initial display
       })
       .to(addressRef.current, {
         opacity: 1,
@@ -107,25 +133,41 @@ export function Hero({ property }: HeroProps) {
         filter: 'blur(0px)',
         duration: 1.2
       }, '-=0.8')
+      // Add CTA button animations
+      .to([primaryBtnRef.current, secondaryBtnRef.current], {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        duration: 1.2,
+        stagger: 0.2
+      }, '-=0.8')
     }
 
-    // Start animations when video is loaded
+    // Start animations when video is loaded or after a timeout
+    const videoLoadTimer = setTimeout(() => {
+      // If video hasn't loaded within 2 seconds, start animations anyway
+      startAnimations()
+    }, 2000)
+
     if (videoElement) {
       if (videoElement.readyState >= 3) {
+        clearTimeout(videoLoadTimer)
         startAnimations()
       } else {
-        videoElement.addEventListener('loadeddata', startAnimations)
+        videoElement.addEventListener('loadeddata', () => {
+          clearTimeout(videoLoadTimer)
+          startAnimations()
+        })
       }
-    } else {
-      startAnimations()
     }
 
     // Cleanup
     return () => {
+      clearTimeout(videoLoadTimer)
       videoElement?.removeEventListener('loadeddata', startAnimations)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
-  }, [])
+  }, [isHydrated])
 
   function scrollToSection(sectionId: string) {
     // Remove any leading # if present
@@ -264,10 +306,15 @@ export function Hero({ property }: HeroProps) {
         {/* Bottom Section - CTAs and Headlines */}
         <div className="mt-auto pb-16 sm:pb-20 relative z-10">
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8 relative z-50">
+          <div ref={ctaContainerRef} className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8 relative z-50">
             {/* Left slide effect button */}
             <button 
+              ref={primaryBtnRef}
               type="button"
+              style={{
+                opacity: 0, // Start with opacity 0
+                pointerEvents: isReady ? 'auto' : 'none' // Disable clicks until ready
+              }}
               onClick={() => {
                 console.log('Primary button clicked');
                 const primaryBtn = property.metadata?.more_info?.ctaButtons?.primary;
@@ -288,7 +335,12 @@ export function Hero({ property }: HeroProps) {
 
             {/* Right slide effect button */}
             <button 
+              ref={secondaryBtnRef}
               type="button"
+              style={{
+                opacity: 0, // Start with opacity 0
+                pointerEvents: isReady ? 'auto' : 'none' // Disable clicks until ready
+              }}
               onClick={() => {
                 console.log('Secondary button clicked');
                 const secondaryBtn = property.metadata?.more_info?.ctaButtons?.secondary;

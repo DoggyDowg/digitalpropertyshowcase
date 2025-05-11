@@ -23,6 +23,8 @@ import { AlertCircle } from 'lucide-react'
 import type { PostgrestError } from '@supabase/supabase-js'
 import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader'
 import { GooglePlacesAutocomplete } from '@/components/shared/GooglePlacesAutocomplete'
+import { convertLocalToUTC, getLocalTimeFromUTC } from '@/lib/utils'
+import { formatInTimeZone } from 'date-fns-tz'
 
 // Initial property state without ID
 const initialProperty: Omit<Property, 'id'> = {
@@ -1310,25 +1312,49 @@ function PropertyEditContent({ id }: { id: string }) {
                                 const dateValue = e.target.value;
                                 if (!dateValue) return;
                                 
-                                // Create a new date object - start with the current auction date or create a new one
-                                const currentDate = property.auction_datetime 
-                                  ? new Date(property.auction_datetime) 
-                                  : new Date();
-                                
-                                // Parse the date parts from the input
-                                const [year, month, day] = dateValue.split('-').map(Number);
-                                
-                                // Set just the date portions (year, month, day)
-                                currentDate.setUTCFullYear(year);
-                                currentDate.setUTCMonth(month - 1); // JavaScript months are 0-indexed
-                                currentDate.setUTCDate(day);
-                                
-                                // Update the property with the modified date
-                                setProperty(prev => ({
-                                  ...prev,
-                                  auction_datetime: currentDate.toISOString(),
-                                  updated_at: new Date().toISOString()
-                                }));
+                                try {
+                                  // Get the time components from the existing date or use defaults
+                                  let hours = 0;
+                                  let minutes = 0;
+                                  
+                                  if (property.auction_datetime) {
+                                    // If we have an existing date, get the time in local timezone
+                                    const localTimeStr = getLocalTimeFromUTC(property.auction_datetime, property.local_timezone);
+                                    const [h, m] = localTimeStr.split(':').map(Number);
+                                    hours = h;
+                                    minutes = m;
+                                  }
+                                  
+                                  // Parse the date parts from the input
+                                  const [year, month, day] = dateValue.split('-').map(Number);
+                                  
+                                  // Create a date object with the local time components
+                                  const localDate = new Date();
+                                  localDate.setFullYear(year);
+                                  localDate.setMonth(month - 1); // JS months are 0-indexed
+                                  localDate.setDate(day);
+                                  localDate.setHours(hours);
+                                  localDate.setMinutes(minutes);
+                                  localDate.setSeconds(0);
+                                  localDate.setMilliseconds(0);
+                                  
+                                  console.log('Local date before conversion:', localDate.toString(), 'with timezone:', property.local_timezone);
+                                  
+                                  // Convert local date to UTC for storage
+                                  const utcDate = convertLocalToUTC(localDate, property.local_timezone);
+                                  
+                                  console.log('Converted to UTC:', utcDate.toISOString());
+                                  
+                                  // Update the property with the UTC date
+                                  setProperty(prev => ({
+                                    ...prev,
+                                    auction_datetime: utcDate.toISOString(),
+                                    updated_at: new Date().toISOString()
+                                  }));
+                                } catch (error) {
+                                  console.error('Error setting auction date:', error);
+                                  toast.error('Failed to set auction date');
+                                }
                               }}
                               className="w-full p-2 border rounded"
                             />
@@ -1340,7 +1366,8 @@ function PropertyEditContent({ id }: { id: string }) {
                             <input
                               type="time"
                               value={property.auction_datetime ? 
-                                `${String(new Date(property.auction_datetime).getUTCHours()).padStart(2, '0')}:${String(new Date(property.auction_datetime).getUTCMinutes()).padStart(2, '0')}`
+                                // Display local time based on saved UTC time
+                                getLocalTimeFromUTC(property.auction_datetime, property.local_timezone)
                                 : '12:00'
                               }
                               onChange={(e) => {
@@ -1348,24 +1375,85 @@ function PropertyEditContent({ id }: { id: string }) {
                                 const timeValue = e.target.value;
                                 if (!timeValue) return;
                                 
-                                // Create a new date object - start with the current auction date or create a new one
-                                const currentDate = property.auction_datetime 
-                                  ? new Date(property.auction_datetime) 
-                                  : new Date();
-                                
-                                // Parse the time parts
-                                const [hours, minutes] = timeValue.split(':').map(Number);
-                                
-                                // Set just the time portions (hours, minutes)
-                                currentDate.setUTCHours(hours);
-                                currentDate.setUTCMinutes(minutes);
-                                
-                                // Update the property with the modified time
-                                setProperty(prev => ({
-                                  ...prev,
-                                  auction_datetime: currentDate.toISOString(),
-                                  updated_at: new Date().toISOString()
-                                }));
+                                try {
+                                  // Parse the time parts from input
+                                  const [hours, minutes] = timeValue.split(':').map(Number);
+                                  
+                                  // Get date components from the existing date or use today
+                                  let year, month, day;
+                                  
+                                  if (property.auction_datetime) {
+                                    // Convert existing UTC date to local date for the timezone
+                                    const existingUtcDate = new Date(property.auction_datetime);
+                                    // Format the date to get it in the local timezone
+                                    const localDateStr = formatInTimeZone(
+                                      existingUtcDate, 
+                                      property.local_timezone,
+                                      'yyyy-MM-dd'
+                                    );
+                                    const parts = localDateStr.split('-');
+                                    if (parts.length === 3) {
+                                      year = parseInt(parts[0]);
+                                      month = parseInt(parts[1]) - 1; // JS months are 0-indexed
+                                      day = parseInt(parts[2]);
+                                    } else {
+                                      // Fallback if date parsing fails
+                                      const now = new Date();
+                                      year = now.getFullYear();
+                                      month = now.getMonth();
+                                      day = now.getDate();
+                                    }
+                                  } else {
+                                    // Use today's date in the local timezone
+                                    const today = new Date();
+                                    const localToday = formatInTimeZone(
+                                      today,
+                                      property.local_timezone,
+                                      'yyyy-MM-dd'
+                                    );
+                                    const parts = localToday.split('-');
+                                    if (parts.length === 3) {
+                                      year = parseInt(parts[0]);
+                                      month = parseInt(parts[1]) - 1;
+                                      day = parseInt(parts[2]);
+                                    } else {
+                                      // Fallback if date parsing fails
+                                      const now = new Date();
+                                      year = now.getFullYear();
+                                      month = now.getMonth();
+                                      day = now.getDate();
+                                    }
+                                  }
+                                  
+                                  // Create a date object with local time components
+                                  const localDate = new Date();
+                                  localDate.setFullYear(year);
+                                  localDate.setMonth(month);
+                                  localDate.setDate(day);
+                                  localDate.setHours(hours);
+                                  localDate.setMinutes(minutes);
+                                  localDate.setSeconds(0);
+                                  localDate.setMilliseconds(0);
+                                  
+                                  console.log('Local time input:', `${hours}:${minutes}`, 
+                                    'Local date before conversion:', localDate.toString(), 
+                                    'in timezone:', property.local_timezone);
+                                  
+                                  // Convert local date to UTC for storage
+                                  const utcDate = convertLocalToUTC(localDate, property.local_timezone);
+                                  
+                                  console.log('Converted to UTC:', utcDate.toISOString());
+                                  
+                                  // Update the property with the UTC date
+                                  setProperty(prev => ({
+                                    ...prev,
+                                    auction_datetime: utcDate.toISOString(),
+                                    updated_at: new Date().toISOString()
+                                  }));
+                                } catch (error) {
+                                  console.error('Error setting auction time:', error);
+                                  toast.error('Failed to set auction time');
+                                }
                               }}
                               className="w-full p-2 border rounded"
                             />
