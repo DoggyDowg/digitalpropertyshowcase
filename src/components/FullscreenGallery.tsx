@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import paginationStyles from '@/styles/Pagination.module.css'
@@ -13,11 +13,20 @@ export function FullscreenGallery({ images, initialIndex, onClose }: FullscreenG
   const [currentSlide, setCurrentSlide] = useState(initialIndex)
   const [transitionClass, setTransitionClass] = useState<'transitionPrev' | 'transitionNext' | ''>('')
   const [mounted, setMounted] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Handle mounting for portal
   useEffect(() => {
     setMounted(true)
-    return () => setMounted(false)
+    
+    // Cleanup function
+    return () => {
+      setMounted(false)
+      // Clear any pending timeouts
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
   }, [])
 
   // Handle escape key to close and manage body scroll
@@ -31,13 +40,22 @@ export function FullscreenGallery({ images, initialIndex, onClose }: FullscreenG
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
+    
+    // Add event listener
     window.addEventListener('keydown', handleEscape)
 
     // Cleanup function
     return () => {
+      // Remove event listener
       window.removeEventListener('keydown', handleEscape)
-      // Restore scrolling
-      document.body.style.overflow = originalOverflow
+      
+      // Only restore body style if we're still mounted
+      try {
+        // Restore scrolling - wrapped in try/catch in case body is not available
+        document.body.style.overflow = originalOverflow
+      } catch (e) {
+        console.error('Error restoring body overflow:', e)
+      }
     }
   }, [onClose])
 
@@ -51,11 +69,22 @@ export function FullscreenGallery({ images, initialIndex, onClose }: FullscreenG
 
   const handlePagination = (direction: 'prev' | 'next') => {
     setTransitionClass(direction === 'prev' ? 'transitionPrev' : 'transitionNext')
-    setTimeout(() => {
+    
+    // Store timeout reference so we can clear it if component unmounts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    
+    timeoutRef.current = setTimeout(() => {
       setTransitionClass('')
+      timeoutRef.current = null
     }, 500)
   }
 
+  // Only prepare portal content if we're mounted
+  if (!mounted) return null
+
+  // Create the gallery content
   const galleryContent = (
     <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ zIndex: 99999 }}>
       {/* Blurred background */}
@@ -153,12 +182,11 @@ export function FullscreenGallery({ images, initialIndex, onClose }: FullscreenG
     </div>
   )
 
-  // Only render in the browser
-  if (!mounted) return null
-
-  // Render using portal
-  return createPortal(
-    galleryContent,
-    document.body
-  )
+  // Use try-catch for the portal creation to handle any DOM-related errors
+  try {
+    return createPortal(galleryContent, document.body)
+  } catch (e) {
+    console.error('Error creating portal for FullscreenGallery:', e)
+    return null
+  }
 } 

@@ -79,7 +79,9 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
         // })
 
         return () => {
-          document.head.removeChild(style)
+          if (document.head.contains(style)) {
+            document.head.removeChild(style)
+          }
           URL.revokeObjectURL(bodyFontUrl)
           URL.revokeObjectURL(headingFontUrl)
         }
@@ -89,9 +91,18 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
       }
     }
 
-    const cleanup = loadFonts()
+    let cleanupPromise = loadFonts()
+    
     return () => {
-      cleanup.then(cleanupFn => cleanupFn?.())
+      cleanupPromise.then(cleanupFn => {
+        try {
+          cleanupFn?.()
+        } catch (e) {
+          console.error('Error during font cleanup:', e)
+        }
+      }).catch(err => {
+        console.error('Error resolving font cleanup function:', err)
+      })
     }
   }, [property?.agency_settings?.branding?.typography])
 
