@@ -177,12 +177,11 @@ export function YourHome({ property }: YourHomeProps) {
                   priority
                 />
               ) : (
-                <Image
-                  src="/images/sections/yourhome/yourhome.jpg"
-                  alt="Your Home Feature"
-                  fill
-                  className="object-cover rounded-lg shadow-xl"
-                />
+                <div className="relative w-full h-full aspect-video bg-gray-300 animate-pulse rounded-lg overflow-hidden shadow-md cursor-pointer group">
+                  <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-black/50 text-white px-4 py-2 rounded-md text-sm">Click to expand</div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -195,9 +194,8 @@ export function YourHome({ property }: YourHomeProps) {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-xl -z-10"
           style={{ 
-            backgroundImage: `url(${homeImageUrl || '/images/sections/yourhome/yourhome.jpg'})`,
-            opacity: 0.5,
-            transform: 'scale(1.1)'
+            backgroundImage: `url(${homeImageUrl || ''})`,
+            opacity: 0.5
           }}
         />
         

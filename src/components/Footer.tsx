@@ -183,9 +183,10 @@ export function Footer({ property }: FooterProps) {
                 <Image
                   src={agencyLogo}
                   alt={property.agency_name || 'Agency Logo'}
-                  width={300}
+                  width={150}
                   height={44}
                   className="w-[75%] h-full object-contain object-left"
+                  style={{ height: 'auto' }}
                   priority
                 />
               </div>

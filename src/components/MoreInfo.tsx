@@ -129,13 +129,13 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
   
   // Debug log the hover effect
-  useEffect(() => {
+  /* useEffect(() => {
     console.log('MoreInfo Component:', {
       hoverEffect,
       propertyId: property.id,
       hasStyling: !!property.styling
     });
-  }, [property.id, property.styling, hoverEffect]);
+  }, [property.id, property.styling, hoverEffect]); */
 
   // Set up demo content if needed
   useEffect(() => {
@@ -162,9 +162,11 @@ export function MoreInfo({ property }: MoreInfoProps) {
     ? demoContent?.additionalInfo 
     : property.metadata?.more_info?.additionalInfo
 
+  /*
   console.log('MoreInfo render - videoUrl:', videoUrl)
   console.log('MoreInfo render - videoLoading:', videoLoading)
   console.log('MoreInfo render - videoError:', videoError)
+  */
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -214,7 +216,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
   }, [property.is_demo, property.metadata])
 
   // Debug logging for auction properties
-  useEffect(() => {
+  /* useEffect(() => {
     const debugInfo = {
       component: 'MoreInfo',
       propertyId: property.id,
@@ -225,7 +227,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
     }
     
     console.log('🎯 MoreInfo Component Debug:', debugInfo)
-  }, [property.id, property.sale_type, property.auction_datetime])
+  }, [property.id, property.sale_type, property.auction_datetime]) */
 
   // Format auction date for calendar
   const formatAuctionForCalendar = useCallback(async (auctionDatetime: string) => {

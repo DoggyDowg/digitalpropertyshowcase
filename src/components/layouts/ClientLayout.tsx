@@ -15,14 +15,9 @@ interface ClientLayoutProps {
 }
 
 export function ClientLayout({ property, children }: ClientLayoutProps) {
-  // Debug logging
-  useEffect(() => {
-    console.log('ClientLayout mounted with property:', {
-      id: property.id,
-      hasstyling: !!property.styling,
-      hoverEffect: property.styling?.textLinks?.hoverEffect
-    });
-  }, [property]);
+  /* useEffect(() => {
+    console.log('ClientLayout mounted with property:', property);
+  }, [property]); */
 
   return (
     <AssetLoadingProvider>

@@ -51,6 +51,8 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
   })
   const { images, loading, error } = useGalleryImages(property.id)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [registeredImageIds, setRegisteredImageIds] = useState<string[]>([])
 
   // Add debugging logs
   useEffect(() => {
@@ -110,29 +112,18 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
     setSelectedImageIndex(null)
   }
 
-  // Show loading state
-  if (loading) {
-    return (
-      <section className="relative py-16 bg-brand-dark">
-        <div className="relative w-full overflow-hidden px-6 sm:px-8 lg:px-12">
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2 px-1 mx-auto max-w-[1400px]">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 flex-grow-0 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-              >
-                <div className={styles.imageContainer}>
-                  <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  const handleImageLoad = (id: string) => {
+    setLoadedImages(prev => new Set(prev).add(id));
+    // console.log(`TransitionGallery - Image loaded: ${id}`); // Commented out log
+  };
 
-  // Show error state
+  const allImagesLoaded = images.length > 0 && loadedImages.size === images.length;
+
+  // console.log(`TransitionGallery - Loading: ${loading}`); // Commented out log
+  // console.log(`TransitionGallery - Images:`, images); // Commented out log
+  // console.log(`TransitionGallery - Error:`, error); // Commented out log
+  // console.log(`TransitionGallery - InView: ${inView}`); // Commented out log
+  
   if (error) {
     console.error('Gallery Error:', error)
     return null

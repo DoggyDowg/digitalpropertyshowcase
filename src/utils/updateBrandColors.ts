@@ -18,7 +18,7 @@ const hexToRgb = (hex: string) => {
     }
 
     const rgb = `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
-    console.log(`Successfully converted ${hex} to RGB: ${rgb}`)
+    // console.log(`Successfully converted ${hex} to RGB: ${rgb}`)
     return rgb
   } catch (error) {
     console.error(`Failed to convert hex to RGB: ${hex}`, error)
@@ -45,7 +45,7 @@ export const updateBrandColors = (colors: BrandColors) => {
   const root = document.documentElement
   
   try {
-    console.log('Setting brand colors:', colors)
+    // console.log('Setting brand colors:', colors)
 
     // Set main color variables
     root.style.setProperty('--brand-dark', colors.dark)
@@ -67,7 +67,7 @@ export const updateBrandColors = (colors: BrandColors) => {
       '--brand-light-rgb': root.style.getPropertyValue('--brand-light-rgb')
     }
 
-    console.log('Brand colors updated successfully:', result)
+    // console.log('Brand colors updated successfully:', result)
     return result
   } catch (error) {
     console.error('Error updating brand colors:', error)

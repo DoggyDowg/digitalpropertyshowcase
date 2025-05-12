@@ -29,7 +29,7 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
 
         // If it's a demo property, generate demo neighbourhood images
         if (isDemoProperty) {
-          console.log('Loading demo neighbourhood images')
+          // console.log('Loading demo neighbourhood images'); // Commented out
           const supportedFormats = ['webp', 'jpg', 'jpeg', 'png']
           const demoImages: NeighbourhoodImage[] = []
 
@@ -45,7 +45,7 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
               try {
                 const response = await fetch(data.publicUrl, { method: 'HEAD' })
                 if (response.ok) {
-                  console.log(`Found demo neighbourhood image ${i} in ${format} format`)
+                  // console.log(`Found demo neighbourhood image ${i} in ${format} format`); // Commented out
                   demoImages.push({
                     id: `demo-neighbourhood-${i}`,
                     src: data.publicUrl,
@@ -55,7 +55,7 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
                   break
                 }
               } catch {
-                console.log(`No ${format} format found for demo neighbourhood image ${i}`)
+                // console.log(`No ${format} format found for demo neighbourhood image ${i}`); // Commented out
               }
             }
 
@@ -64,13 +64,13 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
             }
           }
 
-          console.log('Demo neighbourhood images:', demoImages)
+          // console.log('Demo neighbourhood images:', demoImages); // Commented out
           setImages(demoImages)
           return
         }
 
         // Otherwise, query the assets table for a real property
-        console.log('Fetching neighbourhood images for property:', propertyId)
+        // console.log('Fetching neighbourhood images for property:', propertyId)
         const { data, error } = await supabase
           .from('assets')
           .select('id, storage_path')
@@ -96,7 +96,7 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
             })
           )
 
-          console.log('Neighbourhood images:', neighbourhoodImages)
+          // console.log('Neighbourhood images:', neighbourhoodImages) // Commented out log
           setImages(neighbourhoodImages)
         }
       } catch (err) {

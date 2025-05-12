@@ -20,7 +20,7 @@ export function usePropertyLogo(propertyId?: string) {
       try {
         setLoading(true)
         setError(null)
-        console.log('Fetching logo for property:', propertyId)
+        // console.log('Fetching logo for property:', propertyId)
 
         const { data, error } = await supabase
           .from('assets')
@@ -34,7 +34,7 @@ export function usePropertyLogo(propertyId?: string) {
           throw error
         }
 
-        console.log('Asset data:', data)
+        // console.log('Asset data:', data)
 
         if (data?.storage_path) {
           // Get the public URL for the asset
@@ -43,10 +43,10 @@ export function usePropertyLogo(propertyId?: string) {
             .from('property-assets')
             .getPublicUrl(data.storage_path)
 
-          console.log('Public URL:', publicUrlData)
+          // console.log('Public URL:', publicUrlData)
           setLogoUrl(publicUrlData.publicUrl)
         } else {
-          console.log('No logo found for property')
+          // console.log('No logo found for property'); // Commented out
         }
       } catch (err) {
         console.error('Detailed error:', err)

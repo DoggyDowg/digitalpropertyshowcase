@@ -26,13 +26,14 @@ export function useMoreInfoVideo(propertyId: string, isDemoProperty: boolean): V
         // First try to get promo video
         const { data: promoVideo, error: promoError } = await supabase
           .from('assets')
-          .select('*')
+          .select('source_type, external_url, storage_path')
           .eq('property_id', propertyId)
           .eq('type', 'video')
           .eq('video_type', 'promo')
           .single()
 
-        if (promoError && promoError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        // Allow fallback if no promo video found (PGRST116) or if access is denied/not acceptable (406)
+        if (promoError && promoError.code !== 'PGRST116' && promoError.code !== '406') { 
           throw promoError
         }
 
@@ -40,7 +41,7 @@ export function useMoreInfoVideo(propertyId: string, isDemoProperty: boolean): V
         if (!promoVideo) {
           const { data: heroVideo, error: heroError } = await supabase
             .from('assets')
-            .select('*')
+            .select('source_type, external_url, storage_path')
             .eq('property_id', propertyId)
             .eq('type', 'video')
             .eq('video_type', 'hero')

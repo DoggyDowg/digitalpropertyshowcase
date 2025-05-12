@@ -38,7 +38,7 @@ export default function DynamicFavicon({ faviconUrl }: DynamicFaviconProps) {
       appleLink.href = url;
       document.head.appendChild(appleLink);
 
-      console.log('Dynamic favicon set to:', url);
+      // console.log(`Dynamic favicon set to: ${url}`); // Commented out log
     };
 
     // Set the favicon

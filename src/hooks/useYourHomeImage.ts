@@ -68,7 +68,7 @@ export function useYourHomeImage(propertyId?: string, isDemoProperty?: boolean) 
         }
 
         // For real properties, query the assets table
-        console.log('Fetching your home banner for property:', propertyId, 'attempt:', retryCount + 1)
+        // console.log(`Fetching your home banner for property: ${propertyId} attempt: ${retryCount + 1}`)
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path')

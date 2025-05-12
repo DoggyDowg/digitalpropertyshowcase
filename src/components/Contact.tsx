@@ -27,16 +27,18 @@ export function Contact({ property }: ContactProps) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
-  // Verify EmailJS configuration on mount
-  useEffect(() => {
+  // Initialize EmailJS
+
+  /* useEffect(() => {
     console.log('EmailJS Configuration Check:', {
-      serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID?.substring(0, 4) + '...',
-      templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID?.substring(0, 4) + '...',
-      hasUserId: !!process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
-      environment: process.env.NODE_ENV,
-      domain: window.location.origin
+      userId: process.env.NEXT_PUBLIC_EMAILJS_USER_ID ? 'Set' : 'Not Set',
+      serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ? 'Set' : 'Not Set',
+      templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ? 'Set' : 'Not Set',
     });
-  }, []);
+    if (process.env.NEXT_PUBLIC_EMAILJS_USER_ID) {
+      emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_USER_ID)
+    }
+  }, []) */
 
   useEffect(() => {
     const observer = new IntersectionObserver(

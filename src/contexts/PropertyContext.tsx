@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useState, useContext, ReactNode, useEffect } from 'react'
+import { createContext, useState, useContext, ReactNode } from 'react'
 import type { Property } from '@/types/property'
 
 interface PropertyContextValue {
@@ -15,18 +15,20 @@ interface PropertyProviderProps {
   initialProperty: Property
 }
 
-export function PropertyProvider({ children, initialProperty }: PropertyProviderProps) {
+export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children, initialProperty }) => {
   const [property, setProperty] = useState<Property>(initialProperty)
 
-  // Debug logging to verify property data
+  // console.log('PropertyProvider initialized with:', initialProperty)
+
+  /* Implementation was commented out, keeping for reference
   useEffect(() => {
     console.log('PropertyProvider initialized with:', {
       propertyId: initialProperty.id,
-      styling: initialProperty.styling,
-      headerStyle: initialProperty.styling?.header?.style,
-      textLinksEffect: initialProperty.styling?.textLinks?.hoverEffect
+      hasStyling: !!initialProperty.styling,
+      hasAgencySettings: !!initialProperty.agency_settings,
+      isDemo: initialProperty.is_demo
     })
-  }, [initialProperty])
+  }, [initialProperty]) */
 
   return (
     <PropertyContext.Provider value={{ property, setProperty }}>

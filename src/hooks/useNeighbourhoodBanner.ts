@@ -55,7 +55,7 @@ export function useNeighbourhoodBanner(propertyId?: string, isDemoProperty?: boo
         }
 
         // Otherwise, query the assets table for a real property
-        console.log('Fetching neighbourhood banner for property:', propertyId)
+        // console.log('Fetching neighbourhood banner for property:', propertyId)
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path')

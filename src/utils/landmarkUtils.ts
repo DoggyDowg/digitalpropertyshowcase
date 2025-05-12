@@ -1,4 +1,5 @@
 import type { Landmark, Property } from '@/types/maps';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface LandmarkData {
   property: Property;
@@ -7,7 +8,7 @@ export interface LandmarkData {
 
 export async function getLandmarks(propertyId: string): Promise<LandmarkData> {
   try {
-    console.log('Fetching landmarks for property:', propertyId);
+    // console.log('Fetching landmarks for property:', propertyId);
     const response = await fetch(`/api/get-landmarks?propertyId=${propertyId}`);
     
     if (!response.ok) {
@@ -21,7 +22,7 @@ export async function getLandmarks(propertyId: string): Promise<LandmarkData> {
     }
     
     const data = await response.json();
-    console.log('Landmarks data received:', data);
+    // console.log('Landmarks data received:', data);
     return data;
   } catch (error) {
     console.error('Error fetching landmarks:', error);
@@ -45,5 +46,28 @@ export async function saveLandmarks(data: LandmarkData): Promise<void> {
   } catch (error) {
     console.error('Error saving landmarks:', error);
     throw error;
+  }
+}
+
+export async function fetchLandmarksForProperty(propertyId: string, supabase: SupabaseClient): Promise<Landmark[]> {
+  if (!propertyId) return []
+
+  // console.log('Fetching landmarks for property:', propertyId)
+  
+  try {
+    const { data, error } = await supabase
+      .from('landmarks')
+      .select('*')
+      .eq('property_id', propertyId)
+    
+    if (error) {
+      console.error('Supabase error fetching landmarks:', error)
+      throw error
+    }
+    
+    return data || []
+  } catch (error) {
+    console.error('Error fetching landmarks:', error);
+    return [] // Return empty array on error
   }
 } 

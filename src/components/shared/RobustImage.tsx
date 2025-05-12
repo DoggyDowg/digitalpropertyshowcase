@@ -13,6 +13,7 @@ interface RobustImageProps {
   className?: string
   priority?: boolean
   sizes?: string
+  onLoad?: () => void
 }
 
 export function RobustImage({
@@ -23,7 +24,8 @@ export function RobustImage({
   fill = false,
   className = '',
   priority = false,
-  sizes = '100vw'
+  sizes = '100vw',
+  onLoad
 }: RobustImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -32,6 +34,7 @@ export function RobustImage({
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in')
   const imageRef = useRef<HTMLImageElement>(null)
   const lastUrlRef = useRef<string>(src)
+  const [isVisible, setIsVisible] = useState(false)
 
   // Verify image URL on mount and changes
   useEffect(() => {
@@ -78,14 +81,7 @@ export function RobustImage({
   useEffect(() => {
     const baseUrl = src.split('?')[0]
     if (baseUrl && !hasRegisteredAsset.current) {
-      console.log('[RobustImage] Registering asset:', { 
-        src: baseUrl,
-        isSupabaseUrl,
-        fill,
-        width,
-        height,
-        priority 
-      })
+      // console.log('[RobustImage] Registering asset:', { src, alt }) // Commented out log
       hasRegisteredAsset.current = true
       registerAsset()
     }
@@ -95,7 +91,7 @@ export function RobustImage({
       const newBaseUrl = src.split('?')[0]
       const lastBaseUrl = lastUrlRef.current.split('?')[0]
       if (newBaseUrl !== lastBaseUrl) {
-        console.log('[RobustImage] Cleaning up for:', { src: baseUrl })
+        // console.log('[RobustImage] Cleaning up for:', { src: baseUrl }) // Commented out log
         setIsLoaded(false)
         setError(false)
         hasRegisteredAsset.current = false
@@ -104,16 +100,13 @@ export function RobustImage({
   }, [src, registerAsset, isSupabaseUrl, fill, width, height, priority])
 
   const handleLoad = () => {
-    console.log('[RobustImage] Image loaded:', { 
-      src, 
-      hasRegistered: hasRegisteredAsset.current,
-      naturalWidth: imageRef.current?.naturalWidth,
-      naturalHeight: imageRef.current?.naturalHeight
-    })
+    // console.log('[RobustImage] Image loaded:', { src, alt }) // Commented out log
     setIsLoaded(true)
     if (hasRegisteredAsset.current) {
       markAssetAsLoaded()
     }
+    setError(false)
+    onLoad?.()
   }
 
   const handleError = () => {

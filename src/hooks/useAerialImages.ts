@@ -71,7 +71,7 @@ export function useAerialImages(propertyId?: string, isDemoProperty?: boolean) {
         }
 
         // Query the assets table for aerial images
-        console.log('Fetching aerial images for property:', propertyId)
+        // console.log('Fetching aerial images for property:', propertyId)
         const { data, error } = await supabase
           .from('assets')
           .select('*')

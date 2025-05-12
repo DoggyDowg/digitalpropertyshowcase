@@ -34,7 +34,7 @@ export function useAgent(agentId: string | undefined | null) {
 
         if (error) throw error
 
-        console.log('Agent data:', data)
+        // console.log('Agent data:', data) // Commented out log
         setAgent(data)
       } catch (e) {
         setError(e instanceof Error ? e : new Error('Failed to fetch agent'))

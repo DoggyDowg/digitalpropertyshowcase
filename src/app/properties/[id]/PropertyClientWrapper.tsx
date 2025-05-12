@@ -59,14 +59,12 @@ function StyleFixer({ property }: { property: Property }) {
   
   useEffect(() => {
     // Skip during SSR or before hydration
-    if (!isHydrated || typeof window === 'undefined') {
-      return;
-    }
-    
+    if (!isHydrated) return;
+
     // Get the hover effect setting, with 'scale' as the default
     const hoverEffect = property.styling?.textLinks?.hoverEffect || 'scale';
     
-    console.log('StyleFixer: Applying creative hover effect:', hoverEffect, 'isHydrated:', isHydrated);
+    // console.log(`StyleFixer: Applying creative hover effect: ${hoverEffect} isHydrated: ${isHydrated}`);
     
     // Create a style element to inject CSS
     const styleEl = document.createElement('style');

@@ -54,8 +54,8 @@ export function useLifestyleBanner(propertyId?: string, isDemoProperty?: boolean
           return
         }
 
-        // Otherwise, query the assets table for a real property
-        console.log('Fetching lifestyle banner for property:', propertyId)
+        // For real properties, query the assets table
+        // console.log('Fetching lifestyle banner for property:', propertyId)
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path')

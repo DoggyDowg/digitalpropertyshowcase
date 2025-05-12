@@ -31,24 +31,24 @@ export function HeaderLink({
     hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
     
     // Debug for Vercel preview
-    console.log('HeaderLink received property from context:', {
+    /* console.log('HeaderLink received property from context:', {
       propertyId: property?.id,
       hoverEffect,
       hasPropertyObject: !!property
-    });
+    }); */
   } catch (error) {
     console.error('Error accessing property context in HeaderLink:', error);
     // Continue with default hoverEffect
   }
   
   // Add debugging
-  useEffect(() => {
+  /* useEffect(() => {
     console.log('HeaderLink Component:', {
       href,
       isDarkHeader,
       hoverEffect,
     })
-  }, [href, isDarkHeader, hoverEffect])
+  }, [href, isDarkHeader, hoverEffect]) */
   
   const gestureRef = useGesture({
     onPress: () => setIsPressed(true),

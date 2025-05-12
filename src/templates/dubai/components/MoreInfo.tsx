@@ -35,10 +35,13 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const [isVisible, setIsVisible] = useState(false)
   const supabase = createClientComponentClient()
   const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo)
+  const [iframeReady, setIframeReady] = useState(false)
 
+  /*
   console.log('MoreInfo render - videoUrl:', videoUrl)
   console.log('MoreInfo render - videoLoading:', videoLoading)
   console.log('MoreInfo render - videoError:', videoError)
+  */
 
   useEffect(() => {
     const observer = new IntersectionObserver(

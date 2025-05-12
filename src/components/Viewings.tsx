@@ -80,8 +80,6 @@ export function Viewings({ property }: ViewingsProps) {
         ? [fetchedViewing] 
         : []
   
-  console.log('Current upcomingViewings:', upcomingViewings);
-
   // Get current date
   const now = new Date()
 

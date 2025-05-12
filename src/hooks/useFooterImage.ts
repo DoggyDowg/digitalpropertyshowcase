@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import type { Asset } from '@/types/assets'
 
 export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const supabase = createClientComponentClient()
+
+  // console.log(`[useFooterImage] Starting to load image for property: ${propertyId}`);
+  // console.log(`[useFooterImage] Is demo property: ${isDemo}`);
 
   useEffect(() => {
     let isMounted = true
@@ -21,8 +25,8 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
       }
 
       try {
-        console.log('[useFooterImage] Starting to load image for property:', propertyId)
-        console.log('[useFooterImage] Is demo property:', isDemoProperty)
+        // console.log(`[useFooterImage] Starting to load image for property: ${propertyId}`);
+        // console.log(`[useFooterImage] Is demo property: ${isDemo}`);
         setLoading(true)
         setError(null)
 
@@ -74,7 +78,7 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
         }
 
         // Otherwise, query the assets table for a real property
-        console.log('[useFooterImage] Fetching footer image for property:', propertyId)
+        // console.log(`[useFooterImage] Fetching footer image for property: ${propertyId}`);
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path, id')
@@ -96,15 +100,18 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
           throw error
         }
 
-        console.log('[useFooterImage] Found asset data:', data)
+        // console.log('[useFooterImage] Found asset data:', data); // Commented out log
+        const asset = data as Asset;
+        
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('property-assets')
+          .getPublicUrl(asset.storage_path);
 
-        if (data?.storage_path) {
-          const { data: publicUrlData } = supabase
-            .storage
-            .from('property-assets')
-            .getPublicUrl(data.storage_path)
+        // console.log('[useFooterImage] Generated public URL:', publicUrlData.publicUrl); // Commented out log
 
-          console.log('[useFooterImage] Generated public URL:', publicUrlData.publicUrl)
+        if (publicUrlData.publicUrl) {
+          setImageUrl(publicUrlData.publicUrl);
           
           // Verify the image exists
           try {
@@ -130,9 +137,14 @@ export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
           }
         }
       } catch (err) {
-        console.error('[useFooterImage] Error loading footer image:', err)
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Failed to load footer image'))
+        // Ignore AbortError as it's expected if the component unmounts/re-renders
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.log('[useFooterImage] Fetch aborted, likely due to component unmount or re-render.');
+        } else {
+          console.error('[useFooterImage] Error loading footer image:', err);
+          if (isMounted) {
+            setError(err instanceof Error ? err : new Error('Failed to load footer image'));
+          }
         }
       } finally {
         if (isMounted) {

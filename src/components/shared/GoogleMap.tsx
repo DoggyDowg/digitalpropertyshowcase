@@ -50,7 +50,6 @@ export function GoogleMap({
   landmarks = [], 
   property,
   mode = 'view',
-  onPlaceClick,
   onAddLandmark,
   isAddingLandmark = false
 }: GoogleMapProps) {
@@ -161,17 +160,6 @@ export function GoogleMap({
         : [...prev, type]
     );
   };
-
-  // Debug logging for prop changes
-  useEffect(() => {
-    console.log('GoogleMap props updated:', {
-      isAddingLandmark,
-      hasOnPlaceClick: !!onPlaceClick,
-      hasOnAddLandmark: !!onAddLandmark,
-      hasProperty: !!property,
-      landmarkCount: landmarks.length
-    });
-  }, [isAddingLandmark, onPlaceClick, onAddLandmark, property, landmarks]);
 
   // Reset map when unmounting to prevent memory leaks
   useEffect(() => {

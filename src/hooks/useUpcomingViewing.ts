@@ -19,7 +19,7 @@ export function useUpcomingViewing(propertyId?: string) {
       try {
         setLoading(true)
         setError(null)
-        console.log('Fetching upcoming viewings for property:', propertyId)
+        // console.log('Fetching upcoming viewings for property:', propertyId)
 
         const now = new Date().toISOString()
         
@@ -37,8 +37,15 @@ export function useUpcomingViewing(propertyId?: string) {
           throw error
         }
 
-        console.log('Viewings data:', data)
-        setUpcomingViewing(data || [])
+        // console.log('Viewings data:', data) // Commented out log
+        
+        if (data) {
+          const formattedViewings = data.map(viewing => ({
+            ...viewing,
+            viewing_datetime: new Date(viewing.viewing_datetime).toLocaleString()
+          }))
+          setUpcomingViewing(formattedViewings)
+        }
       } catch (err) {
         console.error('Detailed error:', err)
         setError(err instanceof Error ? err : new Error('Failed to load upcoming viewings'))
