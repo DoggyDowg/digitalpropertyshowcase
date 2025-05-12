@@ -1,5 +1,6 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { headers } from 'next/headers'
 import { PropertyClientWrapper } from './PropertyClientWrapper'
 import { generateMetadata } from './metadata'
 
@@ -23,6 +24,11 @@ export default async function PropertyPage({
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   
+  // Check if request came from a custom domain
+  const headersList = headers()
+  const isCustomDomain = headersList.get('x-custom-domain') === 'true'
+  console.info(`[Server] Request from custom domain: ${isCustomDomain}`)
+  
   const { data: property, error } = await supabase
     .from('properties')
     .select(`
@@ -44,10 +50,11 @@ export default async function PropertyPage({
   console.info('[Server] Property Data Debug:', {
     id: property?.id,
     name: property?.name,
+    isDemoProperty: property?.is_demo,
     hasAgencySettings: !!property?.agency_settings,
     agencySettingsId: property?.agency_id,
     footerLinksCount: property?.agency_settings?.footer_links?.length || 0,
-    footerLinksData: property?.agency_settings?.footer_links,
+    isCustomDomain: isCustomDomain,
     error: error?.message
   })
 
@@ -83,6 +90,26 @@ export default async function PropertyPage({
         </div>
       </div>
     )
+  }
+
+  // Important: If accessed via custom domain, explicitly set is_demo to false
+  // This prevents race conditions where it might initially load as a demo
+  if (isCustomDomain && property.custom_domain) {
+    console.info('[Server] Custom domain detected, ensuring property is not treated as demo')
+    property.is_demo = false
+    
+    // If property incorrectly marked as demo in database, update it
+    if (property.is_demo === true) {
+      console.warn('[Server] Property incorrectly marked as demo, updating database')
+      const { error: updateError } = await supabase
+        .from('properties')
+        .update({ is_demo: false })
+        .eq('id', id)
+      
+      if (updateError) {
+        console.error('[Server] Failed to update is_demo status:', updateError.message)
+      }
+    }
   }
 
   console.info('[Server] ✅ PROPERTY PAGE RENDER COMPLETED ✅\n')

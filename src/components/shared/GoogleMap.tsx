@@ -6,6 +6,7 @@ import { LANDMARK_TYPES, PROPERTY_MARKER_COLOR, getLandmarkTypeConfig } from '@/
 import * as React from 'react';
 import Image from 'next/image';
 import { useFooterImage } from '@/hooks/useFooterImage';
+import { MapContextMenu } from './MapContextMenu';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: false,
@@ -38,6 +39,11 @@ function formatDistance(meters: number): string {
   return `${km}km`;
 }
 
+// Create a custom type that includes our landmarkType
+interface EnhancedPlaceResult extends google.maps.places.PlaceResult {
+  landmarkType?: LandmarkType;
+}
+
 export function GoogleMap({ 
   center, 
   zoom = 15, 
@@ -60,6 +66,16 @@ export function GoogleMap({
   const [windowWidth, setWindowWidth] = useState(0);
   const listViewRef = useRef<HTMLDivElement>(null);
   const { imageUrl, loading } = useFooterImage(property?.id, property?.is_demo);
+  
+  // Add these new state variables for context menu
+  const [contextMenu, setContextMenu] = useState<{
+    isOpen: boolean;
+    position: { x: number; y: number };
+    mapPosition?: google.maps.LatLngLiteral;
+  }>({
+    isOpen: false,
+    position: { x: 0, y: 0 },
+  });
 
   // Handle window width
   useEffect(() => {
@@ -166,76 +182,76 @@ export function GoogleMap({
     };
   }, [map]);
 
-  const onLoad = useCallback((map: google.maps.Map) => {
-    console.log('Map loaded, checking initialization');
-    // Prevent double initialization
-    if (map === null) {
-      console.log('Map is null, skipping initialization');
-      return;
-    }
+  // Handle right-click on map for context menu
+  const handleRightClick = useCallback((e: google.maps.MapMouseEvent) => {
+    console.log('[GoogleMap] Right-click detected!', e);
+    if (mode !== 'admin') return;
     
-    setMap(map);
-    
-    // Initialize Places Service
-    const service = new google.maps.places.PlacesService(map);
-    setPlacesService(service);
-    console.log('Places service initialized');
-  }, []);
-
-  // Only set up click handlers in admin mode
-  useEffect(() => {
-    // Skip if no map or not in admin mode
-    if (!map || mode !== 'admin') {
-      console.log('Skipping click handlers - no map or not in admin mode:', { hasMap: !!map, mode });
-      return;
-    }
-
-    // Skip if no required services
-    if (!placesService || (!onPlaceClick && !onAddLandmark)) {
-      console.log('Skipping click handlers - missing services:', { 
-        hasPlacesService: !!placesService, 
-        hasOnPlaceClick: !!onPlaceClick,
-        hasOnAddLandmark: !!onAddLandmark 
-      });
-      return;
-    }
-
-    console.log('[GoogleMap] Setting up click handlers with isAddingLandmark:', isAddingLandmark);
-    
-    // This is crucial - make sure clickable icons are enabled for landmark selection
-    if (map) {
-      map.setOptions({
-        clickableIcons: true,
-        // Ensure all Google Maps UI elements are visible
-        disableDefaultUI: false,
-        zoomControl: true,
-        streetViewControl: true,
-        scaleControl: true,
-        mapTypeControl: true,
-        fullscreenControl: true
-      });
-      console.log('[GoogleMap] Map options updated to enable clickable icons');
-    }
-    
-    // Remove any existing listeners to prevent duplicates
-    google.maps.event.clearListeners(map, 'click');
-
-    // Add click listener for POIs
-    const clickListener = map.addListener('click', (e: google.maps.MapMouseEvent & { placeId?: string }) => {
-      const placeId = e.placeId;
-      console.log('[GoogleMap] Map clicked:', {
-        hasPlaceId: !!placeId,
-        placeId,
-        lat: e.latLng?.lat(),
-        lng: e.latLng?.lng(),
-        isAddingLandmark
-      });
+    // Prevent the default context menu
+    if (e.domEvent) {
+      e.domEvent.preventDefault();
       
-      if (isAddingLandmark && placeId) {
-        console.log('[GoogleMap] Processing landmark click with placeId:', placeId);
+      // Get the mouse position for the context menu - safely check for MouseEvent
+      const clientX = e.domEvent instanceof MouseEvent ? e.domEvent.clientX : 0;
+      const clientY = e.domEvent instanceof MouseEvent ? e.domEvent.clientY : 0;
+      
+      // Store the map position where the user clicked
+      const mapPosition = e.latLng?.toJSON();
+      
+      if (!mapPosition) return;
+      
+      console.log('[GoogleMap] Opening context menu at', { clientX, clientY, mapPosition });
+      
+      // Open the context menu at this position
+      setContextMenu({
+        isOpen: true,
+        position: { x: clientX, y: clientY },
+        mapPosition,
+      });
+    }
+  }, [mode]);
+  
+  // Handle landmark type selection from context menu
+  const handleLandmarkTypeSelect = useCallback((type: LandmarkType) => {
+    console.log(`[GoogleMap] User selected landmark type from context menu: ${type}`);
+    const mapPosition = contextMenu.mapPosition;
+    
+    if (!mapPosition || !placesService) {
+      console.error('[GoogleMap] Missing map position or places service for landmark search');
+      return;
+    }
+    
+    console.log('[GoogleMap] Searching for landmarks near:', mapPosition);
+    
+    // Search for nearby places of this type with a wider radius
+    placesService.nearbySearch(
+      {
+        location: mapPosition,
+        radius: 1000, // Increased search radius to 1000 meters for better results
+        keyword: type, // Use the landmark type as a keyword for better results
+        type: type === 'dining' ? 'restaurant' : 
+              type === 'shopping' ? 'store' : 
+              type === 'leisure' ? 'park' : 
+              type === 'schools' ? 'school' : 
+              type === 'transport' ? 'transit_station' : undefined
+      },
+      (results, status) => {
+        console.log('[GoogleMap] Nearby search results:', { 
+          status, 
+          count: results?.length,
+          results: results?.map(r => ({ name: r.name, types: r.types }))
+        });
         
-        try {
-          // Use a more comprehensive fields list to ensure we get complete place data
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          // Get details for the first result
+          const placeId = results[0].place_id;
+          if (!placeId) {
+            console.error('[GoogleMap] No place ID found in search results');
+            return;
+          }
+          
+          console.log('[GoogleMap] Getting details for place ID:', placeId);
+          
           placesService.getDetails(
             {
               placeId: placeId,
@@ -252,42 +268,170 @@ export function GoogleMap({
                 'vicinity'
               ]
             },
-            (place, status) => {
-              console.log('[GoogleMap] Place details response:', { 
-                status, 
-                placeName: place?.name,
-                placeFormatted: place?.formatted_address
+            (place, detailStatus) => {
+              console.log('[GoogleMap] Place details result:', { 
+                status: detailStatus,
+                place: place ? {
+                  name: place.name,
+                  address: place.formatted_address || place.vicinity,
+                  types: place.types,
+                  hasGeometry: !!place.geometry
+                } : null
               });
               
-              if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-                try {
-                  console.log('[GoogleMap] Calling onAddLandmark with place:', place);
+              if (detailStatus === google.maps.places.PlacesServiceStatus.OK && place) {
+                console.log('[GoogleMap] Found place details, calling onAddLandmark');
+                
+                if (onAddLandmark) {
+                  // Create a custom object that includes our landmark type
+                  const placeWithType: EnhancedPlaceResult = {
+                    ...place,
+                    landmarkType: type
+                  };
                   
-                  if (onAddLandmark) {
-                    onAddLandmark(place);
-                  } else {
-                    console.warn('[GoogleMap] onAddLandmark callback is missing');
+                  try {
+                    onAddLandmark(placeWithType);
+                    console.log('[GoogleMap] onAddLandmark called successfully');
+                  } catch (error) {
+                    console.error('[GoogleMap] Error in onAddLandmark:', error);
                   }
-                } catch (callbackError) {
-                  console.error('[GoogleMap] Error in onAddLandmark callback:', callbackError);
+                } else {
+                  console.error('[GoogleMap] onAddLandmark callback is not defined');
                 }
               } else {
-                console.error('[GoogleMap] Failed to get place details:', status);
+                console.error('[GoogleMap] Failed to get place details:', detailStatus);
               }
             }
           );
-        } catch (placeError) {
-          console.error('[GoogleMap] Error getting place details:', placeError);
+        } else {
+          console.error('[GoogleMap] No places found near this location for type:', type, 'Status:', status);
+          
+          // Try one more time with just a keyword search and larger radius
+          placesService.nearbySearch(
+            {
+              location: mapPosition,
+              radius: 2000, // Even larger radius
+              keyword: type === 'dining' ? 'restaurant' : 
+                      type === 'shopping' ? 'store' : 
+                      type === 'leisure' ? 'park' : 
+                      type === 'schools' ? 'school' : 
+                      type === 'transport' ? 'station' : type
+            },
+            (secondResults, secondStatus) => {
+              console.log('[GoogleMap] Second search results:', { 
+                status: secondStatus, 
+                count: secondResults?.length 
+              });
+              
+              if (secondStatus === google.maps.places.PlacesServiceStatus.OK && 
+                  secondResults && secondResults.length > 0) {
+                
+                const secondPlaceId = secondResults[0].place_id;
+                if (!secondPlaceId) return;
+                
+                placesService.getDetails(
+                  {
+                    placeId: secondPlaceId,
+                    fields: [
+                      'name',
+                      'geometry',
+                      'formatted_address',
+                      'types',
+                      'place_id',
+                      'photos',
+                      'rating',
+                      'user_ratings_total',
+                      'price_level',
+                      'vicinity'
+                    ]
+                  },
+                  (secondPlace, secondDetailStatus) => {
+                    if (secondDetailStatus === google.maps.places.PlacesServiceStatus.OK && secondPlace) {
+                      console.log('[GoogleMap] Found place details on second attempt:', secondPlace);
+                      
+                      if (onAddLandmark) {
+                        const enhancedPlace: EnhancedPlaceResult = {
+                          ...secondPlace,
+                          landmarkType: type
+                        };
+                        onAddLandmark(enhancedPlace);
+                      }
+                    }
+                  }
+                );
+              }
+            }
+          );
         }
       }
-    });
+    );
+  }, [contextMenu.mapPosition, onAddLandmark, placesService]);
+  
+  // Close context menu
+  const handleCloseContextMenu = useCallback(() => {
+    setContextMenu(prev => ({ ...prev, isOpen: false }));
+  }, []);
 
-    // Return cleanup function
-    return () => {
-      console.log('[GoogleMap] Cleaning up click listener');
-      google.maps.event.removeListener(clickListener);
-    };
-  }, [map, placesService, isAddingLandmark, onPlaceClick, onAddLandmark, mode]);
+  // Modify the onLoad function to set up the places service
+  const onLoad = useCallback((map: google.maps.Map) => {
+    console.log('Map loaded, checking initialization');
+    // Prevent double initialization
+    if (map === null) {
+      console.log('Map is null, skipping initialization');
+      return;
+    }
+    
+    setMap(map);
+    
+    // Initialize Places Service
+    const service = new google.maps.places.PlacesService(map);
+    setPlacesService(service);
+    console.log('Places service initialized');
+    
+    // Add right-click listener for context menu
+    if (mode === 'admin') {
+      console.log('[GoogleMap] Setting up right-click handler for admin mode');
+      
+      // Add event listener to the map container instead of relying on the Google Maps event
+      const mapContainer = map.getDiv();
+      mapContainer.addEventListener('contextmenu', (e) => {
+        console.log('[GoogleMap] contextmenu event triggered on map container');
+        // Prevent default browser context menu
+        e.preventDefault();
+        
+        // Get exact mouse position for the context menu
+        const { clientX, clientY } = e;
+        
+        // Get the current center of the map - this is a simplification that will work for our needs
+        // since we're just using the position as a general area to search for landmarks
+        const center = map.getCenter();
+        if (!center) {
+          console.error('[GoogleMap] Could not get map center');
+          return;
+        }
+        
+        const mapPosition = {
+          lat: center.lat(),
+          lng: center.lng()
+        };
+        
+        console.log('[GoogleMap] Opening context menu from container event', { clientX, clientY, mapPosition });
+        
+        // Open context menu exactly at the cursor position
+        setContextMenu({
+          isOpen: true,
+          position: { x: clientX, y: clientY },
+          mapPosition,
+        });
+        
+        // Since we're handling this ourselves, we can be precise about the position
+        console.log('[GoogleMap] Menu position:', { x: clientX, y: clientY });
+      });
+      
+      // Also keep the Google Maps rightclick handler as backup
+      map.addListener('rightclick', handleRightClick);
+    }
+  }, [mode, handleRightClick]);
 
   const onUnmount = useCallback(() => {
     if (map) {
@@ -482,6 +626,14 @@ export function GoogleMap({
                 />
               )}
             </GoogleMapComponent>
+            
+            {/* Context Menu for Right-Click */}
+            <MapContextMenu
+              isOpen={contextMenu.isOpen}
+              position={contextMenu.position}
+              onSelect={handleLandmarkTypeSelect}
+              onClose={handleCloseContextMenu}
+            />
           </div>
 
           {/* List View */}

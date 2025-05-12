@@ -4,11 +4,17 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 
+// Add cache for domain to property ID mapping to prevent race conditions
+const domainCache = new Map<string, { propertyId: string, timestamp: number }>()
+const CACHE_TTL = 60 * 1000 // 1 minute in milliseconds
+
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
   const pathname = request.nextUrl.pathname
   const searchParams = request.nextUrl.searchParams.toString()
-  const fullUrl = searchParams ? `${request.url}?${searchParams}` : request.url
+
+  // Debug logging
+  console.log(`[Middleware] Processing ${hostname}${pathname}`)
 
   // Handle favicon.ico requests specially
   if (pathname === '/favicon.ico') {
@@ -58,25 +64,57 @@ export async function middleware(request: NextRequest) {
   // Handle custom domains
   if (hostname && !hostname.includes('localhost') && !hostname.includes('vercel.app')) {
     try {
-      // Create Supabase client
-      const supabase = createRouteHandlerClient({ cookies })
+      let propertyId: string | null = null
       
-      // Query the properties table to find the property with this custom domain
-      const { data: property, error } = await supabase
-        .from('properties')
-        .select('id, status')
-        .eq('custom_domain', hostname)
-        .eq('status', 'published')
-        .single()
+      // Check cache first to avoid unnecessary database lookups
+      if (hostname) {
+        const cachedData = domainCache.get(hostname)
+        const now = Date.now()
+        
+        if (cachedData && (now - cachedData.timestamp) < CACHE_TTL) {
+          console.log(`[Middleware] Using cached property ID for domain ${hostname}: ${cachedData.propertyId}`)
+          propertyId = cachedData.propertyId
+        }
+      }
+      
+      // If not in cache, query the database
+      if (!propertyId) {
+        console.log(`[Middleware] Domain ${hostname} not in cache, querying database`)
+        
+        // Create Supabase client
+        const supabase = createRouteHandlerClient({ cookies })
+        
+        // Query the properties table to find the property with this custom domain
+        const { data: property, error } = await supabase
+          .from('properties')
+          .select('id, status, is_demo')
+          .eq('custom_domain', hostname)
+          .eq('status', 'published')
+          .single()
 
-      if (error || !property) {
-        console.error('Custom domain not found:', { hostname, error: error?.message })
-        return res
+        if (error) {
+          console.error('[Middleware] Custom domain query error:', { hostname, error: error.message })
+          return res
+        }
+
+        if (!property) {
+          console.error('[Middleware] Custom domain not found:', { hostname })
+          return res
+        }
+
+        // Store in cache
+        propertyId = property.id
+        domainCache.set(hostname, { 
+          propertyId: property.id, 
+          timestamp: Date.now() 
+        })
+        
+        console.log(`[Middleware] Added to cache: ${hostname} -> ${property.id}`)
       }
 
       // Rewrite to the property page while keeping the URL clean
       const newUrl = request.nextUrl.clone()
-      newUrl.pathname = `/properties/${property.id}`
+      newUrl.pathname = `/properties/${propertyId}`
       
       // Preserve any query parameters
       if (searchParams) {
@@ -85,10 +123,11 @@ export async function middleware(request: NextRequest) {
       
       const response = NextResponse.rewrite(newUrl)
       response.headers.set('x-custom-domain', 'true')
+      response.headers.set('x-cached-domain-match', 'true')
       
       return response
     } catch (err) {
-      console.error('Middleware error:', err)
+      console.error('[Middleware] Error in custom domain handling:', err)
       return res
     }
   }

@@ -292,6 +292,11 @@ type SingleCategories = 'hero_video' | 'your_home' | 'footer' | 'features_banner
 
 const ARRAY_CATEGORIES: ArrayCategories[] = ['gallery', 'neighbourhood', 'floorplan', '3d_tour', 'aerials'];
 
+// Add a custom interface for Window with our custom property
+interface CustomWindow extends Window {
+  __CUSTOM_DOMAIN__?: boolean;
+}
+
 export function PropertyClientWrapper({ property, template }: PropertyClientWrapperProps) {
   // Add loading state to manage content visibility
   const [isLoading, setIsLoading] = useState(true);
@@ -304,6 +309,17 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
     '3d_tour': [],
     aerials: []
   });
+
+  // Check if we're on a custom domain via the client-side flag set in layout.tsx
+  const isCustomDomain = typeof window !== 'undefined' && (window as CustomWindow).__CUSTOM_DOMAIN__ === true;
+  
+  // Ensure property is not demo if accessed from custom domain
+  useEffect(() => {
+    if (isCustomDomain && property.is_demo) {
+      console.log('[Client] Property incorrectly marked as demo on custom domain, fixing...');
+      property.is_demo = false;
+    }
+  }, [isCustomDomain, property]);
 
   // Process assets into the correct structure
   useEffect(() => {

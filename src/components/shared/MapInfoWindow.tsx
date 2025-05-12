@@ -2,7 +2,6 @@
 
 import { InfoWindow } from '@react-google-maps/api';
 import type { Landmark } from '@/types/maps';
-import Image from 'next/image';
 
 interface MapInfoWindowProps {
   landmark: Landmark;
@@ -24,23 +23,10 @@ export function MapInfoWindow({ landmark, position, onClose, distance }: MapInfo
       <div 
         className="min-w-[250px] flex flex-col"
         style={{ 
-          margin: '-8px -16px -16px -16px', // Counteract InfoWindow's internal padding
-          padding: '8px 16px 16px 16px'
+          margin: '-8px -16px -16px -16px',
+          padding: '4px 16px 12px 16px'
         }}
       >
-        {/* Image */}
-        {landmark.details?.photoUrl && (
-          <div className="relative w-[100px] h-16 rounded-lg overflow-hidden mb-3">
-            <Image
-              src={landmark.details.photoUrl}
-              alt={landmark.name}
-              fill
-              className="object-cover"
-              unoptimized // Since we're using external URLs from Google
-            />
-          </div>
-        )}
-
         {/* Content */}
         <h3 className="text-lg font-medium mb-1">{landmark.name}</h3>
         <p className="text-sm text-gray-600">

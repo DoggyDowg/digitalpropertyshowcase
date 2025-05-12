@@ -3,13 +3,20 @@
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import { GoogleMap } from '@/components/shared/GoogleMap';
-import type { Landmark, Property, LandmarkType } from '@/types/maps';
-import { LANDMARK_TYPES, getLandmarkTypeConfig } from '@/utils/landmarkTypes';
+import type { Landmark as BaseLandmark, Property, LandmarkType } from '@/types/maps';
+import { getLandmarkTypeConfig } from '@/utils/landmarkTypes';
 import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader';
+
+// Extend the base Landmark type to include an ID
+interface Landmark extends BaseLandmark {
+  id?: string;
+}
 
 interface LocationState {
   property: Property | null;
-  landmarks: Landmark[];
+  landmarks: Landmark[]; // Existing landmarks loaded from database
+  newLandmarks: Landmark[]; // New landmarks added by user but not yet saved
+  deletedLandmarkIds: string[]; // IDs of landmarks to delete
   isAddingLandmark: boolean;
   selectedType: LandmarkType | null;
 }
@@ -25,10 +32,17 @@ interface Toast {
   id: number;
 }
 
+// Extended interface for PlaceResult with our custom landmarkType
+interface EnhancedPlaceResult extends google.maps.places.PlaceResult {
+  landmarkType?: LandmarkType;
+}
+
 export default function PropertyLocations({ propertyId, onSave }: PropertyLocationsProps) {
   const [state, setState] = useState<LocationState>({
     property: null,
     landmarks: [],
+    newLandmarks: [],
+    deletedLandmarkIds: [],
     isAddingLandmark: false,
     selectedType: null
   });
@@ -63,7 +77,9 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         setState(prev => ({
           ...prev,
           property: data.property,
-          landmarks: data.landmarks || []
+          landmarks: data.landmarks || [],
+          newLandmarks: [],
+          deletedLandmarkIds: []
         }));
       } catch (err) {
         console.error('Error loading existing landmarks:', err);
@@ -76,31 +92,27 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
     }
   }, [propertyId]);
 
-  // Landmark addition handlers
-  const startAddingLandmark = (type: LandmarkType) => {
-    console.log('[PropertyLocations] Starting to add landmark of type:', type);
-    
-    // Cancel any existing landmark addition first
-    setState(prev => {
-      // Only show the toast if we're not already in adding mode
-      if (!prev.isAddingLandmark) {
-        showToast(`Click directly on a point of interest icon on the map to add a ${type} landmark`, 'info');
-      }
-      
-      return {
+  // Handle deleting an existing landmark
+  const handleDeleteLandmark = (index: number, isNewLandmark: boolean = false) => {
+    if (isNewLandmark) {
+      // Remove from newLandmarks array
+      setState(prev => ({
         ...prev,
-        isAddingLandmark: true,
-        selectedType: type
-      };
-    });
-  };
-
-  // Landmark deletion handler
-  const handleDeleteLandmark = (index: number) => {
-    setState(prev => ({
-      ...prev,
-      landmarks: prev.landmarks.filter((_, i) => i !== index)
-    }));
+        newLandmarks: prev.newLandmarks.filter((_, i) => i !== index)
+      }));
+      showToast('New landmark removed', 'info');
+    } else {
+      // Get the landmark to delete
+      const landmarkToDelete = state.landmarks[index];
+      
+      // Mark it for deletion on save by adding ID to deletedLandmarkIds
+      setState(prev => ({
+        ...prev,
+        landmarks: prev.landmarks.filter((_, i) => i !== index),
+        deletedLandmarkIds: [...prev.deletedLandmarkIds, landmarkToDelete.id || '']
+      }));
+      showToast('Landmark marked for deletion', 'info');
+    }
   };
 
   // Save landmarks
@@ -110,6 +122,12 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
     setError('');
 
     try {
+      console.log('Saving landmarks:', {
+        existingCount: state.landmarks.length,
+        newCount: state.newLandmarks.length,
+        deletedCount: state.deletedLandmarkIds.length
+      });
+      
       const response = await fetch('/api/save-landmarks', {
         method: 'POST',
         headers: {
@@ -117,7 +135,8 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         },
         body: JSON.stringify({
           propertyId,
-          landmarks: state.landmarks,
+          landmarks: [...state.landmarks, ...state.newLandmarks],
+          deletedLandmarkIds: state.deletedLandmarkIds
         }),
       });
 
@@ -125,23 +144,37 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         throw new Error('Failed to save changes');
       }
 
+      // After successful save, move newLandmarks to landmarks array
+      setState(prev => ({
+        ...prev,
+        landmarks: [...prev.landmarks, ...prev.newLandmarks],
+        newLandmarks: [],
+        deletedLandmarkIds: []
+      }));
+
       setSaveSuccess(true);
+      showToast('All landmark changes saved successfully', 'success');
       onSave?.();
     } catch (error) {
       console.error('Error saving:', error);
       setError('Failed to save changes');
+      showToast('Error saving landmarks', 'info');
     } finally {
       setIsSaving(false);
     }
   };
 
   // Handle landmark addition
-  const handleAddLandmark = useCallback((place: google.maps.places.PlaceResult) => {
+  const handleAddLandmark = useCallback((place: EnhancedPlaceResult) => {
     console.log('[PropertyLocations] handleAddLandmark called with place:', place);
-    if (!place.geometry?.location || !state.selectedType) {
-      console.warn('[PropertyLocations] handleAddLandmark: Missing geometry or selectedType', {
+    
+    // Get the landmark type from our custom property or from state
+    const landmarkType = place.landmarkType || state.selectedType;
+    
+    if (!place.geometry?.location || !landmarkType) {
+      console.warn('[PropertyLocations] handleAddLandmark: Missing geometry or landmarkType', {
         hasGeometry: !!place.geometry?.location,
-        selectedType: state.selectedType
+        landmarkType
       });
       setState(prev => ({ ...prev, isAddingLandmark: false, selectedType: null }));
       showToast('Could not add landmark - missing required data', 'info');
@@ -150,13 +183,17 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
     
     console.log('[PropertyLocations] Adding landmark:', {
       name: place.name,
-      type: state.selectedType,
+      type: landmarkType,
       position: place.geometry.location.toJSON()
     });
     
+    // Create a temporary ID for new landmarks
+    const tempId = `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     const landmark: Landmark = {
+      id: tempId, // Add temporary ID for new landmarks
       name: place.name || '',
-      type: state.selectedType,
+      type: landmarkType,
       position: {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng()
@@ -168,15 +205,17 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       }
     };
 
-    console.log('[PropertyLocations] Successfully processed landmark, resetting isAddingLandmark.');
+    console.log('[PropertyLocations] Successfully processed landmark, adding to newLandmarks array');
+    
+    // Add to newLandmarks array instead of updating landmarks directly
     setState(prev => ({
       ...prev,
-      landmarks: [...prev.landmarks, landmark],
+      newLandmarks: [...prev.newLandmarks, landmark],
       isAddingLandmark: false,
       selectedType: null
     }));
 
-    showToast(`Added ${landmark.name} to landmarks`, 'success');
+    showToast(`Added ${landmark.name} to new landmarks`, 'success');
   }, [state.selectedType, showToast]);
 
   // Helper function to format type string nicely
@@ -187,17 +226,27 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       .join(' ');
   }
 
+  // Get combined landmarks for map display (both existing and new)
+  const allLandmarks = [...state.landmarks, ...state.newLandmarks];
+
   return (
     <div className="space-y-6 relative">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Property Location & Landmarks</h2>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex gap-2 items-center">
+          {(state.newLandmarks.length > 0 || state.deletedLandmarkIds.length > 0) && (
+            <span className="text-sm text-amber-600 mr-2">
+              You have unsaved changes
+            </span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       {/* Map loading status */}
@@ -231,21 +280,13 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       {/* Map */}
       {isLoaded && state.property && (
         <div className="h-[500px] rounded-lg overflow-hidden border relative">
-          {state.isAddingLandmark && (
-            <div className="absolute top-4 left-0 right-0 mx-auto w-max z-10 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow">
-              <p className="text-sm flex items-center">
-                <span className="mr-2">Click directly on a {state.selectedType} icon on the map</span>
-                <button 
-                  onClick={() => setState(prev => ({ ...prev, isAddingLandmark: false, selectedType: null }))}
-                  className="ml-2 p-1 hover:bg-blue-200 rounded-full"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </p>
-            </div>
-          )}
+          {/* Add a visual indicator for right-click */}
+          <div className="absolute top-4 left-4 right-4 z-10 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.629 5.086a.75.75 0 01.707-.371l8.032.765a.75.75 0 01.635.904l-1.222 6.355a.75.75 0 01-1.313.262l-1.295-1.621-4.263 3.199a.75.75 0 01-1.137-.365l-1.607-5.306-1.3 1.076a.75.75 0 01-1.046-.105L3.33 8.225a.75.75 0 01.028-1.036l4.27-3.103zm1.864 1.471l1.776 5.837 3.526-2.645a.75.75 0 011.051.11l.941 1.176.502-2.618-5.391-.513-1.066.774a.75.75 0 01-1.339-.121zm-4.406 2.66l.801.989.966-.799-1.767-1.25v1.06z" clipRule="evenodd" />
+            </svg>
+            <span>Right-click on the map to add landmarks</span>
+          </div>
           <div 
             className="w-full h-full relative" 
             style={{ 
@@ -257,7 +298,7 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
               center={state.property.position}
               zoom={15}
               property={state.property}
-              landmarks={state.landmarks}
+              landmarks={allLandmarks} // Use combined landmarks
               isAddingLandmark={state.isAddingLandmark}
               mode="admin"
               onAddLandmark={handleAddLandmark}
@@ -273,81 +314,84 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
         <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <p className="text-amber-800 font-medium mb-2">How to add landmarks:</p>
           <ol className="list-decimal pl-5 text-amber-800 space-y-1">
-            <li>Click one of the landmark type buttons below (Shopping, Dining, etc.)</li>
-            <li>Look for <strong>existing points of interest</strong> on the map (restaurants, shops, schools, etc.)</li>
-            <li>Click directly on a point of interest icon (not just anywhere on the map)</li>
+            <li>Right-click anywhere on the map</li>
+            <li>Select a landmark type from the menu (Shopping, Dining, etc.)</li>
+            <li>The system will search for a nearby landmark of that type</li>
             <li>The landmark will be added to your list below</li>
           </ol>
           <p className="text-amber-800 mt-2 text-sm">
-            Note: You can only add landmarks that already exist in Google Maps. If you don&apos;t see 
-            icons for points of interest, try zooming in or moving the map around.
+            Note: You can only add landmarks that already exist in Google Maps. If no landmarks are found
+            near where you right-clicked, try right-clicking closer to a point of interest.
           </p>
         </div>
         
-        {state.isAddingLandmark && (
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800">
-              <strong>Currently adding: {state.selectedType}</strong>
-              <br />
-              Look for {state.selectedType} icons on the map and click directly on one to add it.
-            </p>
+        {/* New Landmarks List */}
+        {state.newLandmarks.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium flex items-center">
+              <span>New Landmarks</span>
+              <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">Unsaved</span>
+            </h3>
+            <div className="space-y-2">
+              {state.newLandmarks.map((landmark, index) => {
+                const config = getLandmarkTypeConfig(landmark.type as LandmarkType);
+                return (
+                  <div
+                    key={landmark.id || index}
+                    className="flex items-center justify-between p-3 border border-blue-200 bg-blue-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      {React.createElement(config.icon, { className: "w-5 h-5" })}
+                      <div>
+                        <p className="font-medium">{landmark.name}</p>
+                        <p className="text-sm text-gray-500">{landmark.address}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteLandmark(index, true)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
         
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {LANDMARK_TYPES.map((config) => (
-            <button
-              key={config.type}
-              onClick={() => startAddingLandmark(config.type)}
-              disabled={state.isAddingLandmark}
-              className={`
-                p-3 rounded-lg border text-left
-                ${state.isAddingLandmark 
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-50 active:bg-gray-100'
-                }
-              `}
-            >
-              <div className="flex items-center gap-2">
-                {React.createElement(config.icon, { className: "w-5 h-5" })}
-                <span className="font-medium">{config.label}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Landmarks List */}
-      {state.landmarks.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Added Landmarks</h3>
-          <div className="space-y-2">
-            {state.landmarks.map((landmark, index) => {
-              const config = getLandmarkTypeConfig(landmark.type as LandmarkType);
-              return (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 border rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    {React.createElement(config.icon, { className: "w-5 h-5" })}
-                    <div>
-                      <p className="font-medium">{landmark.name}</p>
-                      <p className="text-sm text-gray-500">{landmark.address}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteLandmark(index)}
-                    className="text-red-600 hover:text-red-700"
+        {/* Existing Landmarks List */}
+        {state.landmarks.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Existing Landmarks</h3>
+            <div className="space-y-2">
+              {state.landmarks.map((landmark, index) => {
+                const config = getLandmarkTypeConfig(landmark.type as LandmarkType);
+                return (
+                  <div
+                    key={landmark.id || index}
+                    className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    Delete
-                  </button>
-                </div>
-              );
-            })}
+                    <div className="flex items-center gap-3">
+                      {React.createElement(config.icon, { className: "w-5 h-5" })}
+                      <div>
+                        <p className="font-medium">{landmark.name}</p>
+                        <p className="text-sm text-gray-500">{landmark.address}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteLandmark(index)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Error Message */}
       {error && (
