@@ -15,6 +15,24 @@ export const metadata: Metadata = {
     maximumScale: 1,
   },
   manifest: '/site.webmanifest',
+  title: 'Digital Property Showcase - Property Showcase Solution',
+  description: 'Digital Property Showcase helps real estate professionals create beautiful online property showcases with custom domains in minutes.',
+  openGraph: {
+    title: 'Digital Property Showcase - Property Showcase Solution',
+    description: 'Digital Property Showcase helps real estate professionals create beautiful online property showcases with custom domains in minutes.',
+    url: 'https://digitalpropertyshowcase.com',
+    images: [
+      {
+        url: '/assets/logo/logo.png',
+        width: 800,
+        height: 600,
+        alt: 'Digital Property Showcase logo',
+      },
+    ],
+  },
+  icons: {
+    icon: '/assets/logo/logo.png',
+  },
 };
 
 // Basic JSON-LD for the website

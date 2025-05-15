@@ -56,14 +56,13 @@ export function Hero({ property }: HeroProps) {
         scrollTrigger: {
           trigger: 'body',
           start: 'top top',
-          end: '+=50%',
+          end: 'bottom top',
           scrub: 0.5,
-          immediateRender: true,
           onUpdate: (self) => {
             const progress = self.progress
             const blurAmount = Math.pow(progress * 20, 2)
             gsap.set(topSectionRef.current, {
-              filter: `blur(${blurAmount}px)`
+              filter: `blur(${Math.min(blurAmount, 30)}px)`
             })
           }
         }
@@ -85,7 +84,7 @@ export function Hero({ property }: HeroProps) {
         y: 0,
         filter: 'blur(0px)',
         duration: 1.6,
-        delay: 2
+        delay: 0.5
       })
       .to(addressRef.current, {
         opacity: 1,
@@ -119,12 +118,13 @@ export function Hero({ property }: HeroProps) {
       }, '-=1.0')
     }
 
-    // Start animations immediately since video is handled elsewhere
+    // Start animations
     startAnimations()
 
     // Cleanup
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      tl.kill();
     }
   }, [])
 
@@ -140,19 +140,19 @@ export function Hero({ property }: HeroProps) {
               <div className="flex items-center gap-8 lg:gap-12">
                 <HeaderLink 
                   href="#features" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Features
                 </HeaderLink>
                 <HeaderLink 
                   href="#lifestyle" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Lifestyle
                 </HeaderLink>
                 <HeaderLink 
                   href="#neighbourhood" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Neighbourhood
                 </HeaderLink>
@@ -162,19 +162,19 @@ export function Hero({ property }: HeroProps) {
               <div className="flex items-center gap-8 lg:gap-12">
                 <HeaderLink 
                   href="#info" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Info
                 </HeaderLink>
                 <HeaderLink 
                   href="#viewings" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Viewings
                 </HeaderLink>
                 <HeaderLink 
                   href="#contact" 
-                  className="!text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
+                  className="font-sans !text-brand-light hover:!text-brand-light/80 after:!bg-brand-light [&::before]:!bg-brand-light"
                 >
                   Make an Enquiry
                 </HeaderLink>
@@ -199,8 +199,8 @@ export function Hero({ property }: HeroProps) {
             )}
           </div>
 
-          <h2 ref={addressRef} className="text-xl sm:text-2xl md:text-3xl font-light mb-2 text-brand-light">{property.street_address}</h2>
-          <h3 ref={suburbRef} className="text-3xl sm:text-4xl md:text-6xl font-light text-brand-light">{property.suburb}</h3>
+          <h2 ref={addressRef} className="font-heading text-xl sm:text-2xl md:text-3xl font-light mb-2 text-brand-light">{property.street_address}</h2>
+          <h3 ref={suburbRef} className="font-heading text-3xl sm:text-4xl md:text-6xl font-light text-brand-light">{property.suburb}</h3>
         </div>
         
         {/* Bottom Section */}
@@ -209,7 +209,7 @@ export function Hero({ property }: HeroProps) {
           <div ref={ctaContainerRef} className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8 px-4">
             {/* Left slide effect button */}
             <button 
-              className={`${styles.slideEffect} px-8 py-3 text-brand-light bg-brand-dark active:translate-y-[3px]`}
+              className={`${styles.slideEffect} font-sans px-8 py-3 text-brand-light bg-brand-dark active:translate-y-[3px]`}
               onClick={() => {
                 const primaryBtn = property.metadata?.more_info?.ctaButtons?.primary;
                 if (primaryBtn?.type === 'anchor' && primaryBtn.url) {
@@ -224,7 +224,7 @@ export function Hero({ property }: HeroProps) {
 
             {/* Right slide effect button */}
             <button 
-              className={`${styles.slideEffectReverse} px-8 py-3 text-brand-light active:translate-y-[3px]`}
+              className={`${styles.slideEffectReverse} font-sans px-8 py-3 text-brand-light active:translate-y-[3px]`}
               onClick={() => {
                 const secondaryBtn = property.metadata?.more_info?.ctaButtons?.secondary;
                 if (secondaryBtn?.type === 'anchor' && secondaryBtn.url) {
@@ -239,10 +239,10 @@ export function Hero({ property }: HeroProps) {
           </div>
 
           {/* Headline and Subheadline */}
-          <h1 ref={headlineRef} className="text-2xl sm:text-3xl md:text-5xl font-light mb-3 sm:mb-4 px-4 sm:px-0 text-brand-light">
+          <h1 ref={headlineRef} className="font-heading text-2xl sm:text-3xl md:text-5xl font-light mb-3 sm:mb-4 px-4 sm:px-0 text-brand-light">
             {property.content.hero.headline}
           </h1>
-          <p ref={subheadlineRef} className="text-lg sm:text-xl md:text-2xl font-light max-w-2xl mx-auto px-4 sm:px-0 text-brand-light">
+          <p ref={subheadlineRef} className="font-sans text-lg sm:text-xl md:text-2xl font-light max-w-2xl mx-auto px-4 sm:px-0 text-brand-light">
             {property.content.hero.subheadline}
           </p>
         </div>

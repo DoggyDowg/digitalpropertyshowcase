@@ -20,6 +20,17 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/api/favicon" />
         <link rel="apple-touch-icon" href="/api/favicon" />
         
+        {/* Additional CSS for the landing page */}
+        <link rel="stylesheet" href="/css/tailwind-build.css" />
+        <link rel="stylesheet" href="/css/index.css" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+          integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+        />
+        
         <script src="//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" async></script>
       </head>
       <body>

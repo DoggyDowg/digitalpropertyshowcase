@@ -1,0 +1,131 @@
+{
+  "company_overview": {
+    "name": "Digital Property Showcase",
+    "core_product": "Digital Property Website Service",
+    "product_type": "Website Development Service",
+    "specialized_niche": "Real Estate Marketing",
+    "target_market": "Australian Real Estate Agents",
+    "primary_function": "Creation of custom-branded property listing websites for multi-million dollar listings"
+  },
+  "pricing": {
+    "tiers": [
+      {
+        "name": "Essential Showcase",
+        "price": 770,
+        "setup_fee": 0
+      },
+      {
+        "name": "Premium Showcase",
+        "base_price": 960,
+        "setup_fee": 220
+      },
+      {
+        "name": "Prestige Showcase",
+        "base_price": 1260,
+        "setup_fee": 220
+      }
+    ],
+    "extension_options": {
+      "monthly_rate": 80,
+      "initial_period": "3 months"
+    },
+    "additional_notes": [
+      "Discounted rates available for high volume agents",
+      "First-time setup fee covers initial branding setup"
+    ]
+  },
+  "faqs": [
+    {
+      "category": "Pricing and Packages",
+      "questions": [
+        {
+          "question": "How much does Digital Property Showcase cost?",
+          "answer": "We offer three tiers: Essential Showcase at AU$770, Premium Showcase at AU$960, and Prestige Showcase at AU$1,260. Premium and Prestige tiers have an additional AU$220 first-time setup fee.",
+          "detailed_explanation": "Pricing varies by package, with additional setup fees for Premium and Prestige tiers. Discounted rates are available for high-volume agents."
+        },
+        {
+          "question": "What's included in each pricing tier?",
+          "answer": "Tiers progressively add more features:",
+          "breakdown": [
+            "Essential Showcase: Unbranded website, custom domain, unlimited photos/videos, 3 months live, 5 website updates, email support",
+            "Premium Showcase: Adds full agency branding, custom logo, interactive local map, backlinking, 10 website updates, phone support",
+            "Prestige Showcase: Includes automated Instagram carousel, dynamic open house data, dedicated account manager, unlimited updates, advanced SEO optimization"
+          ]
+        },
+        {
+          "question": "Is there a minimum contract period?",
+          "answer": "No long-term contract. Each showcase website is live for 3 months, extendable month-to-month for AU$80 per month."
+        }
+      ]
+    },
+    {
+      "category": "Benefits for Real Estate Agents",
+      "questions": [
+        {
+          "question": "How do real estate agents benefit from these Showcases?",
+          "key_benefits": [
+            "Differentiation in a crowded market",
+            "Compelling edge in listing presentations",
+            "Elevating property perception",
+            "Enhancing agent value",
+            "Premium branding",
+            "Increased client satisfaction"
+          ],
+          "detailed_explanation": "Showcases provide a unique marketing tool that sets agents apart, demonstrating commitment to innovative marketing and elevating professional image."
+        }
+      ]
+    },
+    {
+      "category": "Website Customization",
+      "questions": [
+        {
+          "question": "Can I customise the website to match my agency's branding?",
+          "answer": "Yes, Premium and Prestige tiers offer fully branded websites reflecting your agency's unique style, including fonts, colors, logos, and backlinks."
+        },
+        {
+          "question": "How does the custom branded logo design process work?",
+          "answer": "We send a Style Selection Proposal with icon, font, and color styles aligned with your agency's brand. You'll choose from logo design examples. This one-time selection guides future logos for your listings."
+        },
+        {
+          "question": "How does the interactive local map work?",
+          "answer": "You can nominate up to 10 local landmarks or let us choose based on listing details. The map retains full Google Maps functionality for free exploration."
+        }
+      ]
+    },
+    {
+      "category": "Content and Support",
+      "questions": [
+        {
+          "question": "Is there a limit to photos and videos?",
+          "answer": "No, you can upload as many photos and videos as needed to showcase the property."
+        },
+        {
+          "question": "How long does it take to create a showcase website?",
+          "answer": "Once we have all necessary information, files, and style approval, your showcase will be ready for final approval within 2 business days."
+        },
+        {
+          "question": "What kind of support do you offer?",
+          "answer": "We provide email support 24/7 and phone support during business hours. We set up a WhatsApp group for each project to facilitate easy collaboration."
+        },
+        {
+          "question": "Can I make changes to the website after publication?",
+          "answer": "Yes, update requests vary by tier: 5 for Essential, 10 for Premium, and unlimited for Prestige."
+        }
+      ]
+    },
+    {
+      "category": "Marketing and Visibility",
+      "questions": [
+        {
+          "question": "Will the showcase website help improve my property's visibility online?",
+          "answer": "While we optimize for search engines, primary traffic comes from your marketing efforts. The showcase primarily elevates listing and agent perceived value.",
+          "key_point": "This is as much a marketing tool for you and your agency as it is for your listings."
+        },
+        {
+          "question": "Can I integrate with existing social media marketing?",
+          "answer": "Yes, we link to your social media pages. The Prestige tier offers an automated Instagram carousel, allowing automatic content updates through social media."
+        }
+      ]
+    }
+  ]
+}
