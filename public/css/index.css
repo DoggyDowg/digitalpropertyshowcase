@@ -272,11 +272,81 @@ hr{
   background-color: transparent;
   border: 1px solid white;
   color: white;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.lp-btn-outline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0.8;
+  z-index: -1;
+  transition: width 0.6s ease, height 0.6s ease;
 }
 
 .lp-btn-outline:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--primary-color);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.lp-btn-outline:hover::before {
+  width: 300%;
+  height: 300%;
+}
+
+.lp-btn-outline:active {
+  transform: translateY(0);
+}
+
+/* Dark variant for light backgrounds */
+.lp-btn-outline-dark {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.lp-btn-outline-dark::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  opacity: 0.9;
+  z-index: -1;
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.lp-btn-outline-dark:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(58, 36, 199, 0.3);
+}
+
+.lp-btn-outline-dark:hover::before {
+  width: 300%;
+  height: 300%;
+}
+
+.lp-btn-outline-dark:active {
+  transform: translateY(0);
 }
 
 .lp-btn-text {
@@ -337,6 +407,12 @@ hr{
   height: 24px;
   scale: 0;
   transition: all 0.3s ease;
+  visibility: hidden; /* Hide when using with outline buttons */
+}
+
+/* Only show the circle animation when not using outline buttons */
+.lp-btn:not(.lp-btn-outline):not(.lp-btn-outline-dark).lp-btn-icon-circle .circle-animation {
+  visibility: visible;
 }
 
 .lp-btn-icon-circle:hover .circle-animation {
@@ -396,6 +472,27 @@ hr{
     border-radius: 25px;
 }
 
+/* Fixed-width container matching header responsive behavior */
+.tw-fixed-container {
+    position: relative;
+}
+
+@media (max-width: 767px) {
+    .tw-fixed-container {
+        width: calc(100% - 30px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .tw-fixed-container {
+        width: calc(100% - 120px) !important;
+        max-width: 944px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
 
 /* ---------------- dropdown --------------------- */
 .dropdown {

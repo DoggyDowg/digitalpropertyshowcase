@@ -122,7 +122,7 @@ export default function AgencyEditPage() {
         }
 
         const { data, error } = await supabase
-          .from('agencies')
+          .from('agency_settings')
           .select('*')
           .eq('id', id)
           .single();

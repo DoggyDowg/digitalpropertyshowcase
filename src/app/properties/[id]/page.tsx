@@ -92,24 +92,31 @@ export default async function PropertyPage({
     )
   }
 
-  // Important: If accessed via custom domain, explicitly set is_demo to false
-  // This prevents race conditions where it might initially load as a demo
+  // Important: If accessed via custom domain, ensure property is not treated as demo
+  // and correct its state in the database if necessary.
   if (isCustomDomain && property.custom_domain) {
-    console.info('[Server] Custom domain detected, ensuring property is not treated as demo')
-    property.is_demo = false
+    console.info(`[Server] Custom domain detected for property ID: ${id}.`);
     
-    // If property incorrectly marked as demo in database, update it
+    // Check if the property fetched from the database is incorrectly marked as demo
     if (property.is_demo === true) {
-      console.warn('[Server] Property incorrectly marked as demo, updating database')
+      console.warn(`[Server] Property ID: ${id} is marked as demo in DB (is_demo: ${property.is_demo}), but this is a custom domain. Attempting to update database.`);
       const { error: updateError } = await supabase
         .from('properties')
         .update({ is_demo: false })
-        .eq('id', id)
+        .eq('id', id);
       
       if (updateError) {
-        console.error('[Server] Failed to update is_demo status:', updateError.message)
+        console.error(`[Server] Failed to update is_demo status in DB for property ID: ${id}:`, updateError.message);
+        // Even if DB update fails, we will still serve it as non-demo for this request.
+        // The original value of property.is_demo (true) will be overridden in the next step.
+      } else {
+        console.info(`[Server] Successfully updated is_demo in DB to false for property ID: ${id}.`);
       }
     }
+    
+    // Ensure for the current render, it's not treated as a demo, regardless of its initial DB state or update success.
+    console.info(`[Server] Forcing property.is_demo to false for current request (property ID: ${id}) on custom domain.`);
+    property.is_demo = false;
   }
 
   console.info('[Server] ✅ PROPERTY PAGE RENDER COMPLETED ✅\n')

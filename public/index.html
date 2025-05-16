@@ -115,7 +115,7 @@
             @media (min-width: 768px) {
                 header.main-header {
                     width: calc(100% - 120px) !important;
-                    max-width: 1280px !important;
+                    max-width: 944px !important;
                     margin-left: auto !important;
                     margin-right: auto !important;
                     left: 50% !important;
@@ -214,8 +214,8 @@
         </div> -->
 
         <header
-            class="lg:tw-px-4 tw-max-w-[100vw] tw-max-w-lg:tw-mr-auto max-lg:tw-top-0 tw-fixed tw-top-4 lg:tw-left-1/2 lg:tw--translate-x-1/2 tw-z-20 tw-flex tw-h-[60px] tw-w-full 
-                    tw-text-gray-700 tw-bg-white tw-px-[3%] tw-rounded-md lg:tw-max-w-5xl tw-shadow-md
+            class="main-header lg:tw-px-4 tw-max-w-[100vw] tw-max-w-lg:tw-mr-auto tw-fixed tw-top-4 lg:tw-left-1/2 lg:tw--translate-x-1/2 tw-z-20 tw-flex tw-h-[60px] tw-w-full 
+                    tw-text-gray-700 tw-bg-white tw-px-[3%] tw-rounded-md lg:tw-max-w-[944px] tw-shadow-md
                     lg:tw-justify-around lg:!tw-backdrop-blur-lg lg:tw-opacity-[0.99]"
         >
             <a class="tw-flex tw-p-[4px] tw-gap-2 tw-place-items-center" href="#">
@@ -352,16 +352,15 @@
         <section
             class="hero-section tw-relative tw-flex tw-w-full tw-max-w-[100vw] tw-flex-col tw-overflow-hidden"
             id="hero-section"
-            style="height: 100vh; height: calc(var(--vh, 1vh) * 100);"
+            style="min-height: 600px; height: 100vh; max-height: 800px; overflow: hidden;"
         >
-
-            <!-- video container -->
+                <!-- video container -->
             <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-z-20 tw-transition-opacity
                 tw-duration-300 tw-scale-0 tw-opacity-0 tw-p-2
                 tw-w-full tw-h-full tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg">
 
-                <div class="tw-max-w-[80vw] max-lg:tw-max-w-full max-lg:tw-w-full tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl  max-lg:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md 
-                            tw-h-[90vh] max-lg:tw-h-auto max-lg:tw-min-h-[400px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full
+                <div class="tw-max-w-[80vw] max-md:tw-max-w-full max-md:tw-w-full tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl max-md:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md 
+                            tw-h-[90vh] max-md:tw-h-auto max-md:tw-min-h-[400px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full
                             " id="video-container">
                     <div class="tw-w-full tw-flex">
                         <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl" title="close">
@@ -389,32 +388,51 @@
             </div>
 
             <div    
-                class="hero-bg-gradient tw-relative tw-flex tw-h-full tw-w-full tw-items-center tw-justify-center tw-p-[5%] max-lg:tw-p-4 tw-text-white"
-                style="background-image: url('/assets/images/background/Heading.png'); background-size: 100% auto; background-position: right center; background-repeat: no-repeat;"
+                class="hero-bg-gradient tw-relative tw-flex tw-h-full tw-w-full tw-items-center tw-justify-center tw-p-0 tw-text-white"
+                style="background-image: url('/assets/images/background/BGImg (Desktop).png'); background-size: 100% auto; background-position: right center; background-repeat: no-repeat;"
+                id="hero-bg-gradient"
             >
+                <!-- Dark overlay at the bottom - only visible in tablet view -->
+                <div id="tablet-bottom-overlay" style="position: absolute; 
+                           bottom: 0; 
+                           left: 0; 
+                           width: 100%; 
+                           height: 350px; 
+                           background: linear-gradient(to top, 
+                                rgba(0,0,0,0.45) 0%, 
+                                rgba(0,0,0,0.45) 200px, 
+                                rgba(0,0,0,0) 350px);
+                           z-index: 5;
+                           pointer-events: none;
+                           display: none;">
+                </div>
 
-                <div class="purple-bg-grad reveal-up tw-absolute tw-left-1/4 tw-top-[10%] tw-h-[120px] tw-w-[120px] tw-opacity-30" 
-                ></div> 
 
                 <div
-                    class="tw-flex tw-flex-col tw-w-full md:tw-w-3/5 lg:tw-w-1/2 items-center text-center md:items-start md:text-left"
+                    class="tw-flex tw-flex-col tw-max-w-[100vw] tw-fixed-container items-center text-center md:items-start md:text-left tw-z-20"
+                    style="width: 100%; max-width: 944px; margin-left: 0; margin-right: 0; position: relative; z-index: 10;"
                 >
-                    <h2
-                        class="reveal-up tw-text-4xl md:tw-text-5xl tw-font-semibold tw-uppercase tw-leading-normal max-md:tw-leading-snug tw-text-white md:tw-text-left lg:tw-text-left text-center"
-                        style="color: white !important;"
-                    >
-                        Prestige Listings Deserve <br />Prestige Marketing
-                    </h2>
+                    <div id="hero-text-content-wrapper">
+                        <h2
+                            class="reveal-up tw-text-4xl md:tw-text-5xl tw-font-semibold tw-leading-normal max-md:tw-leading-snug tw-text-white md:tw-text-left text-center"
+                            style="color: white !important;"
+                        >
+                            Prestige Listings Deserve <br />Prestige Marketing
+                        </h2>
+                    </div>
+
+                    <!-- Paragraph moved outside the hero-text-content-wrapper -->
                     <div
-                        class="reveal-up tw-mt-8 tw-max-w-[450px] tw-text-lg max-lg:tw-text-base tw-p-2 tw-text-left max-lg:tw-text-center tw-text-white max-lg:tw-max-w-full"
+                        id="hero-paragraph"
+                        class="reveal-up tw-mt-8 tw-max-w-[450px] tw-text-lg max-[900px]:tw-text-base tw-p-2 tw-text-left max-[900px]:tw-text-center tw-text-white max-[900px]:tw-max-w-full"
                         style="color: white !important;"
                     >
-                        Digital Property Showcase turns your premium listings into elegant, branded digital experiences—designed to impress sellers and win you more business.
+                        Digital Property Showcase turns your premium listings into elegant, branded digital experiences — designed to impress sellers and win you more business.
                     </div>
 
                     <div
-                        class="reveal-up tw-mt-10 max-md:tw-flex-col tw-flex tw-place-items-center tw-gap-4"
-                    >
+                        class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4" id="hero-button-container">
+                        <!-- Removed max-md:tw-flex-col class to ensure buttons are always in a row -->
 
                         <button onclick="openVideo()"
                             class="lp-btn lp-btn-outline lp-btn-lg lp-btn-icon-circle"
@@ -1219,6 +1237,324 @@
         
         // Also update on orientation change specifically for mobile
         window.addEventListener('orientationchange', setViewportHeight);
+    </script>
+
+    <!-- Hero section height fix -->
+    <script>
+        // Simple script to fix hero section height and background image positioning
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Hero height script running!');
+            
+            // Get elements
+            const heroSection = document.getElementById('hero-section');
+            const heroBackground = document.querySelector('.hero-bg-gradient');
+            
+            if (!heroSection || !heroBackground) {
+                console.error('Could not find hero elements');
+                return;
+            }
+            
+            console.log('Found hero elements');
+            
+            // Breakpoints for responsive design
+            const TABLET_BREAKPOINT = 900;
+            const MOBILE_BREAKPOINT = 576;
+            
+            // Function to add text shadow to the headline
+            function addHeadlineTextShadow(headlineElement) {
+                // Create a subtle lift effect with text shadow
+                headlineElement.style.textShadow = '0 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.2)';
+            }
+            
+            // Function to add text shadow to the paragraph
+            function addParagraphTextShadow(paragraphElement) {
+                // Create a subtle lift effect with text shadow (lighter than headline)
+                paragraphElement.style.textShadow = '0 1px 3px rgba(0,0,0,0.2), 0 0 8px rgba(0,0,0,0.1)';
+            }
+
+            function updateHeroLayout(viewportWidth, heroContent, textWrapper, buttonContainer) {
+                // Get the paragraph element
+                const paragraph = document.getElementById('hero-paragraph');
+                
+                // Get the overlay element
+                const tabletOverlay = document.getElementById('tablet-bottom-overlay');
+                
+                // Apply text shadow to headline for all viewport sizes
+                const headlineElement = textWrapper.querySelector('h2');
+                addHeadlineTextShadow(headlineElement);
+                
+                // Apply text shadow to paragraph for all viewport sizes
+                addParagraphTextShadow(paragraph);
+                
+                if (viewportWidth <= TABLET_BREAKPOINT) { // Mobile and Tablet
+                    console.log('Applying Mobile/Tablet hero content layout');
+                    
+                    // Only show overlay on tablet, not on mobile
+                    if (viewportWidth > MOBILE_BREAKPOINT) { // Tablet only
+                        console.log('Enabling overlay for tablet');
+                        tabletOverlay.style.display = 'block';
+                        
+                        // Ensure buttons are in a row for tablet view
+                        buttonContainer.classList.remove('tw-flex-col');
+                        buttonContainer.style.flexDirection = 'row';
+                        
+                        // Create a flexible container with content at top and bottom for TABLET
+                        heroContent.style.display = 'flex';
+                        heroContent.style.flexDirection = 'column';
+                        heroContent.style.justifyContent = 'space-between'; // Pushes content to top and bottom
+                        heroContent.style.height = '100%'; // Fill available height
+                        heroContent.style.boxSizing = 'border-box'; // Include padding in height calculation
+                        
+                        // Top padding for headline on tablet
+                        heroContent.style.paddingTop = '100px';
+                        
+                        // Bottom padding after buttons on tablet
+                        heroContent.style.paddingBottom = '60px';
+                        
+                        // Center alignment
+                        heroContent.style.alignItems = 'center'; 
+                        heroContent.style.textAlign = 'center';
+                        
+                        // Create bottom content group (will contain paragraph and buttons) for TABLET
+                        let bottomContentGroup = document.getElementById('hero-bottom-content');
+                        if (!bottomContentGroup) {
+                            bottomContentGroup = document.createElement('div');
+                            bottomContentGroup.id = 'hero-bottom-content';
+                            bottomContentGroup.style.display = 'flex';
+                            bottomContentGroup.style.flexDirection = 'column';
+                            bottomContentGroup.style.alignItems = 'center';
+                            heroContent.appendChild(bottomContentGroup);
+                        }
+                        
+                        // Style the headline (at the top) for tablet - make it much larger
+                        textWrapper.style.textAlign = 'center';
+                        textWrapper.querySelector('h2').style.textAlign = 'center';
+                        textWrapper.querySelector('h2').style.fontSize = '2.75rem'; // Larger headline for tablet
+                        textWrapper.querySelector('h2').style.lineHeight = '1.2';
+                        
+                        // Move paragraph to bottom content group and style it for tablet
+                        bottomContentGroup.appendChild(paragraph);
+                        paragraph.style.fontSize = '1.1rem';
+                        paragraph.style.textAlign = 'center';
+                        paragraph.style.marginTop = '0';
+                        paragraph.style.marginBottom = '16px'; // 16px padding between paragraph and buttons
+                        paragraph.style.maxWidth = '75%';
+                        
+                        // Move buttons to bottom content group for tablet
+                        bottomContentGroup.appendChild(buttonContainer);
+                        buttonContainer.classList.remove('tw-mt-10');
+                        buttonContainer.style.marginTop = '0';
+                        buttonContainer.classList.add('tw-justify-center');
+                        buttonContainer.classList.remove('tw-flex-col');
+                        
+                    } else { // Mobile specific (<577px)
+                        console.log('Applying Mobile-specific layout');
+                        tabletOverlay.style.display = 'block'; // Show overlay for mobile too
+                        
+                        // Reset any previous layout structures
+                        const bottomContentGroup = document.getElementById('hero-bottom-content');
+                        if (bottomContentGroup) {
+                            // Move elements back to original container before rearranging
+                            if (bottomContentGroup.contains(paragraph)) {
+                                heroContent.appendChild(paragraph);
+                            }
+                            if (bottomContentGroup.contains(buttonContainer)) {
+                                heroContent.appendChild(buttonContainer);
+                            }
+                            bottomContentGroup.remove();
+                        }
+                        
+                        // Set up container for mobile layout
+                        heroContent.style.display = 'flex';
+                        heroContent.style.flexDirection = 'column';
+                        heroContent.style.justifyContent = 'space-between';
+                        heroContent.style.height = '100%';
+                        heroContent.style.boxSizing = 'border-box';
+                        heroContent.style.paddingTop = '100px'; // 100px top padding
+                        heroContent.style.paddingBottom = '60px'; // 60px bottom padding
+                        heroContent.style.alignItems = 'center';
+                        heroContent.style.textAlign = 'center';
+                        
+                        // Create top content group for headline and paragraph
+                        let topContentGroup = document.getElementById('hero-top-content');
+                        if (!topContentGroup) {
+                            topContentGroup = document.createElement('div');
+                            topContentGroup.id = 'hero-top-content';
+                            topContentGroup.style.display = 'flex';
+                            topContentGroup.style.flexDirection = 'column';
+                            topContentGroup.style.alignItems = 'center';
+                            
+                            // Move headline wrapper to top content
+                            if (heroContent.contains(textWrapper)) {
+                                heroContent.removeChild(textWrapper);
+                            }
+                            topContentGroup.appendChild(textWrapper);
+                            
+                            // Move paragraph directly after headline with 12px spacing
+                            if (heroContent.contains(paragraph)) {
+                                heroContent.removeChild(paragraph);
+                            }
+                            topContentGroup.appendChild(paragraph);
+                            
+                            // Insert the top content group at the beginning of hero content
+                            heroContent.insertBefore(topContentGroup, heroContent.firstChild);
+                        }
+                        
+                        // Style the headline for mobile - make it much smaller
+                        textWrapper.style.textAlign = 'center';
+                        textWrapper.querySelector('h2').style.textAlign = 'center';
+                        if (viewportWidth < 400) {
+                            textWrapper.querySelector('h2').style.fontSize = '1.5rem'; // Even smaller headline for < 400px
+                        } else {
+                            textWrapper.querySelector('h2').style.fontSize = '2rem'; // Headline for 400px-576px
+                        }
+                        textWrapper.querySelector('h2').style.lineHeight = '1.3';
+                        
+                        // Style the paragraph for mobile - smaller text
+                        paragraph.style.textAlign = 'center';
+                        paragraph.style.marginTop = '0'; // Removed spacing between headline and paragraph
+                        paragraph.style.marginBottom = '0';
+                        paragraph.style.maxWidth = '100%';
+                        if (viewportWidth < 400) {
+                            paragraph.style.fontSize = '0.9rem'; // Even smaller for < 400px
+                            paragraph.style.lineHeight = '1.4'; // Adjust line spacing for < 400px
+                        } else {
+                            paragraph.style.fontSize = '0.9rem'; // Smaller paragraph text for 400px-576px
+                            paragraph.style.lineHeight = 'normal'; // Reset to default for other mobile sizes
+                        }
+                        
+                        // Style buttons for mobile - same width
+                        buttonContainer.classList.add('tw-flex-col');
+                        buttonContainer.style.flexDirection = 'column';
+                        buttonContainer.classList.remove('tw-mt-10');
+                        buttonContainer.style.marginTop = 'auto'; // Push to bottom with natural spacing
+                        buttonContainer.classList.add('tw-justify-center');
+                        
+                        // Set equal width for all buttons in the container
+                        const buttons = buttonContainer.querySelectorAll('a, button');
+                        buttons.forEach(button => {
+                            button.style.width = '240px'; // Fixed width for all buttons
+                            button.style.maxWidth = '90vw'; // Prevent overflow on very small screens
+                            button.style.margin = '6px auto'; // Center buttons and add vertical spacing
+                        });
+                    }
+                    
+                } else { // Desktop View
+                    console.log('Applying Desktop hero content layout');
+                    
+                    // Hide overlay on desktop
+                    tabletOverlay.style.display = 'none';
+                    
+                    // Ensure buttons are in a row for desktop
+                    buttonContainer.classList.remove('tw-flex-col');
+                    buttonContainer.style.flexDirection = 'row';
+                    
+                    // Remove bottom content group if it exists
+                    const bottomContentGroup = document.getElementById('hero-bottom-content');
+                    if (bottomContentGroup) {
+                        // Move paragraph and buttons back to their original positions
+                        textWrapper.after(paragraph);
+                        paragraph.after(buttonContainer);
+                        
+                        // Remove the temporary container
+                        bottomContentGroup.remove();
+                    }
+                    
+                    // Remove top content group if it exists from mobile view
+                    const topContentGroup = document.getElementById('hero-top-content');
+                    if (topContentGroup) {
+                        // Ensure content is properly reintegrated
+                        if (topContentGroup.contains(textWrapper)) {
+                            heroContent.appendChild(textWrapper);
+                        }
+                        if (topContentGroup.contains(paragraph)) {
+                            textWrapper.after(paragraph);
+                        }
+                        topContentGroup.remove();
+                    }
+                    
+                    // Reset container styles
+                    heroContent.style.display = '';
+                    heroContent.style.flexDirection = '';
+                    heroContent.style.justifyContent = '';
+                    heroContent.style.height = '';
+                    heroContent.style.paddingTop = '';
+                    heroContent.style.paddingBottom = '';
+                    heroContent.style.boxSizing = '';
+                    heroContent.style.alignItems = ''; 
+                    heroContent.style.textAlign = '';
+                    
+                    // Set desktop-specific styles - make headline much larger
+                    textWrapper.style.textAlign = '';
+                    textWrapper.querySelector('h2').style.fontSize = '3.5rem'; // Much larger headline for desktop
+                    textWrapper.querySelector('h2').style.lineHeight = '1.1';
+                    textWrapper.querySelector('h2').style.textAlign = '';
+                    
+                    // Reset paragraph styles
+                    paragraph.style.fontSize = '';
+                    paragraph.style.textAlign = '';
+                    paragraph.style.lineHeight = '';
+                    paragraph.style.maxWidth = '';
+                    paragraph.style.marginTop = '';
+                    paragraph.style.marginBottom = '';
+                    
+                    // Reset button container
+                    buttonContainer.classList.add('tw-mt-10');
+                    buttonContainer.style.marginTop = '';
+                    buttonContainer.classList.remove('tw-justify-center');
+                    buttonContainer.classList.remove('tw-flex-col');
+                }
+            }
+
+            function updateHeroBackground() {
+                const viewportWidth = window.innerWidth;
+                const heroContent = document.querySelector('.hero-bg-gradient > .tw-fixed-container');
+                const textWrapper = document.getElementById('hero-text-content-wrapper');
+                const buttonContainer = document.getElementById('hero-button-container');
+
+                // Set constant height constraints directly
+                heroSection.style.minHeight = '600px';
+                heroSection.style.height = '100vh';
+                heroSection.style.maxHeight = '800px';
+                
+                console.log(`Hero section with min-height: 600px, height: 100vh, max-height: 800px`);
+                
+                // Apply different background images and styles based on viewport width
+                if (viewportWidth <= MOBILE_BREAKPOINT) {
+                    // Mobile view
+                    console.log('Using mobile background');
+                    heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Mobile).png')";
+                    heroBackground.style.backgroundSize = "cover";
+                    heroBackground.style.backgroundPosition = "center center";
+                } 
+                else if (viewportWidth <= TABLET_BREAKPOINT) {
+                    // Tablet view
+                    console.log('Using tablet background');
+                    heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Tablet).png')";
+                    heroBackground.style.backgroundSize = "cover";
+                    heroBackground.style.backgroundPosition = "center center";
+                } 
+                else {
+                    // Desktop view
+                    console.log('Using desktop background');
+                    heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Desktop).png')";
+                    heroBackground.style.backgroundSize = "cover"; 
+                    heroBackground.style.backgroundPosition = "center center";
+                }
+                
+                // Update layout based on viewport width
+                updateHeroLayout(viewportWidth, heroContent, textWrapper, buttonContainer);
+            }
+            
+            // Initial call
+            updateHeroBackground();
+            
+            // Update on resize
+            window.addEventListener('resize', updateHeroBackground);
+            
+            // Also try after a small delay to ensure everything is loaded
+            setTimeout(updateHeroBackground, 500);
+        });
     </script>
 
     <!-- By Paul: https://github.com/PaulleDemon -->
