@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle favicon.ico requests specially
   if (pathname === '/favicon.ico') {
-    // Redirect to our API route for dynamic favicons
+    // Rewrite to our API route for dynamic favicons
     const redirectUrl = new URL('/api/favicon', request.url)
     return NextResponse.rewrite(redirectUrl)
   }
@@ -34,7 +34,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Skip if we're already on a property page
+  // Serve index.html for the root of the main marketing site
+  // In development mode, also handle localhost for testing
+  if (pathname === '/' && hostname && (
+      hostname === 'digitalpropertyshowcase.com' || 
+      hostname === 'www.digitalpropertyshowcase.com' || 
+      hostname.includes('localhost') || 
+      hostname.includes('127.0.0.1')
+    )) {
+    console.log(`[Middleware] Serving index.html for main site: ${hostname}`)
+    const newUrl = new URL('/index.html', request.url)
+    return NextResponse.rewrite(newUrl)
+  }
+
+  // Skip if we're already on a property page (after main site check, so /properties/ on main site still works)
   if (pathname.startsWith('/properties/')) {
     return NextResponse.next()
   }
@@ -61,8 +74,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Handle custom domains
-  if (hostname && !hostname.includes('localhost') && !hostname.includes('vercel.app')) {
+  // Handle custom domains (that are not the main marketing site) 
+  // Exclude localhost in development since we've already handled it above for the root path
+  if (hostname && 
+      !hostname.includes('localhost') && 
+      !hostname.includes('127.0.0.1') && 
+      !hostname.includes('vercel.app') && 
+      hostname !== 'digitalpropertyshowcase.com' && 
+      hostname !== 'www.digitalpropertyshowcase.com'
+  ) {
     try {
       let propertyId: string | null = null
       
