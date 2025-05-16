@@ -201,6 +201,171 @@ hr{
     cursor: default;
 }
 
+/* Landing Page Button System - Namespaced with 'lp-' prefix */
+.lp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+}
+
+/* Button variants */
+.lp-btn-primary {
+  position: relative;
+  color: white;
+  overflow: hidden;
+  z-index: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--primary-color); /* Solid background as base */
+}
+
+.lp-btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+    to right,
+    var(--primary-color) 0%,
+    rgba(255, 51, 122, 0.2) 50%, /* Pink color with 20% opacity */
+    var(--primary-color) 100%
+  );
+  background-size: 200% auto;
+  background-position: 0% 50%;
+  z-index: -1;
+  border-radius: inherit;
+  /* Static position in normal state */
+  animation: lp-primary-gradient-scroll 8s ease infinite; /* Slow, constant animation even in normal state */
+}
+
+.lp-btn-primary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(58, 36, 199, 0.3);
+}
+
+.lp-btn-primary:hover::before {
+  animation: lp-primary-gradient-scroll 4s ease infinite; /* Faster animation on hover */
+}
+
+@keyframes lp-primary-gradient-scroll {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.lp-btn-outline {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.lp-btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.lp-btn-text {
+  background-color: transparent;
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+}
+
+.lp-btn-text:hover {
+  background-color: rgba(58, 36, 199, 0.05);
+}
+
+/* Button sizes */
+.lp-btn-lg {
+  padding: 1rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+.lp-btn-md {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+}
+
+.lp-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Additional modifiers */
+.lp-btn-shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lp-btn-shadow:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lp-btn-icon-right i {
+  transition: transform 0.3s ease;
+}
+
+.lp-btn-icon-right:hover i {
+  transform: translateX(4px);
+}
+
+.lp-btn-icon-circle {
+  position: relative;
+}
+
+.lp-btn-icon-circle .circle-animation {
+  position: absolute;
+  inset: 0;
+  top: 0;
+  left: 0;
+  border: 2px solid #f3f4f6;
+  border-radius: 9999px;
+  width: 24px;
+  height: 24px;
+  scale: 0;
+  transition: all 0.3s ease;
+}
+
+.lp-btn-icon-circle:hover .circle-animation {
+  scale: 1;
+}
+
+.lp-btn-full {
+  width: 100%;
+}
+
+/* Special banner button style */
+.lp-btn-banner {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  max-width: 64rem;
+  text-align: center;
+  font-size: 1.125rem;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lp-btn-banner:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 4px 8px rgba(58, 36, 199, 0.3);
+}
+
 .input{
     padding: 10px;
     background-color: transparent;
