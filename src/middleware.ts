@@ -28,21 +28,10 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next') || 
     pathname.includes('favicon.ico') ||
     pathname.startsWith('/static') ||
-    pathname.startsWith('/assets') ||
-    pathname.startsWith('/css') ||
-    pathname.startsWith('/scripts') ||
-    pathname.startsWith('/js') ||
     pathname.startsWith('/api') ||
-    pathname === '/index.html' ||
     pathname.includes('.')  // Skip files with extensions
   ) {
     return NextResponse.next()
-  }
-
-  // If the root path is requested, serve index.html
-  if (pathname === '/') {
-    const redirectUrl = new URL('/index.html', request.url)
-    return NextResponse.rewrite(redirectUrl)
   }
 
   // Skip if we're already on a property page
