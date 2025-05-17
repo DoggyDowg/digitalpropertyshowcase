@@ -50,8 +50,25 @@ function handleScroll() {
     // Calculate translation based on scroll position
     const translateY = Math.max(0, 12 - (scrollPosition / maxScroll * 12));
     
-    // Apply the transformation
-    dashboard.style.transform = `perspective(1200px) translateX(0px) translateY(${translateY}px) scale(0.8) rotate(0deg) rotateX(${rotationX}deg)`;
+    // Fix dimensions according to viewport
+    const isDesktop = window.innerWidth >= 1024;
+    
+    // Apply the transformation while preserving size - use !important to override any other styles
+    dashboard.style.cssText += `transform: perspective(1200px) translateX(0px) translateY(${translateY}px) scale(0.8) rotate(0deg) rotateX(${rotationX}deg) !important;`;
+    
+    // Set dimensions to compensate for the scale(0.8) with !important to ensure they're applied
+    if (isDesktop) {
+      dashboard.style.cssText += 'width: calc(80vw / 0.8) !important;';
+    } else {
+      dashboard.style.cssText += 'width: calc(90vw / 0.8) !important;';
+    }
+    dashboard.style.cssText += 'height: calc(90vh / 0.8) !important; min-height: calc(500px / 0.8) !important;';
+    
+    // Ensure the container isn't restricting the size
+    const container = document.getElementById('dashboard-container');
+    if (container) {
+      container.style.cssText += 'width: 100% !important; max-width: 100% !important; overflow: visible !important;';
+    }
   }
 }
 

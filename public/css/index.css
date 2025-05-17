@@ -168,6 +168,17 @@ hr{
     transition: transform 0.3s ease;
     will-change: transform;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    
+    /* Base dimensions - compensate for scale(0.8) */
+    width: calc(90vw / 0.8) !important;
+    height: calc(90vh / 0.8) !important;
+    min-height: calc(500px / 0.8) !important;
+}
+
+@media (min-width: 1024px) {
+    #dashboard {
+        width: calc(80vw / 0.8) !important;
+    }
 }
 
 .opacity-0{

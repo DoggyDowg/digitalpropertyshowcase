@@ -231,12 +231,25 @@ gsap.to("#dashboard", {
     scale: 1,
     translateY: 0,
     rotateX: "0deg",
+    width: window.innerWidth > RESPONSIVE_WIDTH ? "80vw" : "90vw",
+    height: "90vh",
+    minHeight: "500px",
     scrollTrigger: {
         trigger: "#hero-section",
         start: window.innerWidth > RESPONSIVE_WIDTH ? "top 30%" : "top 20%",
         end: window.innerWidth > RESPONSIVE_WIDTH ? "bottom 70%" : "bottom 80%",
         scrub: true,
         // markers: true,
+    },
+    onComplete: function() {
+        // Ensure our size adjustments are applied after the animation
+        const dashboard = document.getElementById('dashboard');
+        if (dashboard) {
+            const isDesktop = window.innerWidth >= 1024;
+            dashboard.style.width = isDesktop ? "80vw" : "90vw";
+            dashboard.style.height = "90vh";
+            dashboard.style.minHeight = "500px";
+        }
     }
 })
 
