@@ -121,6 +121,34 @@
             .tw-dark {
                 --text-color: #ffffff;
             }
+            
+            /* Standard paragraph styling across the site */
+            p {
+                font-size: 1rem; /* 16px base size */
+                font-weight: 400; /* Regular weight as default */
+                line-height: 1.6;
+            }
+            
+            @media (min-width: 768px) {
+                p {
+                    font-size: 1.125rem; /* 18px on larger screens */
+                }
+            }
+            
+            /* Apply common paragraph classes to ensure consistency */
+            .standard-paragraph {
+                font-size: 1rem; /* 16px base size */
+                line-height: 1.6;
+                font-weight: 400;
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            @media (min-width: 768px) {
+                .standard-paragraph {
+                    font-size: 1.125rem; /* 18px on larger screens */
+                }
+            }
 
             #live-showcase-banner:hover {
                 background-color: #2E1C9E !important; /* Darker shade of your primary purple */
@@ -517,13 +545,1000 @@
         <section class="property-reel tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
             <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
                 <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center">If It Looks Like Every Other Listing…<br><span class="highlight-text">Why Would They Choose You?</span></h2>
-                <p class="reveal-up tw-text-gray-600 tw-mt-4 tw-mb-6 tw-text-base md:tw-text-lg tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
+                <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
             </div>
             
             <!-- Scrolling Container -->
             <div class="scrolling-wrapper">
                 <div class="scrolling-content">
                     <!-- Property Cards (First set) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
                     <div class="property-card">
                         <div class="property-image">
                             <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
@@ -1591,6 +2606,1275 @@
                             <p class="property-suburb">Bulimba, QLD</p>
                         </div>
                     </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Peppermint Grove">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,195,000</h3>
+                            <p class="property-suburb">Peppermint Grove, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Hawthorn">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,975,000</h3>
+                            <p class="property-suburb">Hawthorn, VIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Property Cards (Duplicate for continuous scrolling effect) -->
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Toorak">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,950,000</h3>
+                            <p class="property-suburb">Toorak, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bondi">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,895,000</h3>
+                            <p class="property-suburb">Bondi, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Brighton">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,750,000</h3>
+                            <p class="property-suburb">Brighton, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Mosman">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$5,200,000</h3>
+                            <p class="property-suburb">Mosman, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in South Yarra">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,250,000</h3>
+                            <p class="property-suburb">South Yarra, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Double Bay">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$4,150,000</h3>
+                            <p class="property-suburb">Double Bay, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Cottesloe">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$3,295,000</h3>
+                            <p class="property-suburb">Cottesloe, WA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Vaucluse">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$6,850,000</h3>
+                            <p class="property-suburb">Vaucluse, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in New Farm">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,950,000</h3>
+                            <p class="property-suburb">New Farm, QLD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Albert Park">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,795,000</h3>
+                            <p class="property-suburb">Albert Park, VIC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Paddington">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$2,450,000</h3>
+                            <p class="property-suburb">Paddington, NSW</p>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Property in Bulimba">
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-price">$1,750,000</h3>
+                            <p class="property-suburb">Bulimba, QLD</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1654,10 +3938,10 @@
         <section class="tw-relative tw-flex tw-w-full tw-py-8 tw-pb-0 tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-visible">
             <!-- Solution copy -->
             <div class="tw-container tw-mx-auto tw-mb-8 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
-                <p class="reveal-up tw-text-xl md:tw-text-2xl tw-mt-4 tw-mb-6 tw-text-center">
+                <p class="reveal-up standard-paragraph tw-text-center">
                     With DPS, each listing becomes a <span class="highlight-text tw-font-bold">tailored, prestige experience</span>—proving you're committed to delivering elite marketing that stands apart from the crowd.
                 </p>
-                <p class="reveal-up tw-text-xl md:tw-text-2xl tw-mt-4 tw-mb-10 tw-text-center">
+                <p class="reveal-up standard-paragraph tw-text-center">
                     Use it to <span class="highlight-text tw-font-bold">win listings, impress sellers and position yourself as the top agent in your area.</span>
                 </p>
                 
@@ -1887,6 +4171,7 @@
             </div>
         </section>
 
+        <!-- === FEATURES/BENEFITS SECTION === -->
         <section class="tw-relative tw-mt-10 tw-flex tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center lg:tw-p-6">
             <div class="reveal-up tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-center 
                     tw-gap-2 tw-p-4 max-lg:tw-max-w-full max-lg:tw-flex-col">
@@ -1896,161 +4181,107 @@
                         max-lg:tw-place-content-center max-lg:tw-w-full">
                     <div class="tw-top-40 tw-flex tw-flex-col lg:tw-sticky tw-place-items-center tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] tw-overflow-hidden">
                         <h2 class="tw-text-5xl tw-font-serif tw-text-center tw-font-medium max-md:tw-text-3xl">
-                            Property Showcase Features
+                            Premium Marketing Features
                         </h2>
                         
                         <a href="/admin" class="btn !tw-mt-8 !tw-bg-transparent !tw-text-black 
                                                 !tw-border-[1px] !tw-border-black 
                                                 dark:!tw-border-white dark:!tw-text-white">
-                            Get Started
+                            Win More Listings
                         </a>
                     </div>
                 </div>
 
-                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full tw-max-w-1/2 max-lg:tw-max-w-full tw-px-[10%]
+                                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full tw-max-w-1/2 max-lg:tw-max-w-full tw-px-[10%]
                              max-lg:tw-px-4 max-lg:tw-gap-3 max-lg:tw-w-full lg:tw-top-[20%]
-                        tw-place-items-center">   
+                        tw-place-items-center">
                     <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
                         <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl 
-                                    hover:tw-shadow-lg dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all
-                                tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-house-door-fill"></i>
+                                    dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all
+                                tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 50px; width: 50px; min-height: 40px; height: 40px;">
+                                <img src="/assets/images/feature-icons/branded.svg" alt="Branded Property Sites" style="width: 50px; height: 40px;" class="!tw-w-[50px] !tw-h-[40px]">
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Property Details
+                                    Fully Branded Property Sites
                                 </h3>
                                 <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Display comprehensive property information including specifications, features, and amenities in an organized, easy-to-navigate format.
+                                    Showcase your agency's professionalism in every pitch. These sites become proof of your superior marketing approach.
                                 </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
                             </div>
                         </a>
                     </div>
 
                     <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
                         <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl
-                                hover:tw-shadow-lg dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-map-fill"></i>
+                                dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 50px; width: 50px; min-height: 40px; height: 40px;">
+                                <img src="/assets/images/feature-icons/map.svg" alt="Interactive Local Maps" style="width: 50px; height: 40px;" class="!tw-w-[50px] !tw-h-[40px]">
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Location Maps
+                                    Interactive Local Maps
                                 </h3>
                                 <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Integrate interactive maps showing property location, nearby amenities, and points of interest to help clients understand the neighborhood.
+                                    Sell the lifestyle. Highlight nearby schools, cafés, and parks—turning homes into destinations.
                                 </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
                             </div>
                         </a>
                     </div>
 
                     <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
-                        <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl hover:tw-shadow-lg tw-duration-300 
-                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-file-pdf-fill"></i>
+                        <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl tw-duration-300 
+                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 50px; width: 50px; min-height: 40px; height: 40px;">
+                                <img src="/assets/images/feature-icons/instagram.svg" alt="Automated Instagram Carousel" style="width: 50px; height: 40px;" class="!tw-w-[50px] !tw-h-[40px]">
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Documents & Downloads
+                                    Automated Instagram Carousel
                                 </h3>
                                 <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Provide downloadable floor plans, brochures, property documents, and other essential files for interested clients.
+                                    Elevate your social presence with dynamic property visuals that impress future vendors scrolling your feed.
                                 </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
                             </div>
                         </a>
                     </div>
 
                     <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
-                        <a href="#" class="tw-flex tw-w-full dark:tw-shadow-[#171717] tw-h-full tw-gap-8 tw-rounded-xl hover:tw-shadow-lg tw-duration-300 
-                        tw-transition-all tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-bar-chart-line-fill"></i>
+                        <a href="#" class="tw-flex tw-w-full dark:tw-shadow-[#171717] tw-h-full tw-gap-8 tw-rounded-xl tw-duration-300 
+                        tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 50px; width: 50px; min-height: 40px; height: 40px;">
+                                <img src="/assets/images/feature-icons/media.svg" alt="Unlimited Media" style="width: 50px; height: 40px;" class="!tw-w-[50px] !tw-h-[40px]">
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Analytics & Insights
+                                    Unlimited Media
                                 </h3>
                                 <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Track visitor engagement with detailed analytics on views, time spent, and popular features to optimize your property showcases.
+                                    Give vendors what they expect—more photography, more video, more impact.
                                 </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
                             </div>
                         </a>
                     </div>
                     
                     <div class="reveal-up tw-h-[240px] tw-w-[450px] max-md:tw-w-full">
-                        <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] hover:tw-shadow-lg tw-duration-300 
-                            tw-transition-all tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-chat-dots-fill"></i>
+                        <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] tw-duration-300 
+                            tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 50px; width: 50px; min-height: 40px; height: 40px;">
+                                <img src="/assets/images/feature-icons/openhomes.svg" alt="Advanced SEO & Open Home Integration" style="width: 50px; height: 40px;" class="!tw-w-[50px] !tw-h-[40px]">
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Inquiry Forms
+                                    Advanced SEO & Open Home Integration
                                 </h3>
                                 <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Capture leads with integrated contact forms that allow interested clients to inquire about properties directly from the showcase.
+                                    Prove you're tech-savvy and proactive. Showcase listings with precision and professionalism.
                                 </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="reveal-up tw-h-[240px] tw-w-[450px] tw-w-full">
-                        <a href="#" class="tw-flex tw-w-full tw-h-full tw-gap-8 tw-rounded-xl 
-                                hover:tw-shadow-lg dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card">
-                            <div class="tw-text-4xl max-md:tw-text-2xl">
-                                <i class="bi bi-share-fill"></i>
-                            </div>
-
-                            <div class="tw-flex tw-flex-col tw-gap-4">
-                                <h3 class="tw-text-2xl max-md:tw-text-xl">
-                                    Social Sharing
-                                </h3>
-                                <p class="tw-text-gray-800 dark:tw-text-gray-100 max-md:tw-text-sm">
-                                    Make it easy to share property showcases on social media with integrated sharing buttons and optimized preview content.
-                                </p>
-
-                                <div class="tw-mt-auto tw-flex tw-gap-2 tw-underline tw-underline-offset-4">
-                                    <span>Learn more</span>
-                                    <i class="bi bi-arrow-up-right group-hover/card:tw--translate-y-1
-                                                group-hover/card:tw-translate-x-1 tw-duration-300 tw-transition-transform"></i>
-                                </div>
                             </div>
                         </a>
                     </div>
