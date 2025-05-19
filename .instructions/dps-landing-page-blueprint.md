@@ -70,9 +70,9 @@ _Prove you’re tech-savvy and proactive. Showcase listings with precision and p
 Include 1–3 **high-impact testimonials** focused on winning listings:
 
 > 💬 *“Using DPS helped me win a $3.5M listing. Sellers loved the look and said no other agent showed them anything like it.”*  
-— Sarah D., Coastal Prestige Property
+— Lou, Colella Property
 
-Add a **trust bar with agency logos** (e.g. Ray White, Buxton, Belle Property, etc.).
+
 
 > 🟡 **Rule:** Only use testimonials that *explicitly tie to the benefit of impressing vendors or winning listings*.
 

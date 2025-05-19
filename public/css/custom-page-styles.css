@@ -1,0 +1,609 @@
+/*
+    =========================================================================
+    START: CSS from original <head> <style> tag (lines 35-247 of original HTML)
+    =========================================================================
+*/
+:root {
+    --primary-color: #3A24C7;
+    --highlight-color: #FF337A;
+    --text-color: #000000;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Museo', 'Montserrat', sans-serif; /* Assuming Museo is a fallback or defined elsewhere if primary */
+    font-weight: 600;
+}
+
+.btn { /* General .btn styling if you use it outside Tailwind components */
+    background-color: var(--primary-color);
+    color: white;
+    /* Add padding, border-radius etc. if this is a base for non-Tailwind buttons */
+}
+
+.btn:hover {
+    background-color: #2E1C9E;
+}
+
+.highlight-text {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 60%, var(--highlight-color) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    position: relative;
+}
+
+.highlight-text::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    filter: blur(8px);
+    color: white; /* This color might need adjustment depending on the background */
+    text-shadow: 0 0 15px white, 0 0 20px white; /* Adjust as needed */
+    opacity: 0.8;
+}
+
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
+.bg-highlight {
+    background-color: var(--highlight-color);
+}
+
+.purple-bg-grad { /* This was for blurred background elements */
+    background: var(--primary-color);
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(40px);
+    transform: translate(-50%, -50%); /* This might need context from HTML placement */
+}
+
+/* Override any template styles with our brand colors */
+.header-links:hover {
+    color: var(--highlight-color) !important; /* Added !important if it's overriding Tailwind */
+}
+
+.bi-check-circle-fill {
+    color: var(--primary-color) !important; /* Added !important if it's overriding Tailwind */
+}
+
+/* Dark theme adjustments */
+.tw-dark { /* This assumes Tailwind's dark mode class is 'tw-dark' */
+    --text-color: #ffffff; /* Example: In dark mode, default text becomes white */
+    /* You'll need more specific dark mode styles here for elements that don't automatically adapt */
+}
+/* Example of how you might target elements in dark mode */
+.tw-dark .some-element-class {
+    background-color: #333;
+    color: #eee;
+}
+
+
+/* Standard paragraph styling across the site */
+p { /* This is a very general selector, be careful it doesn't override too much.
+       Prefer using a class like .standard-paragraph for specific control. */
+    font-size: 1rem; /* 16px base size */
+    font-weight: 400; /* Regular weight as default */
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+    p {
+        font-size: 1.125rem; /* 18px on larger screens */
+    }
+}
+
+/* Apply common paragraph classes to ensure consistency */
+.standard-paragraph {
+    font-size: 1rem; /* 16px base size */
+    line-height: 1.6;
+    font-weight: 400;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .standard-paragraph {
+        font-size: 1.125rem; /* 18px on larger screens */
+    }
+}
+
+#live-showcase-banner:hover {
+    background-color: #2E1C9E !important; /* Darker shade of your primary purple */
+    transform: translateX(-50%) translateY(-2px) !important; /* Maintain horizontal centering, add upward lift */
+    box-shadow: 0 4px 8px rgba(58, 36, 199, 0.3) !important;
+}
+
+/* Header spacing fix */
+@media (min-width: 768px) {
+    header.main-header {
+        width: calc(100% - 120px) !important;
+        max-width: 944px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* Mobile header styling */
+@media (max-width: 767px) {
+    header.main-header {
+        width: calc(100% - 30px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* Make sure the mobile menu doesn't inherit the header padding */
+@media not all and (min-width: 1024px) { /* Targets screens smaller than lg (1024px) */
+    header.main-header .collapsible-header { /* Ensure this targets the correct element */
+        padding: 5px; /* Example padding, adjust as needed */
+        padding-top: 5%;
+        padding-bottom: 5%;
+    }
+}
+
+/* Loader Styles - Adapted from Codepen */
+#iframe-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8); /* Light background for loader */
+  z-index: 10; /* Ensure it's above the iframe initially */
+}
+.tw-dark #iframe-loader {
+  background-color: rgba(0, 0, 0, 0.8); /* Dark background for loader */
+}
+#iframe-loader.hidden {
+  display: none;
+}
+.ip { /* SVG loader */
+  width: 8em; /* Adjusted size */
+  height: 4em; /* Adjusted size */
+}
+.ip__track {
+  stroke: #ddd; /* Light grey track from Codepen */
+}
+.tw-dark .ip__track {
+  stroke: #444; /* Darker track for dark mode */
+}
+.ip__worm1,
+.ip__worm2 {
+  animation: worm1 2s linear infinite;
+}
+.ip__worm2 {
+  animation-name: worm2;
+}
+@keyframes worm1 {
+  from { stroke-dashoffset: 0; }
+  50% { animation-timing-function: steps(1); stroke-dashoffset: -358; }
+  50.01% { animation-timing-function: linear; stroke-dashoffset: 358; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes worm2 {
+  from { stroke-dashoffset: 358; }
+  50% { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -358; }
+}
+
+#hero-preview-iframe.loading {
+  display: none !important; /* Hide iframe completely */
+}
+#hero-preview-iframe.loaded {
+  display: block; /* Show iframe */
+  width: 100%; /* Ensure it takes full width */
+  height: 100%; /* Ensure it takes full height */
+  border: none; /* Ensure no border is re-added if default styles interfere */
+  background-color: transparent; /* Ensure background is transparent */
+}
+
+/* Ensure iframe container has no bottom padding */
+#hero-preview-iframe,
+#hero-preview-iframe.loaded,
+.tw-w-full.tw-h-full.tw-rounded-xl.tw-overflow-hidden.tw-flex.tw-relative { /* This specific Tailwind class combination might be too fragile */
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+/* Consider a more direct selector for the iframe's immediate parent if the above is problematic */
+/* For example, if the iframe is directly inside .animated-border > div */
+/* .animated-border > div {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+} */
+
+
+/* Position button absolutely relative to the dashboard container */
+#live-showcase-banner {
+    position: absolute !important;
+    bottom: 0px !important; /* Was 0, check desired spacing */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 20 !important;
+    width: 200px !important; /* Or use Tailwind classes for width */
+}
+
+/* Remove bottom padding from section containing dashboard, add padding for button */
+/* This selector was "section.tw-py-8.tw-pb-0".
+   It needs to be specific to the section containing #dashboard-container
+   Let's assume that section has an ID or a unique class. If not, you'll need to add one.
+   Example: if the section has id="solution-showcase-section" */
+#solution-showcase-section { /* Replace with actual ID or class of the section */
+    padding-bottom: 50px !important; /* Increased from 30px to ensure button visibility. Adjust as needed. */
+}
+
+
+/* Ensure dashboard container has space for button */
+#dashboard-container {
+    padding-bottom: 0px !important; /* Was 0. If the button is absolutely positioned *within* this,
+                                      this container might need bottom padding to make space *for* the button
+                                      if the button isn't meant to overlay content.
+                                      Given #live-showcase-banner styling, it seems it's meant to be at the bottom
+                                      of the dashboard-container's visual area, not necessarily inside its flow.
+                                      The padding on the parent section is likely the key. */
+    position: relative !important; /* For absolute positioning of the banner */
+}
+
+/* Explicit logo opacity styling */
+.logo-container { /* Assuming this class is on the <a> tag or a div around the logo */
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.logo-container:hover {
+    opacity: 1 !important; /* Force 100% opacity */
+}
+/*
+    =======================================================================
+    END: CSS from original <head> <style> tag
+    =======================================================================
+*/
+
+
+/*
+    =====================================================================================
+    START: CSS from first property reel section (lines 520-597 of original HTML)
+    =====================================================================================
+*/
+/* Scrolling reel container */
+.property-reel { /* This is a general class, already styled above, ensure no conflicts */
+    /* background-color: transparent; */ /* Already transparent by default */
+    /* padding: 3rem 0; */ /* This was in the inline style, consider if it's still needed here or handled by Tailwind */
+    position: relative; /* This is fine */
+    background: #fff !important; /* Add solid white background */
+}
+
+/* General rule for both wrappers */
+.scrolling-wrapper {
+    width: 100%;
+    overflow: hidden; /* This is key for the marquee effect */
+    position: relative;
+    padding-bottom: 15px; /* Added to make space for box-shadows below cards */
+    background: #fff !important; /* Add solid white background */
+    /* Replaced with more explicit gradient approach below */
+    /* -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 60%, transparent 100%); */
+    /* mask-image: linear-gradient(to right, transparent 0%, black 15%, black 60%, transparent 100%); */
+}
+
+/* Specific rules for each reel's wrapper to override any inline styles */
+#property-reel-1 .scrolling-wrapper,
+#property-reel-2 .scrolling-wrapper {
+    /* Create a multi-step gradient with explicit opacity values */
+    -webkit-mask-image: linear-gradient(
+        to right,
+        rgba(0,0,0,0) 0%,      /* Completely transparent */
+        rgba(0,0,0,0.7) 10%,   /* Partial transparency */
+        rgba(0,0,0,1) 15%,     /* Fully opaque */
+        rgba(0,0,0,1) 50%,     /* Fully opaque middle */
+        rgba(0,0,0,1) 60%,     /* Start fading earlier */
+        rgba(0,0,0,0.7) 80%,   /* Partial transparency */
+        rgba(0,0,0,0) 100%     /* Completely transparent */
+    ) !important;
+    
+    mask-image: linear-gradient(
+        to right,
+        rgba(0,0,0,0) 0%,      /* Completely transparent */
+        rgba(0,0,0,0.7) 10%,   /* Partial transparency */
+        rgba(0,0,0,1) 15%,     /* Fully opaque */
+        rgba(0,0,0,1) 50%,     /* Fully opaque middle */
+        rgba(0,0,0,1) 60%,     /* Start fading earlier */
+        rgba(0,0,0,0.7) 80%,   /* Partial transparency */
+        rgba(0,0,0,0) 100%     /* Completely transparent */
+    ) !important;
+}
+
+/* The content that scrolls */
+.scrolling-content, .scrolling-content-reverse { /* Combined for shared properties */
+    display: flex; /* Arrange cards in a row */
+    flex-shrink: 0; /* Prevent content from shrinking */
+    min-width: 100%; /* Ensure it at least fills the wrapper, duplicated content will extend this */
+    /* Add any other shared styles here, like gap between cards if not handled by card margin */
+}
+
+.scrolling-content {
+    /* animation: scrollLeft 60s linear infinite; */
+    animation: scrollLeft 10s linear infinite;
+}
+
+.scrolling-content:hover {
+    animation-play-state: running; /* Keep animation running on hover */
+}
+
+/* Property card styling - smaller size */
+.property-card {
+    flex: 0 0 auto; /* Prevents cards from shrinking/growing, takes their defined width */
+    width: 180px; /* Proportionally reduced width */
+    height: 120px; /* Requested height */
+    margin-right: 8px; /* Added for spacing between cards */
+    border-radius: 6px;
+    overflow: hidden; /* Clips the image within the card's rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Adjusted for more visible depth */
+    background-color: #fff; /* Changed from rgba(255, 255, 255, 0.9) to remove transparency */
+    /* Remove hover transitions as they were explicitly removed in the spec */
+    transition: none; /* Explicitly remove any inherited transitions */
+}
+
+/* Remove hover transform effect and make shadow consistent */
+.property-card:hover {
+    transform: none; /* No scaling or movement on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Consistent shadow with base state */
+}
+
+/* Property image container - smaller */
+.property-image {
+    width: 100%;
+    height: 80px; /* Smaller image area within the card */
+    overflow: hidden; /* Ensures image stays within these bounds */
+}
+
+.property-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers the area, might crop */
+    transition: none; /* Remove zoom transition */
+}
+
+/* Remove zoom hover effect (already handled by img transition:none) */
+/* .property-card:hover .property-image img {
+    transform: none;
+} */
+
+/* Property details section - smaller */
+.property-details {
+    padding: 5px; /* Minimal padding */
+    text-align: left; /* Ensure text alignment if not inherited correctly */
+}
+
+.property-price {
+    font-size: 0.6rem; /* Very small text */
+    font-weight: 700;
+    color: var(--primary-color); /* Uses your defined primary color */
+    margin: 0 0 2px 0; /* Small margin below price */
+}
+
+/* Removed duplicate property-price style that was overriding with highlight color */
+
+.property-suburb {
+    font-size: 0.5rem; /* Extremely small text */
+    color: #555; /* Dark grey for suburb */
+    margin: 0;
+}
+
+/* Animation for scrolling left */
+@keyframes scrollLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* This relies on duplicating the content. If `scrolling-content` has one set of unique items
+           and then a full duplicate of those items, this will scroll one full set.
+           The JS code now duplicates the unique set multiple times.
+           calc(-X%) where X is 100 / (number of full visible sets in one animation cycle).
+           If your JS creates (Original + 7 Duplicates = 8 sets total), and you want animation to loop over say, 4 sets:
+           100% / (8 total sets / 4 sets per anim cycle) = 100% / 2 = 50% of total width.
+           With current JS (duplicateCount=8), it means the scrollable content is 8x the width of unique items.
+           calc(-100% * ( (duplicateCount - N) / duplicateCount ) ) where N is how many sets you want visible at one time before repeat
+           For a simple marquee with many duplicates, translateX(-[width of one full unique set]) often works if CSS is set up right
+           or, more simply, if you have 2 full sets of items (original + 1 duplicate), -50% works.
+           Given the current JS duplicates the *entire set* many times, we aim to scroll one *full set of duplicates*.
+           If there are N unique items, and they are duplicated M times. The total width is roughly (ItemWidth * N * M).
+           The goal is to shift by (ItemWidth * N).
+           So, if `scrolling-content` contains `Item1, Item2, ..., ItemN, Item1, Item2, ..., ItemN, ...` (M times)
+           We want to scroll by the width of `Item1...ItemN`.
+           This is 1/M of the total width.
+           If duplicateCount in JS is 8, this means we have 8 full copies.
+           To scroll one copy out, we scroll 1/8th of the total width.
+           100% / 8 = 12.5%.
+           So, transform: translateX(-12.5%);
+           However, your original animation used calc(-50% - 4px); This implies you had 2 full copies of items for the animation.
+           The JS now creates `duplicateCount` copies.
+           If `duplicateCount` in JS is `D`, then the animation should scroll by `1/D` of the total width.
+           transform: translateX(calc(-100% / D_from_JS_duplicateCount));
+           Let's stick to your original `calc(-50% - 4px)` and assume `duplicateCount=2` for animation logic,
+           while JS can create more for visual length. The animation will just "jump" more often but might be less smooth.
+           For a truly smooth infinite scroll with MANY duplicates (like 8 sets from JS),
+           the animation should ideally scroll by the width of ONE SET OF UNIQUE ITEMS.
+           If unique items make up, say, 1/8th of the total generated content, then:
+           transform: translateX(-12.5%);
+           Let's use a more robust calculation that works if the content is duplicated once for the animation.
+           The JS generates `duplicateCount` (e.g., 8) full sets. The CSS animation effectively needs to see at least two full sets to make the "infinite" effect seamless with a -50% translate.
+           The easiest way to ensure this is to have the JS populate what the CSS expects for its 50% logic.
+           The JS is creating `propertyData.length * duplicateCount` items.
+           The `translateX(calc(-50% - 4px))` is standard for an infinite scroll where the content is exactly duplicated once.
+           The JS `duplicateCount` ensures there's *enough* content. The CSS animation itself will handle the looping based on its own 50% calculation of the *total width* of `.scrolling-content`.
+        */
+        transform: translateX(calc(-50% - 4px)); /* Adjusted for the 8px gap: 50% of total width + half the gap */
+    }
+}
+
+/* Responsive adjustments - keep size consistent */
+@media (max-width: 768px) {
+    .property-card {
+        /* width: 180px; */ /* Already set, no change needed unless different for mobile */
+    }
+
+    .property-image {
+        /* height: 80px; */ /* Already set */
+    }
+}
+/*
+    =====================================================================================
+    END: CSS from first property reel section
+    =====================================================================================
+*/
+
+
+/*
+    ======================================================================================
+    START: CSS from second property reel section (lines 1408-1450 of original HTML)
+    ======================================================================================
+*/
+/* Reverse direction scrolling content */
+.scrolling-content-reverse {
+    /* animation: scrollRight 120s linear infinite; */
+    animation: scrollRight 10s linear infinite;
+    /* Start the animation from a scrolled position if necessary,
+       or ensure the initial transform in the keyframe is correct.
+       If the content is duplicated (e.g., A+B becomes A+B+A+B),
+       and you start at translateX(0), it will show the beginning.
+       If you want it to start as if it's already scrolled, adjust initial transform or keyframe 0%.
+    */
+}
+
+.scrolling-content-reverse:hover {
+    animation-play-state: running; /* Keep animation running on hover */
+}
+
+/* Animation for reverse scrolling (right to left) */
+@keyframes scrollRight {
+    0% {
+        /* Should start from the "end" of one full set of unique items */
+        transform: translateX(calc(-50% - 4px)); /* Mirrored from scrollLeft */
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Property cards in second reel - 10% larger */
+/* We need to make sure this selector is specific enough for the second reel */
+#property-reel-2 .property-card { /* Target cards only within the second reel */
+    width: 198px; /* 10% larger than 180px */
+    height: 132px; /* 10% larger than 120px */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    position: relative; /* For the ::before pseudo-element */
+    z-index: 5; /* To ensure it's above other elements if overlapping occurs */
+}
+
+/* Property image container for second reel - 10% larger */
+#property-reel-2 .property-image { /* Target images only within the second reel */
+    height: 88px; /* 10% larger than 80px */
+}
+
+/* Add a subtle dark overlay that extends beyond the card */
+#property-reel-2 .property-card::before { /* Target cards only within the second reel */
+    content: '';
+    position: absolute;
+    top: -8px; /* Extends 8px outside */
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background-color: rgba(0, 0, 0, 0.08); /* Subtle dark overlay */
+    border-radius: 12px; /* Slightly larger radius than the card itself */
+    z-index: -1; /* Behind the card content */
+}
+/*
+    ======================================================================================
+    END: CSS from second property reel section
+    ======================================================================================
+*/
+
+/*
+    ======================================================================================
+    START: CSS from SOLUTION SECTION for animated arrow
+    ======================================================================================
+*/
+.arrow {
+    text-align: center;
+    padding: 60px 0; /* This was from inline style, might need adjustment or Tailwind */
+}
+.bounce {
+    -moz-animation: bounce 2s infinite;
+    -webkit-animation: bounce 2s infinite;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+}
+/*
+    ======================================================================================
+    END: CSS from SOLUTION SECTION for animated arrow
+    ======================================================================================
+*/
+
+/*
+    ======================================================================================
+    START: CSS from #dashboard for responsive sizing
+    ======================================================================================
+*/
+#dashboard {
+    /* Base size for mobile/tablet - compensate for scale(0.8) by dividing by 0.8 */
+    /* These rules were inside a <style> tag directly under #dashboard.
+       They are generally fine, but ensure they don't conflict with Tailwind classes
+       that might also be trying to set width/height. The !important might be necessary.
+    */
+    width: calc(90vw / 0.8) !important; /* This gives actual 90vw visible width due to parent scale */
+    min-height: calc(500px / 0.8) !important; /* Actual 500px visible min-height */
+    height: calc(90vh / 0.8) !important; /* Actual 90vh visible height */
+    /* margin-bottom: 0 !important; */ /* Already handled by Tailwind or direct style on element */
+    /* padding-bottom: 0 !important; */ /* Already handled */
+}
+
+@media (min-width: 1024px) { /* lg breakpoint */
+    #dashboard {
+        width: calc(80vw / 0.8) !important; /* Actual 80vw visible width on desktop */
+    }
+}
+
+/* Update the dashboard container too - this was already in HTML style, seems fine */
+/* #dashboard-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+} */
+
+/* Fix spacing for the animated border - these were already on the elements with !important */
+/* .animated-border {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+} */
+/*
+    ======================================================================================
+    END: CSS from #dashboard for responsive sizing
+    ======================================================================================
+*/
