@@ -1,0 +1,102 @@
+<!-- === PROBLEM SECTION === -->
+<!-- Illustrating the issue of generic property listings that all look the same -->
+<!-- Property Listings Scrolling Reel -->
+<section id="property-reel-1" class="property-reel tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent; max-width: 100vw;">
+    <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+        <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center">If It Looks Like Every Other Listing…<br><span class="highlight-text">Why Would They Choose You?</span></h2>
+        <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
+    </div>
+
+    <!-- Scrolling Container -->
+    <div class="scrolling-wrapper" style="overflow: hidden; width: 100%;">
+        <div class="scrolling-content">
+            <!-- Property cards will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- The <style> block for this section (property-reel, scrolling-wrapper, property-card CSS)
+         has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
+</section>
+
+<!-- Second reel of overlapping properties (part of the Problem illustration) -->
+<section id="property-reel-2" class="property-reel tw-relative tw-overflow-hidden" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent; transform: rotate(-4deg) !important; transform-origin: center center !important; width: 100% !important; max-width: 100vw; overflow-x: hidden;">
+    <!-- Scrolling Container (Reverse Direction) -->
+    <div class="scrolling-wrapper" style="transform: none !important; width: 100% !important; overflow: hidden;">
+        <div class="scrolling-content-reverse">
+            <!-- Property cards will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- The <style> block for this section (scrolling-content-reverse CSS)
+         has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
+</section>
+
+<section
+    class="hero-section tw-relative tw-flex tw-w-full tw-max-w-[100vw] tw-flex-col tw-overflow-hidden"
+    id="hero-section"
+    style="min-height: 600px; height: 100vh; max-height: 800px; overflow: hidden; max-width: 100%; width: 100%;"
+>
+        <!-- video container -->
+    <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-z-20 tw-transition-opacity
+        tw-duration-300 tw-scale-0 tw-opacity-0 tw-p-2
+        tw-w-full tw-h-full tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg">
+
+        <div class="tw-max-w-[80vw] max-md:tw-max-w-full max-md:tw-w-full tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl max-md:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md
+                    tw-h-[90vh] max-md:tw-h-auto max-md:tw-min-h-[400px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full
+                    " id="video-container">
+            <div class="tw-w-full tw-flex">
+                <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl" title="close">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+            <div class="tw-flex tw-w-full  tw-rounded-xl tw-px-[5%] max-md:tw-px-2 tw-min-h-[300px] tw-max-h-[90%] tw-h-full">
+
+                <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
+                    <!-- Cloudinary video player -->
+                    <iframe
+                        id="cloudinaryPlayer"
+                        class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full"
+                        src="https://player.cloudinary.com/embed/?cloud_name=dxljgvhwe&public_id=lvpnomocwwmskybl1vho&profile=cld-default&controls=true"
+                        style="border:none;"
+                        allow="fullscreen; encrypted-media; picture-in-picture"
+                        allowfullscreen
+                        frameborder="0"
+                        title="Digital Property Showcase Introduction Video">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="hero-bg-gradient tw-relative tw-flex tw-h-full tw-w-full tw-items-center tw-justify-center tw-p-0 tw-text-white"
+        style="background-image: url('/assets/images/background/BGImg (Desktop).png'); background-size: 100% auto; background-position: right center; background-repeat: no-repeat; width: 100%;"
+        id="hero-bg-gradient"
+    >
+</section>
+
+<body
+        class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#fcfcfc]
+            tw-text-black"
+    >
+        <div class="page-wrapper" style="width: 100%; max-width: 100vw; overflow-x: hidden;">
+        <!-- Template for a single property card -->
+        <template id="property-card-template">
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="" alt="" loading="lazy">
+                </div>
+                <div class="property-details">
+                    <h3 class="property-price"></h3>
+                    <p class="property-suburb"></p>
+                </div>
+            </div>
+        </template>
+
+        <!-- <div class="tw-absolute tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-flex
+                    tw-h-[100px] tw-w-full tw-max-w-[80%]">
+            <div class="header-gradient tw-h-full tw-w-full "></div>
+        </div> -->
+    </div>
+</body> 

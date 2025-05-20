@@ -36,6 +36,7 @@ h1, h2, h3, h4, h5, h6 {
     color: transparent;
     display: inline-block;
     position: relative;
+    font-weight: 700;
 }
 
 .highlight-text::before {
@@ -45,9 +46,16 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
     z-index: -1;
     filter: blur(8px);
-    color: white; /* This color might need adjustment depending on the background */
-    text-shadow: 0 0 15px white, 0 0 20px white; /* Adjust as needed */
+    color: white;
+    text-shadow: 0 0 15px white, 0 0 20px white;
     opacity: 0.8;
+}
+
+/* Fix for elements without data-text attribute */
+.highlight-text:not([data-text])::before {
+    /* Use a transparent pseudo-element when data-text is missing */
+    content: "";
+    background: none;
 }
 
 .bg-primary {
@@ -281,186 +289,358 @@ p { /* This is a very general selector, be careful it doesn't override too much.
     =====================================================================================
 */
 /* Scrolling reel container */
-.property-reel { /* This is a general class, already styled above, ensure no conflicts */
-    /* background-color: transparent; */ /* Already transparent by default */
-    /* padding: 3rem 0; */ /* This was in the inline style, consider if it's still needed here or handled by Tailwind */
-    position: relative; /* This is fine */
-    background: #fff !important; /* Add solid white background */
-}
-
-/* General rule for both wrappers */
-.scrolling-wrapper {
-    width: 100%;
-    overflow: hidden; /* This is key for the marquee effect */
+.property-reel {
+    /* padding-top: 8rem; (original for reel 1) */ /* Keep individual padding on sections if needed */
+    /* padding-bottom: 0; (original for reel 1) */
     position: relative;
-    padding-bottom: 15px; /* Added to make space for box-shadows below cards */
-    background: #fff !important; /* Add solid white background */
-    /* Replaced with more explicit gradient approach below */
-    /* -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 60%, transparent 100%); */
-    /* mask-image: linear-gradient(to right, transparent 0%, black 15%, black 60%, transparent 100%); */
+    width: 100%;
+    overflow: hidden; /* Keep this to hide overflowing cards if wrapper is not fully containing */
+    /* z-index: 1; (original for reel 1) */
+    background-color: transparent; /* Ensures no conflicting background */
 }
 
-/* Specific rules for each reel's wrapper to override any inline styles */
-#property-reel-1 .scrolling-wrapper,
+/* Styles for the scrolling container */
+.scrolling-wrapper {
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling if content exceeds width */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    padding-bottom: 20px; /* Space for potential scrollbar or just visual padding */
+    width: 100%; /* Ensure it takes full width of .property-reel */
+}
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+/* Property Reel 1 specific wrapper (if any unique styling is needed beyond rotation) */
+#property-reel-1 .scrolling-wrapper {
+    /* transform: rotate(2deg); (Original was likely a typo or undesired effect) */
+    /* width: 100%; */ /* Already covered by .scrolling-wrapper */
+}
+
+/* Property Reel 2 specific wrapper adjustment for rotation */
 #property-reel-2 .scrolling-wrapper {
-    /* Create a multi-step gradient with explicit opacity values */
-    -webkit-mask-image: linear-gradient(
-        to right,
-        rgba(0,0,0,0) 0%,      /* Completely transparent */
-        rgba(0,0,0,0.7) 10%,   /* Partial transparency */
-        rgba(0,0,0,1) 15%,     /* Fully opaque */
-        rgba(0,0,0,1) 50%,     /* Fully opaque middle */
-        rgba(0,0,0,1) 60%,     /* Start fading earlier */
-        rgba(0,0,0,0.7) 80%,   /* Partial transparency */
-        rgba(0,0,0,0) 100%     /* Completely transparent */
-    ) !important;
-    
-    mask-image: linear-gradient(
-        to right,
-        rgba(0,0,0,0) 0%,      /* Completely transparent */
-        rgba(0,0,0,0.7) 10%,   /* Partial transparency */
-        rgba(0,0,0,1) 15%,     /* Fully opaque */
-        rgba(0,0,0,1) 50%,     /* Fully opaque middle */
-        rgba(0,0,0,1) 60%,     /* Start fading earlier */
-        rgba(0,0,0,0.7) 80%,   /* Partial transparency */
-        rgba(0,0,0,0) 100%     /* Completely transparent */
-    ) !important;
+    /* transform: none !important; (This was overriding the section's rotation) */
+    /* width: 110% !important; (Adjust if necessary, but prefer 100% and let cards dictate overall width) */
+    width: 100%; /* Let content determine scroll width */
 }
 
-/* The content that scrolls */
+
+/* Styles for the content within the scrolling container */
 .scrolling-content, .scrolling-content-reverse { /* Combined for shared properties */
-    display: flex; /* Arrange cards in a row */
-    flex-shrink: 0; /* Prevent content from shrinking */
-    min-width: 100%; /* Ensure it at least fills the wrapper, duplicated content will extend this */
-    /* Add any other shared styles here, like gap between cards if not handled by card margin */
+    display: flex; /* Aligns cards in a row */
+    flex-shrink: 0; /* Prevents content from shrinking */
+    min-width: 100%; /* Ensures it tries to fill the wrapper */
+    white-space: nowrap; /* Prevents cards from wrapping to the next line */
+    padding: 10px 0; /* Vertical padding for the row of cards */
 }
 
 .scrolling-content {
-    /* animation: scrollLeft 60s linear infinite; */
-    animation: scrollLeft 10s linear infinite;
+    animation: scrollLeft 45s linear infinite; /* Slower animation */
 }
-
 .scrolling-content:hover {
-    animation-play-state: running; /* Keep animation running on hover */
+    /* animation-play-state: paused; */ /* REMOVED - no pausing on hover */
 }
 
-/* Property card styling - smaller size */
+/* Updated Property Card Styling */
 .property-card {
-    flex: 0 0 auto; /* Prevents cards from shrinking/growing, takes their defined width */
-    width: 180px; /* Proportionally reduced width */
-    height: 120px; /* Requested height */
-    margin-right: 8px; /* Added for spacing between cards */
-    border-radius: 6px;
-    overflow: hidden; /* Clips the image within the card's rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Adjusted for more visible depth */
-    background-color: #fff; /* Changed from rgba(255, 255, 255, 0.9) to remove transparency */
-    /* Remove hover transitions as they were explicitly removed in the spec */
-    transition: none; /* Explicitly remove any inherited transitions */
+    width: 180px; /* USER REQUESTED WIDTH */
+    height: 150px; /* USER REQUESTED HEIGHT */
+    background-color: #fff; /* Card background */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    margin-right: 15px; /* Space between cards */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensures content stays within rounded corners */
+    flex-shrink: 0; /* Prevent cards from shrinking */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Remove hover transform effect and make shadow consistent */
 .property-card:hover {
-    transform: none; /* No scaling or movement on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Consistent shadow with base state */
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Property image container - smaller */
 .property-image {
     width: 100%;
-    height: 80px; /* Smaller image area within the card */
-    overflow: hidden; /* Ensures image stays within these bounds */
+    height: 90px; /* Adjusted to fit within 150px total card height, leaving space for details */
+    overflow: hidden;
 }
 
 .property-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures image covers the area, might crop */
-    transition: none; /* Remove zoom transition */
+    object-fit: cover; /* Ensures image covers the area, cropping if necessary */
+    display: block; /* Remove any extra space below image */
 }
 
-/* Remove zoom hover effect (already handled by img transition:none) */
-/* .property-card:hover .property-image img {
-    transform: none;
-} */
-
-/* Property details section - smaller */
 .property-details {
-    padding: 5px; /* Minimal padding */
-    text-align: left; /* Ensure text alignment if not inherited correctly */
+    padding: 8px; /* Padding within the details area */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically if space allows */
+    flex-grow: 1; /* Allow details to take remaining space */
+    box-sizing: border-box;
+    height: calc(150px - 90px); /* Explicitly set height for details section */
+    text-align: left; /* Ensure text is aligned left */
 }
 
 .property-price {
-    font-size: 0.6rem; /* Very small text */
-    font-weight: 700;
-    color: var(--primary-color); /* Uses your defined primary color */
-    margin: 0 0 2px 0; /* Small margin below price */
+    font-size: 0.95em; /* Slightly smaller font for price */
+    font-weight: 600; /* Bold price */
+    color: #333;
+    margin: 0 0 2px 0; /* Small margin at the bottom */
+    white-space: normal; /* Allow wrapping if needed */
 }
-
-/* Removed duplicate property-price style that was overriding with highlight color */
 
 .property-suburb {
-    font-size: 0.5rem; /* Extremely small text */
-    color: #555; /* Dark grey for suburb */
+    font-size: 0.8em; /* Smaller font for suburb */
+    color: #666;
     margin: 0;
+    white-space: normal; /* Allow wrapping if needed */
 }
 
-/* Animation for scrolling left */
+/* Keyframes for scrolling animation */
 @keyframes scrollLeft {
     0% {
-        transform: translateX(0);
+        transform: translateX(0%);
     }
     100% {
-        /* This relies on duplicating the content. If `scrolling-content` has one set of unique items
-           and then a full duplicate of those items, this will scroll one full set.
-           The JS code now duplicates the unique set multiple times.
-           calc(-X%) where X is 100 / (number of full visible sets in one animation cycle).
-           If your JS creates (Original + 7 Duplicates = 8 sets total), and you want animation to loop over say, 4 sets:
-           100% / (8 total sets / 4 sets per anim cycle) = 100% / 2 = 50% of total width.
-           With current JS (duplicateCount=8), it means the scrollable content is 8x the width of unique items.
-           calc(-100% * ( (duplicateCount - N) / duplicateCount ) ) where N is how many sets you want visible at one time before repeat
-           For a simple marquee with many duplicates, translateX(-[width of one full unique set]) often works if CSS is set up right
-           or, more simply, if you have 2 full sets of items (original + 1 duplicate), -50% works.
-           Given the current JS duplicates the *entire set* many times, we aim to scroll one *full set of duplicates*.
-           If there are N unique items, and they are duplicated M times. The total width is roughly (ItemWidth * N * M).
-           The goal is to shift by (ItemWidth * N).
-           So, if `scrolling-content` contains `Item1, Item2, ..., ItemN, Item1, Item2, ..., ItemN, ...` (M times)
-           We want to scroll by the width of `Item1...ItemN`.
-           This is 1/M of the total width.
-           If duplicateCount in JS is 8, this means we have 8 full copies.
-           To scroll one copy out, we scroll 1/8th of the total width.
-           100% / 8 = 12.5%.
-           So, transform: translateX(-12.5%);
-           However, your original animation used calc(-50% - 4px); This implies you had 2 full copies of items for the animation.
-           The JS now creates `duplicateCount` copies.
-           If `duplicateCount` in JS is `D`, then the animation should scroll by `1/D` of the total width.
-           transform: translateX(calc(-100% / D_from_JS_duplicateCount));
-           Let's stick to your original `calc(-50% - 4px)` and assume `duplicateCount=2` for animation logic,
-           while JS can create more for visual length. The animation will just "jump" more often but might be less smooth.
-           For a truly smooth infinite scroll with MANY duplicates (like 8 sets from JS),
-           the animation should ideally scroll by the width of ONE SET OF UNIQUE ITEMS.
-           If unique items make up, say, 1/8th of the total generated content, then:
-           transform: translateX(-12.5%);
-           Let's use a more robust calculation that works if the content is duplicated once for the animation.
-           The JS generates `duplicateCount` (e.g., 8) full sets. The CSS animation effectively needs to see at least two full sets to make the "infinite" effect seamless with a -50% translate.
-           The easiest way to ensure this is to have the JS populate what the CSS expects for its 50% logic.
-           The JS is creating `propertyData.length * duplicateCount` items.
-           The `translateX(calc(-50% - 4px))` is standard for an infinite scroll where the content is exactly duplicated once.
-           The JS `duplicateCount` ensures there's *enough* content. The CSS animation itself will handle the looping based on its own 50% calculation of the *total width* of `.scrolling-content`.
-        */
-        transform: translateX(calc(-50% - 4px)); /* Adjusted for the 8px gap: 50% of total width + half the gap */
+        transform: translateX(-50%); /* Adjust based on total content width vs wrapper */
     }
 }
 
-/* Responsive adjustments - keep size consistent */
+/* Styles for the content that scrolls in the reverse direction */
+/* (Reel 2 - the angled one) */
+.scrolling-content-reverse {
+    animation: scrollRight 60s linear infinite; /* Slower animation */
+}
+.scrolling-content-reverse:hover {
+    /* animation-play-state: paused; */ /* REMOVED - no pausing on hover */
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(-50%); /* Adjust based on total content width vs wrapper */
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+
+/* REMOVE or COMMENT OUT previous .property-card styles that might conflict if they are separate blocks */
+/* For example, if there was a .property-card style block around original line 348, 456, or 725,
+   ensure they are removed or commented out if they are redundant or conflicting with the new consolidated one above.
+   The edit tool will replace this comment section with the existing code, so I'm instructing it to be mindful.
+   The key is to have ONE primary definition for .property-card and its children, as defined above.
+*/
+
+/* Specific styles for cards within the second property reel (angled one) */
+/* #property-reel-2 .property-card { */
+    /* All visual styling should now be handled by the general .property-card rules */
+    /* The rotation of the entire reel is handled by inline style on the <section> element itself */
+    /* or could be: */
+    /* transform: rotate(0deg); */ /* Reset individual card rotation if the section is rotated */
+/* } */
+
+/* Remove any specific image or detail overrides for reel 2 if they are not needed */
+/* #property-reel-2 .property-image { ... } */
+/* #property-reel-2 .property-details { ... } */
+
+
+/* Ensure the section itself for reel 2 has the desired transform, if not inline */
+/* #property-reel-2 {
+    transform: rotate(-4deg) !important;
+    transform-origin: center center !important;
+    width: 100vw !important;
+    margin-left: 0vw !important;
+} */
+/* This is likely already handled by inline styles on the <section> tag in index.html,
+   which is fine. Inline styles:
+   style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2;
+          background-color: transparent; transform: rotate(-4deg) !important;
+          transform-origin: center center !important; width: 100vw !important; margin-left: 0vw;"
+*/
+
+/* Responsive adjustments if needed for smaller screens */
 @media (max-width: 768px) {
-    .property-card {
-        /* width: 180px; */ /* Already set, no change needed unless different for mobile */
-    }
-
-    .property-image {
-        /* height: 80px; */ /* Already set */
-    }
+    /* .property-card {
+        width: 160px; /* Slightly smaller cards on mobile if desired */
+        /* height: 140px; */
+    /* } */
+    /* .property-image {
+        height: 80px; /* Adjust image height accordingly */
+    /* } */
+    /* .property-details {
+        height: calc(140px - 80px);
+        padding: 6px;
+    } */
+    /* .property-price {
+        font-size: 0.9em;
+    } */
+    /* .property-suburb {
+        font-size: 0.75em;
+    } */
+    /* For now, keeping the 180x150px size as per request for all views */
 }
+
+
+/*
+    =========================================================================
+    END: Property Reel Specific Styles
+    =========================================================================
+*/
+/* Styles for the scrolling container */
+/* .scrolling-wrapper { */ /* Commenting out the old block that starts around line 292 */
+/*    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;  /* Firefox */
+/*    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+/* }
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+/* } */
+
+/* #property-reel-1 .scrolling-wrapper,
+#property-reel-2 .scrolling-wrapper {
+    transform: rotate(2deg);
+    width: 110%;
+} */ /* Commenting out this combined rule as well */
+
+/* #property-reel-2 .scrolling-wrapper {
+    transform: rotate(-2deg);
+} */ /* Commenting out this specific rule */
+
+/* .scrolling-content, .scrolling-content-reverse { */ /* Commenting out old combined rule around line 331 */
+/*    display: flex;
+    flex-shrink: 0;
+    min-width: 100%; /* Changed from 'max-content' to ensure it fills and allows scrolling */
+/*    animation-duration: 40s; /* Default duration, can be overridden */
+/*    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+} */
+
+/* .scrolling-content { */ /* Commenting out old rule around line 338 */
+/*    animation-name: scrollLeft;
+} */
+/* .scrolling-content:hover {
+    animation-play-state: paused;
+} */
+
+/* .property-card { */ /* Commenting out old .property-card around line 348 */
+    /* Existing styles here will be replaced or merged */
+    /* background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 280px; /* Default width, will be overridden */
+    /* height: auto; /* Default height, will be overridden */
+    /* display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out;
+} */
+/* .property-card:hover {
+    transform: translateY(-5px);
+} */
+
+/* .property-image { */ /* Commenting out old .property-image around line 368 */
+/*    width: 100%;
+    height: 200px; /* Default height, will be overridden */
+/*    overflow: hidden;
+} */
+/* .property-image img { */ /* Commenting out old .property-image img around line 374 */
+/*    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+} */
+/* .property-card:hover .property-image img {
+    transform: scale(1.05);
+} */
+
+/* .property-details { */ /* Commenting out old .property-details around line 387 */
+/*    padding: 10px;
+    text-align: left;
+} */
+/* .property-price { */ /* Commenting out old .property-price around line 392 */
+/*    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+} */
+/* .property-suburb { */ /* Commenting out old .property-suburb around line 401 */
+/*    font-size: 0.9em;
+    color: #555;
+} */
+
+/* @keyframes scrollLeft { ... } */ /* This will be redefined if necessary or kept if identical */
+
+/* @media (max-width: 768px) { */ /* Commenting out old media query block around line 455 */
+/*     .property-card {
+        width: 220px; /* Adjust for smaller screens */
+    /* } */
+/*     .property-image {
+        height: 150px; /* Adjust image height for smaller cards */
+    /* } */
+/* } */
+
+/* .scrolling-content-reverse { */ /* Commenting out old rule around line 477 */
+/*    animation-name: scrollRight;
+} */
+/* .scrolling-content-reverse:hover {
+    animation-play-state: paused;
+} */
+
+/* @keyframes scrollRight { ... } */ /* This will be redefined if necessary or kept if identical */
+
+/* #property-reel-2 .property-card { */ /* Commenting out old specific rule for reel 2 cards around line 505 */
+    /* Example: Adding a slight skew or different shadow if needed, but for identical look, this isn't necessary */
+    /* box-shadow: 0 4px 8px rgba(0,0,0,0.15); */
+    /* These styles were causing issues with card size and overlap with text */
+    /* transform: rotate(0deg); */ /* Overriding parent rotation */
+    /* width: auto !important; /* Problematic */
+    /* height: auto !important; /* Problematic */
+    /* max-width: 180px !important; /* Problematic */
+    /* max-height: 220px !important; /* Problematic */
+/* } */
+
+/* #property-reel-2 .property-image { */ /* Commenting out old specific rule for reel 2 images around line 514 */
+    /* height: 100px !important; /* Problematic fixed height */
+/* } */
+
+/* #property-reel-2 .property-card::before { */ /* Commenting out pseudo-element rule around line 519 if not needed */
+    /* content: "";
+    position: absolute;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
+    border: 2px dashed var(--primary-color);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1; */
+/* } */
+/* #property-reel-2 .property-card:hover::before {
+    opacity: 1;
+} */
+
+/* The duplicated .property-card and children styles from lines 725 onwards should also be removed */
+/* if they are identical to the main block defined above. */
+/* .property-card { ... } */ /* Around line 725 - this is a duplicate block */
+/* .property-card:hover { ... } */ /* Around line 737 */
+/* .property-image { ... } */ /* Around line 742 */
+/* .property-image img { ... } */ /* Around line 748 */
+/* .property-card:hover .property-image img { ... } */ /* Around line 755 */
+/* .property-details { ... } */ /* Around line 759 */
+/* .property-price { ... } */ /* Around line 763 */
+/* .property-suburb { ... } */ /* Around line 770 */
+
 /*
     =====================================================================================
     END: CSS from first property reel section
@@ -473,60 +653,42 @@ p { /* This is a very general selector, be careful it doesn't override too much.
     START: CSS from second property reel section (lines 1408-1450 of original HTML)
     ======================================================================================
 */
-/* Reverse direction scrolling content */
-.scrolling-content-reverse {
-    /* animation: scrollRight 120s linear infinite; */
-    animation: scrollRight 10s linear infinite;
-    /* Start the animation from a scrolled position if necessary,
-       or ensure the initial transform in the keyframe is correct.
-       If the content is duplicated (e.g., A+B becomes A+B+A+B),
-       and you start at translateX(0), it will show the beginning.
-       If you want it to start as if it's already scrolled, adjust initial transform or keyframe 0%.
-    */
-}
-
-.scrolling-content-reverse:hover {
-    animation-play-state: running; /* Keep animation running on hover */
-}
-
-/* Animation for reverse scrolling (right to left) */
-@keyframes scrollRight {
-    0% {
-        /* Should start from the "end" of one full set of unique items */
-        transform: translateX(calc(-50% - 4px)); /* Mirrored from scrollLeft */
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
 /* Property cards in second reel - 10% larger */
-/* We need to make sure this selector is specific enough for the second reel */
-#property-reel-2 .property-card { /* Target cards only within the second reel */
+#property-reel-2 .property-card { /* Re-enabling with modifications */
     width: 198px; /* 10% larger than 180px */
-    height: 132px; /* 10% larger than 120px */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    position: relative; /* For the ::before pseudo-element */
-    z-index: 5; /* To ensure it's above other elements if overlapping occurs */
+    height: 165px; /* 10% larger than 150px */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Much deeper shadow */
+    position: relative; /* For potential ::before pseudo-element if needed */
+    z-index: 5; /* Ensure it's above other elements if overlapping occurs */
 }
 
 /* Property image container for second reel - 10% larger */
-#property-reel-2 .property-image { /* Target images only within the second reel */
-    height: 88px; /* 10% larger than 80px */
+#property-reel-2 .property-image { 
+    height: 99px; /* 10% larger than 90px */
 }
 
-/* Add a subtle dark overlay that extends beyond the card */
-#property-reel-2 .property-card::before { /* Target cards only within the second reel */
-    content: '';
-    position: absolute;
-    top: -8px; /* Extends 8px outside */
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background-color: rgba(0, 0, 0, 0.08); /* Subtle dark overlay */
-    border-radius: 12px; /* Slightly larger radius than the card itself */
-    z-index: -1; /* Behind the card content */
+/* Property details for second reel - adjust to match new height */
+#property-reel-2 .property-details {
+    height: calc(165px - 99px); /* Maintain proper proportion */
 }
+
+/* Fix the edge visibility issue with the rotated reel */
+#property-reel-2 {
+    width: 100%; /* Container stays at 100% width */
+    overflow: hidden; /* Prevent horizontal scrolling */
+}
+
+#property-reel-2 .scrolling-wrapper {
+    width: 110vw !important; /* Make the wrapper wider than container */
+    margin-left: -5vw; /* Center the extra width */
+    margin-right: -5vw;
+}
+
+/* Ensure the second reel's content has enough width to fill the enlarged wrapper */
+#property-reel-2 .scrolling-content-reverse {
+    min-width: 110%; /* Ensure content can fill the wider wrapper */
+}
+
 /*
     ======================================================================================
     END: CSS from second property reel section
@@ -607,3 +769,504 @@ p { /* This is a very general selector, be careful it doesn't override too much.
     END: CSS from #dashboard for responsive sizing
     ======================================================================================
 */
+
+/* Custom Page Styles */
+
+/* FAQ Section Styles */
+.faq-category {
+    margin-bottom: 1.5rem;
+}
+
+.faq-accordion {
+    cursor: pointer;
+    padding: 1rem 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.faq-accordion:hover span {
+    color: var(--primary-color, #6b46c1);
+}
+
+.faq-accordion.active span {
+    color: var(--primary-color, #6b46c1);
+    font-weight: 600;
+}
+
+.faq .content {
+    transition: max-height 0.3s ease-out;
+    overflow: hidden;
+    padding: 0;
+    max-height: 0;
+    color: #4b5563;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+}
+
+.faq .content p {
+    margin-bottom: 0.75rem;
+}
+
+.faq .content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Improved list styling */
+.faq .content ul {
+    margin-bottom: 0.75rem;
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.faq .content ul li {
+    margin-bottom: 0.625rem;
+    position: relative;
+    padding-left: 0.25rem;
+}
+
+/* Make labels bold */
+.faq .content strong,
+.faq .content b {
+    font-weight: 700;
+    color: #333333;
+}
+
+/* Special styling for showcase labels */
+.faq .content ul li strong {
+    font-weight: 700;
+    color: var(--primary-color, #6b46c1);
+}
+
+/* Style for the label before the colon */
+.faq .content span.label {
+    font-weight: 700;
+    color: var(--primary-color, #6b46c1);
+}
+
+/* Property Reel Styles */
+/* .scrolling-wrapper { */ /* COMMENTING OUT - This is the conflicting block */
+/*    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+    position: relative;
+} */
+
+/* .scrolling-content { */ /* COMMENTING OUT - This is the conflicting block */
+/*    display: flex;
+    animation: scroll 40s linear infinite;
+    width: fit-content;
+} */
+
+/* .scrolling-content-reverse { */ /* COMMENTING OUT - This is the conflicting block */
+/*    display: flex;
+    animation: scroll-reverse 40s linear infinite;
+    width: fit-content;
+} */
+
+/* @keyframes scroll { */ /* COMMENTING OUT - This is the conflicting block */
+/*    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+} */
+
+/* @keyframes scroll-reverse { */ /* COMMENTING OUT - This is the conflicting block */
+/*    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+} */
+
+/* .property-card { */ /* COMMENTING OUT - This is the conflicting block */
+/*    min-width: 240px;
+    height: 280px;
+    background: white;
+    margin-right: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+} */
+
+/* .property-card:hover { */ /* COMMENTING OUT - This is the conflicting block */
+/*    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+} */
+
+/* .property-image { */ /* COMMENTING OUT - This is the conflicting block */
+/*    width: 100%;
+    height: 180px;
+    overflow: hidden;
+} */
+
+/* .property-image img { */ /* COMMENTING OUT - This is the conflicting block */
+/*    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+} */
+
+/* .property-card:hover .property-image img { */ /* COMMENTING OUT - This is the conflicting block */
+/*    transform: scale(1.05);
+} */
+
+/* .property-details { */ /* COMMENTING OUT - This is the conflicting block */
+/*    padding: 12px;
+} */
+
+/* .property-price { */ /* COMMENTING OUT - This is the conflicting block */
+/*    font-weight: 600;
+    font-size: 18px;
+    margin: 0 0 5px 0;
+    color: #333;
+} */
+
+/* .property-suburb { */ /* COMMENTING OUT - This is the conflicting block */
+/*    font-size: 14px;
+    color: #666;
+    margin: 0;
+} */
+
+/* Animated Arrow Styles */
+.arrow.bounce {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+/* Dashboard Styles */
+#dashboard {
+    transition: all 0.3s ease-in-out;
+}
+
+@media (min-width: 1024px) {
+    #dashboard {
+        width: 80vw !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    #dashboard {
+        width: 90vw !important;
+    }
+}
+
+#dashboard {
+    height: 90vh !important;
+    min-height: 500px !important;
+}
+
+/* Pricing Card Styles */
+.pricing-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; /* Ensure flex properties apply for tw-mt-auto on button */
+    flex-direction: column; /* Ensure flex properties apply for tw-mt-auto on button */
+}
+
+.pricing-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(107, 70, 193, 0.1);
+}
+
+/* Ensure all pricing card buttons have consistent margin-top if not using mt-auto correctly */
+.pricing-card .lp-btn {
+    margin-top: auto; /* This should push the button to the bottom if the card is a flex column */
+}
+
+/* Footer with Background Image */
+.footer-container {
+    position: relative;
+    width: 100%;
+    padding: 100px 0 40px; /* Increased top padding */
+    margin-top: 80px;
+    color: #333;
+    overflow: hidden;
+}
+
+/* Footer content styling */
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px; /* Increased horizontal padding */
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px; /* Increased spacing between sections */
+}
+
+/* Logo */
+.footer-logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.footer-logo img {
+    height: 60px; /* Slightly larger logo */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.footer-logo img:hover {
+    transform: scale(1.05); /* Subtle hover effect */
+}
+
+/* Footer columns */
+.footer-columns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    gap: 40px;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 180px;
+}
+
+.footer-column h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-column h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 12px;
+}
+
+.footer-column ul li a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.footer-column ul li a:hover {
+    color: var(--primary-color);
+    transform: translateX(3px); /* Subtle animation on hover */
+}
+
+/* Social links */
+.footer-social {
+    display: flex;
+    gap: 18px;
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.footer-social a {
+    color: #555;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-social a:hover {
+    color: var(--primary-color);
+    transform: translateY(-3px); /* Float up effect */
+}
+
+/* Copyright */
+.footer-copyright {
+    text-align: center;
+    color: #777;
+    font-size: 12px !important;
+    width: 100%;
+    padding: 4px 0 !important;
+    border-top: 1px solid rgba(238, 238, 238, 0.5);
+}
+
+.footer-copyright p {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Newsletter styles in footer */
+.newsletter-text {
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 15px;
+}
+
+.newsletter-form {
+    display: flex;
+    width: 100%;
+    max-width: 300px;
+    position: relative;
+    flex-wrap: wrap; /* Allow message to wrap to next line */
+}
+
+.newsletter-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    line-height: 1.5;
+    height: 42px; /* Explicitly set height */
+    box-sizing: border-box;
+}
+
+.newsletter-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+    background-color: white;
+}
+
+/* Reset button styling */
+.newsletter-button {
+    position: absolute !important;
+    right: 6px !important;
+    top: 6px !important;
+    transform: none !important; /* Remove transform which can cause alignment issues */
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    z-index: 2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    font-style: normal !important;
+    text-align: center !important;
+}
+
+/* Override arrow icon styles */
+.newsletter-button i.bi-arrow-right {
+    display: block !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    font-style: normal !important;
+}
+
+.newsletter-button:hover {
+    background-color: var(--primary-color-dark, #0056b3);
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Newsletter message styling */
+.newsletter-message {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    min-height: 20px;
+    padding: 2px 0;
+    transition: all 0.3s ease;
+}
+
+.newsletter-message.success {
+    color: #28a745;
+}
+
+.newsletter-message.error {
+    color: #dc3545;
+}
+
+/* Responsive adjustments for newsletter */
+@media (max-width: 768px) {
+    .newsletter-form {
+        margin: 0 auto;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 80px 0 30px; /* Slightly less padding on mobile */
+    }
+    
+    .footer-content {
+        padding: 0 20px;
+        gap: 30px;
+    }
+    
+    .footer-columns {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .footer-column {
+        min-width: 100%;
+        text-align: center;
+    }
+    
+    .footer-column h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px; /* Wider underline when centered */
+    }
+    
+    .footer-column ul li a:hover {
+        transform: none; /* No horizontal shift on mobile */
+    }
+    
+    .footer-logo img {
+        height: 50px; /* Slightly smaller on mobile */
+    }
+    
+    .footer-social {
+        justify-content: center;
+        margin-top: 15px;
+    }
+}

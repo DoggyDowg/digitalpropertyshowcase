@@ -186,4 +186,83 @@ document.addEventListener('DOMContentLoaded', function() {
   if (headerItems) {
     headerItems.classList.add('animated-collapse');
   }
+  
+  // FAQ Accordion functionality
+  initFaqAccordions();
 }); 
+
+// Initialize FAQ accordions
+function initFaqAccordions() {
+  const faqAccordions = document.querySelectorAll('.faq-accordion');
+  
+  faqAccordions.forEach(accordion => {
+    // Initially hide all content
+    const content = accordion.nextElementSibling;
+    content.style.maxHeight = '0';
+    content.style.overflow = 'hidden';
+    content.style.transition = 'max-height 0.3s ease-out';
+    content.style.padding = '0';
+    
+    // Add click event listeners
+    accordion.addEventListener('click', function() {
+      // Toggle active class on the accordion
+      this.classList.toggle('active');
+      
+      // Get the icon element
+      const icon = this.querySelector('.bi');
+      
+      // Get the content element
+      const content = this.nextElementSibling;
+      
+      // Check if the accordion is active
+      if (this.classList.contains('active')) {
+        // Rotate the plus icon to make it a minus
+        icon.style.transform = 'rotate(45deg)';
+        
+        // Show the content
+        content.style.padding = '12px 0';
+        
+        // Fix for accurate height calculation
+        // First temporarily remove the maxHeight constraint and make sure content is visible
+        content.style.maxHeight = 'none';
+        content.style.visibility = 'visible';
+        content.style.position = 'relative';
+        
+        // Get the actual height after padding is applied
+        const actualHeight = content.offsetHeight;
+        
+        // Reset to hidden state for animation to work
+        content.style.maxHeight = '0';
+        
+        // Force a reflow to ensure the browser recognizes the change
+        void content.offsetHeight;
+        
+        // Now set to the actual calculated height
+        content.style.maxHeight = actualHeight + 'px';
+      } else {
+        // Reset the icon
+        icon.style.transform = 'rotate(0)';
+        
+        // Hide the content
+        content.style.maxHeight = '0';
+        content.style.padding = '0';
+      }
+    });
+  });
+  
+  // Add window resize listener to recalculate heights for open accordions
+  window.addEventListener('resize', function() {
+    const activeAccordions = document.querySelectorAll('.faq-accordion.active');
+    activeAccordions.forEach(accordion => {
+      const content = accordion.nextElementSibling;
+      
+      // Temporarily remove constraints to measure true height
+      const originalMaxHeight = content.style.maxHeight;
+      content.style.maxHeight = 'none';
+      
+      // Get actual height and restore
+      const actualHeight = content.offsetHeight;
+      content.style.maxHeight = actualHeight + 'px';
+    });
+  });
+} 

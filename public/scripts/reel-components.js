@@ -87,6 +87,97 @@ const propertyData = [
 ];
 
 /**
+ * Applies the needed inline styles to property card elements
+ * @param {HTMLElement} card - The card element to style
+ * @param {boolean} isSecondReel - Whether this card is in the second reel
+ */
+function applyCardStyles(card, isSecondReel) {
+    // Card dimensions and basic styles
+    const cardWidth = isSecondReel ? 198 : 180; // 10% larger for second reel
+    const cardHeight = isSecondReel ? 165 : 150; // 10% larger for second reel
+    
+    // Image height 
+    const imageHeight = isSecondReel ? 99 : 90; // 10% larger for second reel
+    
+    // Shadow - deeper for second reel
+    const shadowValue = isSecondReel 
+        ? '0 8px 20px rgba(0, 0, 0, 0.3)' 
+        : '0 2px 5px rgba(0, 0, 0, 0.1)';
+    
+    // Apply styles directly to the card element
+    card.style.width = `${cardWidth}px`;
+    card.style.height = `${cardHeight}px`;
+    card.style.backgroundColor = '#fff';
+    card.style.border = '1px solid #e0e0e0';
+    card.style.borderRadius = '8px';
+    card.style.marginRight = '15px';
+    card.style.boxShadow = shadowValue;
+    card.style.display = 'flex';
+    card.style.flexDirection = 'column';
+    card.style.overflow = 'hidden';
+    card.style.flexShrink = '0';
+    
+    // Image container styles
+    const imageContainer = card.querySelector('.property-image');
+    imageContainer.style.width = '100%';
+    imageContainer.style.height = `${imageHeight}px`;
+    imageContainer.style.overflow = 'hidden';
+    
+    // Image styles
+    const image = imageContainer.querySelector('img');
+    image.style.width = '100%';
+    image.style.height = '100%';
+    image.style.objectFit = 'cover';
+    image.style.display = 'block';
+    
+    // Details section styles
+    const detailsSection = card.querySelector('.property-details');
+    detailsSection.style.padding = '8px';
+    detailsSection.style.display = 'flex';
+    detailsSection.style.flexDirection = 'column';
+    detailsSection.style.justifyContent = 'center';
+    detailsSection.style.flexGrow = '1';
+    detailsSection.style.boxSizing = 'border-box';
+    detailsSection.style.height = `${cardHeight - imageHeight}px`;
+    detailsSection.style.textAlign = 'left';
+    
+    // Price text styles
+    const priceText = detailsSection.querySelector('.property-price');
+    priceText.style.fontSize = '0.95em';
+    priceText.style.fontWeight = '600';
+    priceText.style.color = '#333';
+    priceText.style.margin = '0 0 2px 0';
+    priceText.style.whiteSpace = 'normal';
+    
+    // Suburb text styles
+    const suburbText = detailsSection.querySelector('.property-suburb');
+    suburbText.style.fontSize = '0.8em';
+    suburbText.style.color = '#666';
+    suburbText.style.margin = '0';
+    suburbText.style.whiteSpace = 'normal';
+}
+
+/**
+ * Make the second reel wrapper wider with negative margin to avoid edge visibility
+ */
+function fixSecondReelWrapper() {
+    setTimeout(() => {
+        const secondReel = document.getElementById('property-reel-2');
+        if (secondReel) {
+            // Make sure the reel itself has overflow: hidden
+            secondReel.style.overflow = 'hidden';
+            
+            // Make the wrapper wider and center it
+            const wrapper = secondReel.querySelector('.scrolling-wrapper');
+            if (wrapper) {
+                wrapper.style.width = '120vw';
+                wrapper.style.marginLeft = '-10vw';
+            }
+        }
+    }, 100); // Small delay to ensure the elements are available
+}
+
+/**
  * Populates a reel container with property cards.
  * @param {string} containerSelector - CSS selector for the reel's content div.
  * @param {Array} data - The array of property data objects.
@@ -95,6 +186,7 @@ const propertyData = [
 function populatePropertyReel(containerSelector, data, duplicateCount = 8) {
     const container = document.querySelector(containerSelector);
     const template = document.getElementById('property-card-template');
+    const isSecondReel = containerSelector.includes('property-reel-2');
 
     if (!container) {
         console.error(`Property reel container "${containerSelector}" not found.`);
@@ -121,9 +213,20 @@ function populatePropertyReel(containerSelector, data, duplicateCount = 8) {
 
         cardClone.querySelector('.property-price').textContent = prop.price;
         cardClone.querySelector('.property-suburb').textContent = prop.suburb;
+        
+        // Get the card element to apply styles
+        const card = cardClone.querySelector('.property-card');
+        
+        // Apply styles directly to the card and its children
+        applyCardStyles(card, isSecondReel);
 
         container.appendChild(cardClone);
     });
+    
+    // Fix the second reel wrapper if needed
+    if (isSecondReel) {
+        fixSecondReelWrapper();
+    }
 }
 
 // Wait for the DOM to be fully loaded before running the script
@@ -133,4 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const secondReelContentSelector = '#property-reel-2 .scrolling-wrapper .scrolling-content-reverse';
     populatePropertyReel(secondReelContentSelector, propertyData);
+    
+    // Additional fix for the second reel wrapper in case it wasn't applied during population
+    fixSecondReelWrapper();
 });
