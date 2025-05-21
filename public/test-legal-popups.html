@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Popups Test Page</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #4f46e5;
+        }
+        
+        p {
+            max-width: 600px;
+            line-height: 1.6;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/legal-popups.css">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+        integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+</head>
+<body>
+    <h1>Legal Popups Test Page</h1>
+    
+    <div class="button-container">
+        <button onclick="openLegalPopup('privacy-policy-popup')">Open Privacy Policy</button>
+        <button onclick="openLegalPopup('terms-of-service-popup')">Open Terms of Service</button>
+    </div>
+    
+    <p>
+        Click the buttons above to test the legal popups. Make sure they open, close, and display correctly.
+        You can also test closing with the Escape key or by clicking outside the popup.
+    </p>
+    
+    <!-- Terms of Service and Privacy Policy Popups -->
+    <div id="privacy-policy-popup" class="legal-popup">
+        <div class="tw-bg-white dark:tw-bg-gray-800 tw-rounded-xl tw-shadow-2xl tw-max-w-4xl tw-w-full tw-relative">
+            <div class="tw-p-6 tw-border-b tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-between tw-items-center">
+                <h3 class="tw-text-2xl tw-font-semibold">Privacy Policy</h3>
+                <button onclick="closeLegalPopup('privacy-policy-popup')" class="tw-text-gray-500 hover:tw-text-gray-700 dark:tw-text-gray-300 dark:hover:tw-text-gray-100 tw-text-2xl">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="tw-overflow-y-auto">
+                <div class="tw-prose tw-max-w-none dark:tw-prose-invert">
+                    <h4>Last Updated: May 15, 2024</h4>
+                    
+                    <!-- Sample Privacy Policy Content -->
+                    <p>This is a test version of the Privacy Policy popup. The actual content is much longer and includes various sections on data collection, usage, sharing, and user rights.</p>
+                    
+                    <p>The scrolling functionality and styling can be tested with this sample content.</p>
+                    
+                    <!-- Adding more content to test scrolling -->
+                    <h5>1. Information We Collect</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>2. How We Use Your Information</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>3. Information Sharing and Disclosure</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>4. Your Rights and Choices</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>5. Additional Information</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                </div>
+            </div>
+            <div class="tw-p-4 tw-border-t tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-end">
+                <button onclick="closeLegalPopup('privacy-policy-popup')" class="close-button">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="terms-of-service-popup" class="legal-popup">
+        <div class="tw-bg-white dark:tw-bg-gray-800 tw-rounded-xl tw-shadow-2xl tw-max-w-4xl tw-w-full tw-relative">
+            <div class="tw-p-6 tw-border-b tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-between tw-items-center">
+                <h3 class="tw-text-2xl tw-font-semibold">Terms of Service</h3>
+                <button onclick="closeLegalPopup('terms-of-service-popup')" class="tw-text-gray-500 hover:tw-text-gray-700 dark:tw-text-gray-300 dark:hover:tw-text-gray-100 tw-text-2xl">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="tw-overflow-y-auto">
+                <div class="tw-prose tw-max-w-none dark:tw-prose-invert">
+                    <h4>Last Updated: May 15, 2024</h4>
+                    
+                    <!-- Sample Terms of Service Content -->
+                    <p>This is a test version of the Terms of Service popup. The actual content is much longer and includes various sections on service usage, account responsibilities, payment terms, and legal disclaimers.</p>
+                    
+                    <p>The scrolling functionality and styling can be tested with this sample content.</p>
+                    
+                    <!-- Adding more content to test scrolling -->
+                    <h5>1. Service Description</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>2. Account Registration</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>3. Subscription and Payments</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>4. User Content and Responsibilities</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                    
+                    <h5>5. Prohibited Activities</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget aliquam nisl nunc vel nisl.</p>
+                </div>
+            </div>
+            <div class="tw-p-4 tw-border-t tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-end">
+                <button onclick="closeLegalPopup('terms-of-service-popup')" class="close-button">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Function to open legal popup
+        function openLegalPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+                
+                // Focus on the popup for accessibility
+                const focusableElement = popup.querySelector('button');
+                if (focusableElement) {
+                    setTimeout(() => {
+                        focusableElement.focus();
+                    }, 100);
+                }
+                
+                // Add escape key listener
+                document.addEventListener('keydown', handleEscapeKey);
+                
+                // Add click outside listener
+                popup.addEventListener('click', handleOutsideClick);
+            }
+        }
+        
+        // Function to close legal popup
+        function closeLegalPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+                
+                // Remove event listeners
+                document.removeEventListener('keydown', handleEscapeKey);
+                popup.removeEventListener('click', handleOutsideClick);
+            }
+        }
+        
+        // Handle escape key press
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                const activePopup = document.querySelector('.legal-popup.active');
+                if (activePopup) {
+                    closeLegalPopup(activePopup.id);
+                }
+            }
+        }
+        
+        // Handle click outside the popup content
+        function handleOutsideClick(event) {
+            // Check if click is directly on the popup background (not its children)
+            if (event.target.classList.contains('legal-popup')) {
+                closeLegalPopup(event.target.id);
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Get Started - Digital Property Showcase</title>
+        <meta name="description" content="Start creating your premium property showcase in minutes." />
+
+        <!-- Favicon -->
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        <!-- Custom Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="/css/tailwind-build.css">
+        <link rel="stylesheet" href="/css/index.css" />
+        <link rel="stylesheet" href="/css/custom-page-styles.css">
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+            integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+
+        <!-- Custom styles for the onboarding form -->
+        <style>
+            .step-container {
+                display: none;
+            }
+            .step-container.active {
+                display: block;
+            }
+            .step-indicator {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background-color: #e5e7eb;
+                color: #6b7280;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            .step-indicator.active {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            .step-indicator.completed {
+                background-color: #10b981;
+                color: white;
+            }
+            .step-line {
+                flex: 1;
+                height: 2px;
+                background-color: #e5e7eb;
+                transition: all 0.3s ease;
+            }
+            .step-line.completed {
+                background-color: #10b981;
+            }
+            .form-card {
+                transition: all 0.3s ease;
+            }
+            .form-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .form-card.selected {
+                border-color: var(--primary-color);
+                border-width: 2px;
+                background-color: rgba(var(--primary-color-rgb), 0.05);
+            }
+            #onboarding-form .form-input {
+                width: 100% !important; /* Make input fill its container */
+                padding: 12px 16px !important; /* tw-py-3, tw-px-4 */
+                border: 1px solid #d1d5db !important; /* tw-border, tw-border-gray-300 */
+                border-radius: 8px; /* tw-rounded-lg */
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; /* tw-shadow-sm */
+                line-height: 1.25; /* tw-leading-tight */
+            }
+            #onboarding-form .form-input:focus {
+                outline: 2px solid var(--primary-color);
+                outline-offset: 2px;
+                border-color: transparent;
+            }
+            #onboarding-form .form-label {
+                display: block;
+                font-size: 14px; /* tw-text-sm */
+                font-weight: 500; /* tw-font-medium */
+                color: #374151; /* tw-text-gray-700 */
+                margin-bottom: 4px; /* tw-mb-1 */
+            }
+#onboarding-form .custom-radio {
+                 display: flex;
+                 align-items: center;
+                 gap: 8px; /* tw-gap-2 */
+                 cursor: pointer;
+             }
+            #onboarding-form .custom-radio input[type="radio"] {
+                width: 16px; /* tw-w-4 */
+                height: 16px; /* tw-h-4 */
+                accent-color: var(--primary-color); /* tw-accent-[var(--primary-color)] */
+            }
+            #onboarding-form .custom-radio span {
+                color: #374151; /* tw-text-gray-700 */
+            }
+            #onboarding-form {
+                padding: 36px;
+            }
+
+            #step-2 h3 {
+                padding-top: 24px;
+            }
+
+            .progress-container {
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto 2rem;
+                padding: 0 1rem;
+            }
+            .hide-section {
+                display: none;
+            }
+            
+            /* Responsive tier card layout */
+            .tier-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            @media (min-width: 640px) {
+                .tier-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            
+            @media (min-width: 768px) {
+                .tier-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            
+            /* Compact tier card styles */
+            .tier-card {
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                position: relative;
+                cursor: pointer;
+                background-color: white;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .tier-card:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .tier-card.selected {
+                border-color: var(--primary-color);
+                border-width: 2px;
+                background-color: rgba(var(--primary-color-rgb), 0.05);
+            }
+            
+            .tier-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }
+            
+            .tier-popular-badge {
+                position: absolute;
+                top: 0;
+                right: 1rem;
+                background-color: var(--primary-color);
+                color: white;
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                transform: translateY(-50%);
+            }
+            
+            .tier-price {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 0.25rem;
+            }
+            
+            .tier-period {
+                font-size: 0.875rem;
+                color: #6b7280;
+                margin-bottom: 0.5rem;
+            }
+            
+            .tier-features {
+                font-size: 0.875rem;
+                margin-top: 0.5rem;
+                /* Hide features by default */
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                opacity: 0;
+            }
+            
+            .tier-features.show {
+                /* Show when toggled */
+                max-height: 500px; /* Enough height to accommodate all content */
+                opacity: 1;
+            }
+            
+            .tier-feature {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .tier-feature i {
+                color: var(--primary-color);
+                margin-top: 0.125rem;
+            }
+            
+            /* Toggle button for features */
+            .toggle-features {
+                color: var(--primary-color);
+                font-size: 0.875rem;
+                cursor: pointer;
+                margin-top: 0.25rem;
+                display: inline-block;
+                font-weight: 500;
+            }
+            
+            .toggle-features:hover {
+                text-decoration: underline;
+            }
+            
+            /* Checkbox style */
+            .tier-checkbox {
+                width: 1.25rem;
+                height: 1.25rem;
+                border-radius: 50%;
+                border: 1px solid #d1d5db;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            
+            .tier-checkbox-inner {
+                width: 0.75rem;
+                height: 0.75rem;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+            }
+            
+            /* Header styles */
+            .page-header {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 1rem;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                z-index: 50;
+                height: 70px; /* Fixed height for header */
+            }
+            
+            .header-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                max-width: 1200px;
+                padding: 0 1rem;
+            }
+            
+            .back-link {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                color: #6b7280;
+                text-decoration: none;
+                font-size: 0.875rem;
+            }
+            
+            .back-link:hover {
+                color: #374151;
+            }
+            
+            /* Added header spacing fix */
+            .header-spacer {
+                height: 90px; /* Slightly more than header height */
+                width: 100%;
+            }
+            
+            /* Info text style */
+            .info-text-sm {
+                font-size: 0.75rem;
+                line-height: 1.2;
+                color: #6b7280;
+            }
+            
+            /* Button container */
+            .button-container {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 1.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            /* Description text style */
+            .description-text-sm {
+                font-size: 0.85rem;
+                line-height: 1.4;
+                color: #6b7280;
+                padding-bottom: 8px;
+                text-align: center;
+            }
+
+            /* Center headings */
+            .center-heading {
+                text-align: center;
+            }
+            /* Styles for Google Places Autocomplete suggestions */
+            .autocomplete-suggestions-container {
+                position: absolute;
+                top: 100%; /* Position below the input */
+                left: 0;
+                right: 0;
+                z-index: 10; /* Ensure it's above other content */
+                background-color: white;
+                border: 1px solid #d1d5db;
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                max-height: 200px; /* Limit height and add scroll */
+                overflow-y: auto;
+                display: none; /* Hide by default */
+            }
+
+            .autocomplete-suggestion-item {
+                padding: 10px 16px;
+                cursor: pointer;
+                border-bottom: 1px solid #eee;
+            }
+
+            .autocomplete-suggestion-item:last-child {
+                border-bottom: none;
+            }
+
+            .autocomplete-suggestion-item:hover {
+                background-color: #f3f4f6;
+            }
+        </style>
+    </head>
+    <body class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#fcfcfc] tw-text-black">
+        <!-- Fixed header with centered logo -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="tw-w-24">
+                    <!-- Empty div to balance the header -->
+                </div>
+                
+                <a href="/" class="tw-text-center">
+                    <img 
+                        src="/assets/logo/logo_lightgb.png" 
+                        alt="Digital Property Showcase" 
+                        class="tw-h-10 tw-w-auto"
+                    />
+                </a>
+                
+                <a href="/" class="back-link">
+                    <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        </header>
+
+        <!-- Add spacer to prevent header overlap -->
+        <div class="header-spacer"></div>
+
+        <main class="tw-flex-grow tw-pb-12">
+            <div class="tw-container tw-mx-auto tw-px-4 tw-max-w-3xl">
+                <h1 class="tw-text-3xl tw-font-bold tw-text-center tw-mb-3">
+                    Create Your Property Showcase
+                </h1>
+                <p class="tw-text-center tw-mb-5 tw-text-gray-600 tw-text-sm tw-max-w-lg tw-mx-auto">
+                    Let's get your premium property showcase set up in just a few steps.<br>
+                    <span class="tw-font-medium tw-text-[var(--primary-color)]">
+                        No payment required until your showcase is ready!
+                    </span>
+                </p>
+
+                <!-- Progress Steps -->
+                <div class="progress-container">
+                    <div class="tw-flex tw-items-center tw-mb-2">
+                        <div class="step-indicator active" id="step-indicator-1">1</div>
+                        <div class="step-line" id="step-line-1"></div>
+                        <div class="step-indicator" id="step-indicator-2">2</div>
+                        <div class="step-line" id="step-line-2"></div>
+                        <div class="step-indicator" id="step-indicator-3">3</div>
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-text-xs tw-text-gray-600">
+                        <span>Choose Tier</span>
+                        <span>Agent Details</span>
+                        <span>Property Info</span>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <form id="onboarding-form" class="tw-bg-white tw-rounded-xl tw-shadow-md tw-px-4 tw-py-6 sm:tw-p-6">
+                    <!-- Step 1: Tier Selection -->
+                    <div class="step-container active" id="step-1">
+                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3 center-heading">Step 1: Choose Your Showcase Tier</h2>
+                        <p class="description-text-sm tw-mb-2">
+                            Select the tier that best fits your needs. You can change this later if needed.
+                        </p>
+
+                        <div class="tier-grid tw-mt-2">
+                            <!-- Essential Tier -->
+                            <div class="tier-card" data-tier="essential" onclick="selectTier('essential')">
+                                <div class="tier-header">
+                                    <h3 class="tw-font-semibold">Essential</h3>
+                                    <div class="tier-checkbox">
+                                        <div class="tier-checkbox-inner tw-hidden"></div>
+                                    </div>
+                                </div>
+                                <p class="tier-price">AU$770</p>
+                                <p class="tier-period">+ setup: $0</p>
+                                
+                                <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
+                                
+                                <div class="tier-features" id="essential-features">
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Unbranded website</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Custom domain</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Unlimited media</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>3 months live</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>5 content updates</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Email support</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Premium Tier -->
+                            <div class="tier-card" data-tier="premium" onclick="selectTier('premium')">
+                                <div class="tier-popular-badge">Popular</div>
+                                <div class="tier-header">
+                                    <h3 class="tw-font-semibold">Premium</h3>
+                                    <div class="tier-checkbox">
+                                        <div class="tier-checkbox-inner tw-hidden"></div>
+                                    </div>
+                                </div>
+                                <p class="tier-price">AU$960</p>
+                                <p class="tier-period">+ setup: $220</p>
+                                
+                                <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
+                                
+                                <div class="tier-features" id="premium-features">
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Full agency branding</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Custom logo</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Interactive local map</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Backlinking to your site</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>10 website updates</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Phone support</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Prestige Tier -->
+                            <div class="tier-card" data-tier="prestige" onclick="selectTier('prestige')">
+                                <div class="tier-header">
+                                    <h3 class="tw-font-semibold">Prestige</h3>
+                                    <div class="tier-checkbox">
+                                        <div class="tier-checkbox-inner tw-hidden"></div>
+                                    </div>
+                                </div>
+                                <p class="tier-price">AU$1,260</p>
+                                <p class="tier-period">+ setup: $220</p>
+                                
+                                <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
+                                
+                                <div class="tier-features" id="prestige-features">
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Instagram carousel</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Dynamic open house data</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span><strong>Dedicated account manager</strong></span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Unlimited updates</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Advanced SEO optimization</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Priority support</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tw-text-center tw-mb-6">
+                            <p class="info-text-sm">All tiers include a 3-month showcase period, with option to extend for AU$80/month.</p>
+                            <p class="info-text-sm">You won't be charged until your showcase is ready to launch.</p>
+                        </div>
+
+                        <div class="button-container">
+                            <button type="button" onclick="nextStep(1)" 
+                                    class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right" id="step1-next-btn" disabled>
+                                Continue
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Agent & Agency Information -->
+                    <div class="step-container" id="step-2">
+                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3">Step 2: Agent & Agency Information</h2>
+                        <p class="tw-text-gray-600 tw-mb-5">
+                            Tell us about you and your agency.
+                        </p>
+
+                        <!-- Your Information -->
+                        <div class="tw-mb-5">
+                            <h3 class="tw-text-lg tw-font-medium tw-mb-3 tw-pt-6">Your Information</h3>
+                            <div class="tw-grid tw-gap-4 md:tw-grid-cols-3">
+                                <div>
+                                    <label for="user_name" class="form-label">Your Name <span class="tw-text-red-500">*</span></label>
+                                    <input type="text" id="user_name" name="user_name" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label for="user_email" class="form-label">Email Address <span class="tw-text-red-500">*</span></label>
+                                    <input type="email" id="user_email" name="user_email" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label for="user_phone" class="form-label">Phone Number <span class="tw-text-red-500">*</span></label>
+                                    <input type="tel" id="user_phone" name="user_phone" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selling Agent Information -->
+                        <div class="tw-mb-5">
+                            <div class="tw-flex tw-items-center tw-gap-2 tw-mb-3">
+                                <label class="form-label tw-mb-0 tw-mt-2">Are you the selling agent?</label>
+                                <div class="tw-flex tw-items-center tw-gap-4">
+                                    <label class="custom-radio">
+                                        <input type="radio" name="is_selling_agent" value="yes" checked
+                                               onchange="toggleSellingAgentFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
+                                        <span>Yes</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="is_selling_agent" value="no"
+                                               onchange="toggleSellingAgentFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
+                                        <span>No</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="selling_agent_fields" class="hide-section">
+                                <h3 class="tw-text-lg tw-font-medium tw-mb-3 tw-pt-6">Selling Agent Information</h3>
+                                <div class="tw-grid tw-gap-4 md:tw-grid-cols-3">
+                                    <div>
+                                        <label for="agent_name" class="form-label">Agent Name <span class="tw-text-red-500">*</span></label>
+                                        <input type="text" id="agent_name" name="agent_name" class="form-input">
+                                    </div>
+                                    <div>
+                                        <label for="agent_email" class="form-label">Agent Email <span class="tw-text-red-500">*</span></label>
+                                        <input type="email" id="agent_email" name="agent_email" class="form-input">
+                                    </div>
+                                    <div>
+                                        <label for="agent_phone" class="form-label">Agent Phone <span class="tw-text-red-500">*</span></label>
+                                        <input type="tel" id="agent_phone" name="agent_phone" class="form-input">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agency Information -->
+                        <div class="tw-mb-6">
+                            <h3 class="tw-text-lg tw-font-medium tw-mb-3 tw-pt-6">Agency Information</h3>
+                            <div class="tw-grid tw-gap-4 md:tw-grid-cols-2">
+                                <div>
+                                    <label for="agency_name" class="form-label">Agency Name <span class="tw-text-red-500">*</span></label>
+                                    <input type="text" id="agency_name" name="agency_name" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label for="agency_office" class="form-label">Office Location <span class="tw-text-red-500">*</span></label>
+                                    <input type="text" id="agency_office" name="agency_office" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tw-flex tw-justify-between">
+                            <button type="button" onclick="prevStep(2)" 
+                                    class="lp-btn lp-btn-outline lp-btn-md lp-btn-icon-left">
+                                <i class="bi bi-arrow-left"></i>
+                                Back
+                            </button>
+                            <button type="button" onclick="nextStep(2)" 
+                                    class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right">
+                                Continue
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Property Details -->
+                    <div class="step-container" id="step-3">
+                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3">Step 3: Property Details</h2>
+                        <p class="tw-text-gray-600 tw-mb-5">
+                            Tell us about the property you want to showcase.
+                        </p>
+
+                        <div class="tw-grid tw-gap-4 md:tw-grid-cols-2" style="width: 100%;">
+                            <div class="tw-relative"> <!-- Added tw-relative class -->
+                                <label for="street_address" class="form-label">Address <span class="tw-text-red-500">*</span></label>
+                                <input type="text" id="street_address" name="street_address" class="form-input" required>
+                                <div id="autocomplete-suggestions-container" class="autocomplete-suggestions-container"></div> <!-- Added suggestions container -->
+                            </div>
+                            <div>
+                                <label for="property_name" class="form-label">Property Name (Optional)</label>
+                                <input type="text" id="property_name" name="property_name" class="form-input"
+                                       placeholder="If empty, will use the full address">
+                            </div>
+                            <div>
+                                <label for="price" class="form-label">Price <span class="tw-text-red-500">*</span></label>
+                                <input type="text" id="price" name="price" class="form-input" required
+                                       placeholder="e.g. $1,200,000 or Contact Agent">
+                            </div>
+                            <div>
+                                <label class="form-label">Sale Type <span class="tw-text-red-500">*</span></label>
+                                <div class="tw-flex tw-items-center tw-gap-4 tw-mt-2">
+                                    <label class="tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
+                                        <input type="radio" name="sale_type" value="private_sale" checked
+                                               onchange="toggleAuctionFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
+                                        <span>Private Sale</span>
+                                    </label>
+                                    <label class="tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
+                                        <input type="radio" name="sale_type" value="auction"
+                                               onchange="toggleAuctionFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
+                                        <span>Auction</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Auction Date/Time (hidden by default) -->
+                        <div id="auction_fields" class="tw-mt-4 hide-section">
+                            <div class="tw-grid tw-gap-4 md:tw-grid-cols-2" style="width: 100%;">
+                                <div>
+                                    <label for="auction_date" class="form-label">Auction Date <span class="tw-text-red-500">*</span></label>
+                                    <input type="date" id="auction_date" name="auction_date" class="form-input">
+                                </div>
+                                <div>
+                                    <label for="auction_time" class="form-label">Auction Time <span class="tw-text-red-500">*</span></label>
+                                    <input type="time" id="auction_time" name="auction_time" class="form-input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tw-mt-5">
+                            <label for="preferred_domain" class="form-label">Preferred Domain <span class="tw-text-red-500">*</span></label>
+                            <div class="tw-flex tw-items-center">
+                                <span class="tw-px-3 tw-py-2 tw-bg-gray-100 tw-border tw-border-r-0 tw-border-gray-300 tw-rounded-l-lg">www.</span>
+                                <input type="text" id="preferred_domain" name="preferred_domain" class="form-input tw-rounded-l-none"
+                                       placeholder="123mainstreet.com" required>
+                            </div>
+                            <p class="tw-text-xs tw-text-gray-500 tw-mt-1">
+                                Choose a simple, memorable domain related to the property address.
+                            </p>
+                        </div>
+
+
+                        <div class="tw-mt-8 tw-flex tw-justify-between">
+                            <button type="button" onclick="prevStep(3)" 
+                                    class="lp-btn lp-btn-outline lp-btn-md lp-btn-icon-left">
+                                <i class="bi bi-arrow-left"></i>
+                                Back
+                            </button>
+                            <button type="submit" 
+                                    class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right">
+                                Submit
+                                <i class="bi bi-check2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="tw-mt-5 tw-text-center tw-text-gray-500">
+                    <p class="tw-text-xs tw-mb-1" style="font-size: 12px; margin-bottom: 4px;">Need help? <a href="mailto:info@digitalpropertyshowcase.com" class="tw-text-[var(--primary-color)] tw-underline">Contact our support team</a></p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="tw-bg-gray-100 tw-py-4 tw-mt-auto">
+            <div class="tw-container tw-mx-auto tw-px-4 tw-text-center tw-text-gray-600">
+                <p class="tw-text-xs" style="font-size: 12px; padding-top: 4px; padding-bottom: 4px;">© 2025 Digital Property Showcase. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <script>
+            let selectedTier = '';
+            let featuresVisible = false;
+            
+            // Function to select tier
+            function selectTier(tier) {
+                selectedTier = tier;
+                
+                // Update visual state
+                const cards = document.querySelectorAll('.tier-card');
+                cards.forEach(card => {
+                    card.classList.remove('selected');
+                    const checkbox = card.querySelector('.tier-checkbox-inner');
+                    checkbox.classList.add('tw-hidden');
+                });
+                
+                const selectedCard = document.querySelector(`.tier-card[data-tier="${tier}"]`);
+                selectedCard.classList.add('selected');
+                const checkbox = selectedCard.querySelector('.tier-checkbox-inner');
+                checkbox.classList.remove('tw-hidden');
+                
+                // Update tier display in step 3
+                
+                // Enable next button
+                document.getElementById('step1-next-btn').disabled = false;
+            }
+            
+            // Function to toggle all features visibility
+            function toggleAllFeatures(event) {
+                event.stopPropagation(); // Prevent tier selection when clicking the toggle
+                
+                featuresVisible = !featuresVisible;
+                
+                // Toggle all feature sections
+                const allFeatures = document.querySelectorAll('.tier-features');
+                const allToggles = document.querySelectorAll('.toggle-features');
+                
+                if (featuresVisible) {
+                    // Show all features
+                    allFeatures.forEach(featuresEl => {
+                        featuresEl.classList.add('show');
+                    });
+                    
+                    // Update all toggle buttons
+                    allToggles.forEach(button => {
+                        button.innerHTML = `Hide features <i class="bi bi-chevron-up"></i>`;
+                    });
+                } else {
+                    // Hide all features
+                    allFeatures.forEach(featuresEl => {
+                        featuresEl.classList.remove('show');
+                    });
+                    
+                    // Update all toggle buttons
+                    allToggles.forEach(button => {
+                        button.innerHTML = `What's included? <i class="bi bi-chevron-down"></i>`;
+                    });
+                }
+            }
+            
+            // Functions to navigate between steps
+            function nextStep(currentStep) {
+                // Validate current step fields
+                if (currentStep === 1 && !selectedTier) {
+                    alert('Please select a showcase tier to continue');
+                    return;
+                }
+                
+                if (currentStep === 2) {
+                    const requiredFields = [
+                        'user_name', 'user_email', 'user_phone', 'agency_name', 'agency_office'
+                    ];
+                    
+                    // Add agent fields if the user is not the selling agent
+                    const isSellingAgent = document.querySelector('input[name="is_selling_agent"]:checked').value;
+                    if (isSellingAgent === 'no') {
+                        requiredFields.push('agent_name', 'agent_email', 'agent_phone');
+                    }
+                    
+                    for (const field of requiredFields) {
+                        const element = document.getElementById(field);
+                        if (!element.value.trim()) {
+                            alert(`Please fill in the ${element.labels[0].textContent.replace(' *', '')}`);
+                            element.focus();
+                            return;
+                        }
+                    }
+                }
+                
+                // Hide current step
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                
+                // Show next step
+                document.getElementById(`step-${currentStep + 1}`).classList.add('active');
+                
+                // Update progress indicators
+                document.getElementById(`step-indicator-${currentStep}`).classList.remove('active');
+                document.getElementById(`step-indicator-${currentStep}`).classList.add('completed');
+                document.getElementById(`step-indicator-${currentStep + 1}`).classList.add('active');
+                
+                // Update connecting line
+                document.getElementById(`step-line-${currentStep}`).classList.add('completed');
+                
+                // Scroll to top of the form
+                window.scrollTo({
+                    top: document.querySelector('.progress-container').offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+            
+            function prevStep(currentStep) {
+                // Hide current step
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                
+                // Show previous step
+                document.getElementById(`step-${currentStep - 1}`).classList.add('active');
+                
+                // Update progress indicators
+                document.getElementById(`step-indicator-${currentStep}`).classList.remove('active');
+                document.getElementById(`step-indicator-${currentStep - 1}`).classList.remove('completed');
+                document.getElementById(`step-indicator-${currentStep - 1}`).classList.add('active');
+                
+                // Update connecting line
+                document.getElementById(`step-line-${currentStep - 1}`).classList.remove('completed');
+                
+                // Scroll to top of the form
+                window.scrollTo({
+                    top: document.querySelector('.progress-container').offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Toggle selling agent fields visibility
+            function toggleSellingAgentFields() {
+                const isSellingAgent = document.querySelector('input[name="is_selling_agent"]:checked').value;
+                const sellingAgentFields = document.getElementById('selling_agent_fields');
+                
+                if (isSellingAgent === 'yes') {
+                    sellingAgentFields.classList.add('hide-section');
+                    // Clear the fields
+                    document.getElementById('agent_name').removeAttribute('required');
+                    document.getElementById('agent_email').removeAttribute('required');
+                    document.getElementById('agent_phone').removeAttribute('required');
+                } else {
+                    sellingAgentFields.classList.remove('hide-section');
+                    // Make the fields required
+                    document.getElementById('agent_name').setAttribute('required', 'required');
+                    document.getElementById('agent_email').setAttribute('required', 'required');
+                    document.getElementById('agent_phone').setAttribute('required', 'required');
+                }
+            }
+            
+            // Toggle auction fields visibility
+            function toggleAuctionFields() {
+                const saleType = document.querySelector('input[name="sale_type"]:checked').value;
+                const auctionFields = document.getElementById('auction_fields');
+                
+                if (saleType === 'auction') {
+                    auctionFields.classList.remove('hide-section');
+                    document.getElementById('auction_date').setAttribute('required', 'required');
+                    document.getElementById('auction_time').setAttribute('required', 'required');
+                } else {
+                    auctionFields.classList.add('hide-section');
+                    document.getElementById('auction_date').removeAttribute('required');
+                    document.getElementById('auction_time').removeAttribute('required');
+                }
+            }
+            
+            // Form submission handler
+            document.getElementById('onboarding-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate required fields in step 3
+                const requiredFields = [
+                    'street_address', 'suburb', 'state', 'price', 'preferred_domain'
+                ];
+                
+                // Add auction fields if auction is selected
+                const saleType = document.querySelector('input[name="sale_type"]:checked').value;
+                if (saleType === 'auction') {
+                    requiredFields.push('auction_date', 'auction_time');
+                }
+                
+                for (const field of requiredFields) {
+                    const element = document.getElementById(field);
+                    if (!element.value.trim()) {
+                        alert(`Please fill in the ${element.labels[0].textContent.replace(' *', '')}`);
+                        element.focus();
+                        return;
+                    }
+                }
+                
+                // In a real implementation, you would send this data to your backend
+                alert('Form submitted successfully! Our team will contact you soon to complete your showcase setup.');
+                
+                // Redirect to homepage or thank you page
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            });
+            
+            // Initialize the form
+            document.addEventListener('DOMContentLoaded', function() {
+                // Pre-select Essential tier as default
+                selectTier('premium');
+            });
+        </script>
+
+        <script>
+            let addressInput;
+            let suburbInput;
+            let stateInput;
+            let autocompleteTimeout;
+            let suggestionsContainer;
+
+            document.addEventListener('DOMContentLoaded', function() {
+                addressInput = document.getElementById('street_address');
+                suburbInput = document.getElementById('suburb');
+                stateInput = document.getElementById('state');
+                suggestionsContainer = document.getElementById('autocomplete-suggestions-container');
+
+                if (addressInput) {
+                    addressInput.addEventListener('input', handleAddressInput);
+                }
+
+                // Hide suggestions when clicking outside the input and container
+                document.addEventListener('click', function(event) {
+                    if (suggestionsContainer && !suggestionsContainer.contains(event.target) && event.target !== addressInput) {
+                        hideSuggestions();
+                    }
+                });
+
+                 // Hide suggestions when the input loses focus, with a slight delay
+                 // to allow click events on suggestions to register
+                 if (addressInput) {
+                    addressInput.addEventListener('blur', function() {
+                        setTimeout(hideSuggestions, 100);
+                    });
+                 }
+            });
+
+            async function handleAddressInput() {
+                clearTimeout(autocompleteTimeout);
+                const input = addressInput.value.trim();
+
+                if (input.length < 3) { // Only search if input is at least 3 characters
+                    hideSuggestions(); // Hide suggestions if input is too short
+                    return;
+                }
+
+                autocompleteTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`/api/autocomplete?input=${encodeURIComponent(input)}`);
+                        const data = await response.json();
+
+                        if (data.predictions && data.predictions.length > 0) {
+                            displaySuggestions(data.predictions);
+                        } else {
+                            hideSuggestions(); // Hide suggestions if no predictions found
+                        }
+
+                    } catch (error) {
+                        console.error('Error fetching autocomplete predictions:', error);
+                        hideSuggestions(); // Hide suggestions on error
+                    }
+                }, 300); // Debounce input
+            }
+
+            function displaySuggestions(predictions) {
+                if (!suggestionsContainer) return;
+
+                suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+                predictions.forEach(prediction => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.classList.add('autocomplete-suggestion-item');
+                    suggestionItem.textContent = prediction.description;
+                    suggestionItem.addEventListener('click', () => {
+                        addressInput.value = prediction.description; // Fill input with selected suggestion
+                        selectPlace(prediction.place_id); // Call selectPlace with place_id
+                        hideSuggestions(); // Hide suggestions after selection
+                    });
+                    suggestionsContainer.appendChild(suggestionItem);
+                });
+                suggestionsContainer.style.display = 'block'; // Show the container
+            }
+
+            function hideSuggestions() {
+                if (suggestionsContainer) {
+                    suggestionsContainer.style.display = 'none';
+                    suggestionsContainer.innerHTML = ''; // Clear suggestions when hidden
+                }
+            }
+
+
+            // This function would be called when a user selects a prediction
+            // It would then call a backend endpoint to get place details
+            // and populate the form fields.
+            async function selectPlace(placeId) {
+                 try {
+                    const response = await fetch(`/api/place-details?placeId=${encodeURIComponent(placeId)}`);
+                    const place = await response.json();
+
+                    if (place) {
+                        console.log('Place details:', place);
+                        let streetNumber = '';
+                        let route = '';
+                        let suburb = '';
+                        let state = '';
+
+                        if (place.address_components) {
+                            place.address_components.forEach((component) => {
+                                const types = component.types;
+                                if (types.includes('street_number')) {
+                                    streetNumber = component.long_name;
+                                }
+                                if (types.includes('route')) {
+                                    route = component.long_name;
+                                }
+                                if (types.includes('locality') || types.includes('sublocality_level_1')) {
+                                    suburb = component.long_name;
+                                }
+                                if (types.includes('administrative_area_level_1')) {
+                                    state = component.long_name;
+                                }
+                            });
+                        }
+
+                        // Populate the form fields
+                        addressInput.value = `${streetNumber} ${route}`.trim();
+                        suburbInput.value = suburb;
+                        stateInput.value = state;
+
+                        // You might want to store latitude/longitude as well if needed later
+                        // const latitude = place.geometry?.location?.lat();
+                        // const longitude = place.geometry?.location?.lng();
+                        // console.log('Coordinates:', { latitude, longitude });
+                    } else {
+                        console.error('Could not retrieve place details.');
+                    }
+                } catch (error) {
+                    console.error('Error fetching place details:', error);
+                }
+            }
+
+            // The initAutocomplete function is no longer needed for client-side API calls
+            // but we'll keep a placeholder or remove it depending on future needs.
+            // For now, removing the Google Maps script tag is the key step.
+
+        </script>
+    </body>
+</html>

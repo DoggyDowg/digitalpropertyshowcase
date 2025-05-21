@@ -26,14 +26,8 @@
         <!-- <link rel="stylesheet" href="css/tailwind-runtime.css" /> -->
         <link rel="stylesheet" href="/css/tailwind-build.css">
         <link rel="stylesheet" href="/css/index.css" />
-
-        <!--
-            IMPORTANT: ALL CSS from your original inline <style> tags
-            (the large one in the <head> and the ones inside the property reel sections)
-            MUST be moved to an external CSS file. For example:
-        -->
         <link rel="stylesheet" href="/css/custom-page-styles.css"> <!-- Create this file and add your styles -->
-
+        <link rel="stylesheet" href="/css/legal-popups.css"> <!-- Added CSS for legal popups -->
 
         <link
             rel="stylesheet"
@@ -181,7 +175,7 @@
                 >
                     <!-- Theme toggle button removed -->
                     <a
-                        href="#"
+                        href="/onboarding.html"
                         aria-label="Get Started"
                         class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right"
                     >
@@ -293,7 +287,7 @@
 
                         <a
                             class="lp-btn lp-btn-primary lp-btn-lg lp-btn-shadow lp-btn-icon-right"
-                            href="#"
+                            href="/onboarding.html"
                         >
                             <span>Get Started Now</span>
                             <i class="bi bi-arrow-right"></i>
@@ -770,7 +764,7 @@
                     </p>
                     
                     <a
-                        href="#"
+                        href="/onboarding.html"
                         class="lp-btn lp-btn-primary lp-btn-md tw-mt-auto !tw-w-full"
                     >
                         Get Essential
@@ -830,7 +824,7 @@
                     </p>
                     
                     <a
-                        href="#"
+                        href="/onboarding.html"
                         class="lp-btn lp-btn-primary lp-btn-md tw-mt-auto !tw-w-full"
                     >
                         Get Premium
@@ -889,7 +883,7 @@
                     </p>
                     
                     <a
-                        href="#"
+                        href="/onboarding.html"
                         class="lp-btn lp-btn-primary lp-btn-md tw-mt-auto !tw-w-full"
                     >
                         Get Prestige
@@ -1152,7 +1146,7 @@
 
                 <div class="tw-mt-8 tw-relative tw-flex max-lg:tw-flex-col tw-gap-5">
 
-                    <a href="#" class="lp-btn lp-btn-primary lp-btn-lg reveal-up">
+                    <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-lg reveal-up">
                         Get Started Today
                     </a>
                 </div>
@@ -1160,106 +1154,184 @@
             </div>
         </section>
 
-        <section
-            class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%] max-md:tw-px-2"
-        >
-            <div
-                class="tw-flex tw-w-full tw-max-w-[80%] tw-place-content-center tw-place-items-center tw-justify-between tw-gap-3
-                        tw-rounded-lg tw-bg-[#F6F7FB] dark:tw-bg-[#171717] tw-p-6 max-md:tw-max-w-full max-md:tw-flex-col"
-            >
-                <div class="tw-flex tw-flex-col max-lg:tw-text-center tw-gap-1">
-                    <h2 class="tw-text-2xl tw-text-gray-800 dark:tw-text-gray-200 max-md:tw-text-xl">
-                        Join our newsletter
-                    </h2>
-                    <div class="tw-text-gray-700 dark:tw-text-gray-300">Get product insights and updates.</div>
-                </div>
-
-                <div
-                    class="tw-flex tw-h-[60px] tw-place-items-center tw-gap-2 tw-overflow-hidden tw-p-2"
-                >
-                    <input
-                        type="email"
-                        class="input tw-h-full tw-w-full !tw-border-gray-600 tw-p-2 tw-outline-none"
-                        placeholder="email"
-                    />
-                    <a
-                        class="lp-btn lp-btn-outline lp-btn-sm dark:text-white"
-                        href=""
-                    >
-                        Signup
-                    </a>
-                </div>
-            </div>
-        </section>
+ 
 
         <!-- === CONTACT FORM SECTION === -->
-        <section class="tw-w-full tw-py-12 tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-bg-white dark:tw-bg-[#171717]" id="contact">
-          <div class="tw-max-w-4xl tw-mx-auto">
-            <div class="tw-text-center tw-mb-12">
-              <h2 class="tw-text-3xl tw-font-bold tw-text-gray-900 dark:tw-text-white sm:tw-text-4xl">
+        <section class="tw-relative tw-w-full tw-py-16 tw-flex tw-flex-col tw-items-center tw-justify-center" id="contact" 
+                style="background-image: url('/assets/images/background/contactform.jpg'); 
+                       background-size: cover; 
+                       background-position: center;
+                       background-attachment: fixed;
+                       background-repeat: no-repeat;
+                       min-width: 100vw;
+                       position: relative;
+                       margin-top: 40px;
+                       margin-bottom: 40px;">
+  
+          <!-- Dark overlay with 50% opacity -->
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+          
+          <div class="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-max-w-5xl tw-relative tw-flex tw-flex-col tw-items-center" style="z-index: 2; margin-top: 40px; margin-bottom: 40px;">
+            <div class="tw-text-center tw-mb-10">
+              <h2 class="reveal-up tw-text-4xl tw-font-bold" style="color: white !important;">
                 Get in Touch
               </h2>
-              <p class="tw-mt-4 tw-text-lg tw-text-gray-600 dark:tw-text-gray-300">
+              <p class="reveal-up tw-mt-4 tw-text-lg" style="color: white !important;">
                 Have questions? Send us a message and we'll get back to you soon.
               </p>
             </div>
             
-            <form class="tw-bg-white dark:tw-bg-[#1e1e1e] tw-rounded-xl tw-shadow-lg tw-p-8 tw-w-full md:tw-w-[75%] lg:tw-w-[66.67%] tw-mx-auto">
-              <div class="tw-space-y-6">
-                <div>
-                  <label for="name" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 dark:tw-text-gray-300 tw-mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    class="input tw-w-full tw-px-4 tw-py-2 tw-border tw-border-gray-300 dark:tw-border-gray-600 tw-rounded-md focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white dark:tw-bg-[#2d2d2d] dark:tw-text-white"
-                    placeholder="John Doe"
-                  >
-                </div>
+            <!-- Formspree form -->
+            <form 
+              action="https://formspree.io/f/xdkgjjvl" 
+              method="POST"
+              id="contact-form" 
+              class="reveal-up tw-rounded-xl tw-shadow-lg tw-p-8 tw-w-full tw-max-w-xl tw-border tw-border-gray-100 hover:tw-shadow-xl tw-transition-all tw-duration-300"
+              style="background-color: rgba(255, 255, 255, 0.8);"
+            >
+              <div class="tw-space-y-5">
+        <!-- Name and Agency row -->
+        <div class="tw-flex tw-flex-col md:tw-flex-row md:tw-gap-4">
+          <div class="tw-w-full md:tw-w-1/2">
+            <label for="name" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              class="input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white"
+              placeholder="John Doe"
+            >
+          </div>
+          
+          <div class="tw-w-full md:tw-w-1/2 tw-mt-5 md:tw-mt-0">
+            <label for="agency" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+              Agency
+            </label>
+            <input
+              type="text"
+              id="agency"
+              name="agency"
+              required
+              class="input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white"
+              placeholder="Your Agency"
+            >
+          </div>
+        </div>
 
-                <div>
-                  <label for="email" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 dark:tw-text-gray-300 tw-mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    class="input tw-w-full tw-px-4 tw-py-2 tw-border tw-border-gray-300 dark:tw-border-gray-600 tw-rounded-md focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white dark:tw-bg-[#2d2d2d] dark:tw-text-white"
-                    placeholder="you@example.com"
-                  >
-                </div>
+        <!-- Email field -->
+        <div class="tw-mt-5">
+          <label for="email" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="_replyto"
+            required
+            class="input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white"
+            placeholder="you@example.com"
+          >
+        </div>
 
-                <div>
-                  <label for="message" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 dark:tw-text-gray-300 tw-mb-1">
-                    Your Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="4"
-                    required
-                    class="input tw-w-full tw-px-4 tw-py-2 tw-border tw-border-gray-300 dark:tw-border-gray-600 tw-rounded-md focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white dark:tw-bg-[#2d2d2d] dark:tw-text-white"
-                    placeholder="How can we help you?"
-                  ></textarea>
-                </div>
+        <!-- Message field -->
+        <div class="tw-mt-5">
+          <label for="message" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+            Your Message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="4"
+            required
+            class="input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent tw-bg-white"
+            placeholder="How can we help you?"
+          ></textarea>
+        </div>
+        
+        <!-- Hidden fields for Formspree -->
+        <input type="hidden" name="_subject" value="New Contact Form Submission">
+        <input type="text" name="_gotcha" style="display:none">
 
-                <div class="tw-pt-2">
-                  <button
-                    type="submit"
-                    class="lp-btn lp-btn-primary tw-w-full tw-py-3 tw-px-6 tw-rounded-md tw-text-white tw-font-medium tw-bg-primary hover:tw-bg-primary/90 tw-transition tw-duration-200 tw-ease-in-out"
-                  >
-                    Send Message
-                  </button>
-                </div>
-              </div>
-            </form>
+        <div class="tw-pt-2">
+          <button
+            type="submit"
+            id="contact-submit-btn"
+            class="lp-btn lp-btn-primary lp-btn-md tw-w-full tw-rounded-lg"
+          >
+            Send Message
+          </button>
+        </div>
+        
+        <!-- Form status message -->
+        <div id="contact-form-status" class="tw-mt-4 tw-hidden">
+          <div class="tw-p-4 tw-rounded-lg tw-text-center tw-font-medium"></div>
+        </div>
+      </div>
+    </form>
           </div>
         </section>
+
+        <!-- Simple form handling script -->
+        <script>
+          var form = document.getElementById("contact-form");
+          var statusDiv = document.getElementById("contact-form-status");
+          var statusMessage = statusDiv.querySelector("div");
+          var submitBtn = document.getElementById("contact-submit-btn");
+          
+          function showStatus(message, isSuccess) {
+            statusDiv.classList.remove("tw-hidden");
+            statusMessage.textContent = message;
+            if (isSuccess) {
+              statusMessage.className = "tw-p-4 tw-rounded-lg tw-text-center tw-font-medium tw-bg-green-100 tw-text-green-800";
+            } else {
+              statusMessage.className = "tw-p-4 tw-rounded-lg tw-text-center tw-font-medium tw-bg-red-100 tw-text-red-800";
+            }
+          }
+          
+          function setSubmitting(isSubmitting) {
+            if (isSubmitting) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = '<span class="tw-flex tw-items-center tw-justify-center"><span class="tw-animate-spin tw-mr-2">⟳</span> Sending...</span>';
+            } else {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Send Message';
+            }
+          }
+          
+          async function handleSubmit(event) {
+            event.preventDefault();
+            setSubmitting(true);
+            
+            try {
+              const response = await fetch(form.action, {
+                method: form.method,
+                body: new FormData(form),
+                headers: {
+                  'Accept': 'application/json'
+                }
+              });
+              
+              const result = await response.json();
+              
+              if (response.ok) {
+                showStatus("Thank you for your message! We will get back to you soon.", true);
+                form.reset();
+              } else {
+                showStatus(result.error || "Sorry, there was a problem submitting your form.", false);
+              }
+            } catch (error) {
+              showStatus("Sorry, there was a problem submitting your form.", false);
+              console.error("Form submission error:", error);
+            } finally {
+              setSubmitting(false);
+            }
+          }
+          
+          form.addEventListener("submit", handleSubmit);
+        </script>
 
         <!-- New Footer with Background Image -->
         <footer class="footer-container">
@@ -1308,8 +1380,8 @@
                     <div class="footer-column">
                         <h4>Legal</h4>
                         <ul>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#privacy-policy">Privacy Policy</a></li>
+                            <li><a href="#terms-of-service">Terms of Service</a></li>
                         </ul>
                     </div>
                     
@@ -1357,6 +1429,198 @@
     <script src="/scripts/components.js"></script>
     <script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
     <script src="/index.js"></script>
+
+    <!-- Terms of Service and Privacy Policy Popups -->
+    <div id="privacy-policy-popup" class="legal-popup">
+        <div class="tw-bg-white dark:tw-bg-gray-800 tw-rounded-xl tw-shadow-2xl tw-max-w-4xl tw-w-full tw-relative">
+            <div class="tw-p-6 tw-border-b tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-between tw-items-center">
+                <h3 class="tw-text-2xl tw-font-semibold">Privacy Policy</h3>
+                <button onclick="closeLegalPopup('privacy-policy-popup')" class="tw-text-gray-500 hover:tw-text-gray-700 dark:tw-text-gray-300 dark:hover:tw-text-gray-100 tw-text-2xl">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="tw-overflow-y-auto">
+                <div class="tw-prose tw-max-w-none dark:tw-prose-invert">
+                    <h4>Last Updated: May 15, 2024</h4>
+                    
+                    <p>Welcome to Digital Property Showcase. We are committed to protecting your privacy and providing a secure experience. This Privacy Policy explains how we collect, use, and safeguard your information.</p>
+                    
+                    <h5>1. Information We Collect</h5>
+                    
+                    <p><strong>Personal Information:</strong> When you register for our services, we collect information such as your name, email address, phone number, and agency details.</p>
+                    
+                    <p><strong>Property Information:</strong> We collect and store property details, photos, videos, and location data that you upload to create your property showcases.</p>
+                    
+                    <p><strong>Usage Data:</strong> We automatically collect information about how you interact with our platform, including IP address, browser type, pages visited, and time spent on the site.</p>
+                    
+                    <p><strong>Cookies and Tracking Technologies:</strong> We use cookies and similar technologies to enhance your experience, analyze usage patterns, and deliver personalized content.</p>
+                    
+                    <h5>2. How We Use Your Information</h5>
+                    
+                    <ul>
+                        <li>To provide and maintain our services</li>
+                        <li>To process payments and manage your account</li>
+                        <li>To create and host your property showcase websites</li>
+                        <li>To communicate with you about service updates and promotional offers</li>
+                        <li>To improve our platform and develop new features</li>
+                        <li>To analyze usage trends and optimize user experience</li>
+                        <li>To comply with legal obligations</li>
+                    </ul>
+                    
+                    <h5>3. Information Sharing and Disclosure</h5>
+                    
+                    <p>We do not sell your personal information. We may share information with:</p>
+                    
+                    <ul>
+                        <li><strong>Service Providers:</strong> Third-party vendors who help us provide services (hosting, payment processing, analytics)</li>
+                        <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                        <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+                        <li><strong>With Your Consent:</strong> In circumstances where you have explicitly authorized the sharing</li>
+                    </ul>
+                    
+                    <h5>4. Data Retention and Security</h5>
+                    
+                    <p>We retain your information for as long as your account is active or as needed to provide services, comply with legal obligations, resolve disputes, or enforce agreements. We implement appropriate security measures to protect your information from unauthorized access or disclosure.</p>
+                    
+                    <h5>5. Your Rights and Choices</h5>
+                    
+                    <p>Depending on your location, you may have rights regarding your personal information, including:</p>
+                    
+                    <ul>
+                        <li>Accessing, correcting, or deleting your data</li>
+                        <li>Withdrawing consent for processing</li>
+                        <li>Requesting restriction of processing</li>
+                        <li>Data portability</li>
+                        <li>Opting out of marketing communications</li>
+                    </ul>
+                    
+                    <p>To exercise these rights, please contact us at privacy@digitalpropertyshowcase.com.</p>
+                    
+                    <h5>6. International Data Transfers</h5>
+                    
+                    <p>Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place to protect your information in compliance with applicable laws.</p>
+                    
+                    <h5>7. Children's Privacy</h5>
+                    
+                    <p>Our services are not directed to individuals under 18. We do not knowingly collect personal information from children.</p>
+                    
+                    <h5>8. Changes to This Policy</h5>
+                    
+                    <p>We may update this Privacy Policy periodically. We will notify you of significant changes through email or a notice on our website.</p>
+                    
+                    <h5>9. Contact Us</h5>
+                    
+                    <p>If you have questions about this Privacy Policy, please contact us at:</p>
+                    <p>Email: privacy@digitalpropertyshowcase.com</p>
+                </div>
+            </div>
+            <div class="tw-p-4 tw-border-t tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-end">
+                <button onclick="closeLegalPopup('privacy-policy-popup')" class="lp-btn lp-btn-primary lp-btn-md">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="terms-of-service-popup" class="legal-popup">
+        <div class="tw-bg-white dark:tw-bg-gray-800 tw-rounded-xl tw-shadow-2xl tw-max-w-4xl tw-w-full tw-relative">
+            <div class="tw-p-6 tw-border-b tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-between tw-items-center">
+                <h3 class="tw-text-2xl tw-font-semibold">Terms of Service</h3>
+                <button onclick="closeLegalPopup('terms-of-service-popup')" class="tw-text-gray-500 hover:tw-text-gray-700 dark:tw-text-gray-300 dark:hover:tw-text-gray-100 tw-text-2xl">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="tw-overflow-y-auto">
+                <div class="tw-prose tw-max-w-none dark:tw-prose-invert">
+                    <h4>Last Updated: May 15, 2024</h4>
+                    
+                    <p>Please read these Terms of Service ("Terms") carefully before using Digital Property Showcase ("Service"). By accessing or using our Service, you agree to be bound by these Terms.</p>
+                    
+                    <h5>1. Service Description</h5>
+                    
+                    <p>Digital Property Showcase provides services that enable real estate agents to create and manage digital property showcase websites. Our Service includes website hosting, domain management, and digital marketing tools as described on our website.</p>
+                    
+                    <h5>2. Account Registration</h5>
+                    
+                    <p>To use our Service, you must register for an account and provide accurate information. You are responsible for maintaining the confidentiality of your account credentials and for all activities associated with your account.</p>
+                    
+                    <h5>3. Subscription and Payments</h5>
+                    
+                    <ul>
+                        <li>Our Service is offered on a subscription basis with different tiers as outlined on our pricing page.</li>
+                        <li>All payments are due in advance and non-refundable unless otherwise stated.</li>
+                        <li>Each showcase website is live for 3 months and can be extended month-to-month for an additional fee.</li>
+                        <li>We reserve the right to change our pricing with notice to our users.</li>
+                        <li>Failure to pay fees may result in service suspension or termination.</li>
+                    </ul>
+                    
+                    <h5>4. User Content and Responsibilities</h5>
+                    
+                    <p><strong>You retain ownership of content you upload to our Service.</strong> By uploading content, you grant us a non-exclusive, worldwide, royalty-free license to use, store, and display that content solely for the purpose of providing and improving the Service.</p>
+                    
+                    <p>You are responsible for ensuring that your content:</p>
+                    
+                    <ul>
+                        <li>Does not violate any intellectual property rights</li>
+                        <li>Is accurate and not misleading</li>
+                        <li>Complies with all applicable real estate laws and regulations</li>
+                        <li>Does not contain malicious code or harmful elements</li>
+                    </ul>
+                    
+                    <h5>5. Prohibited Activities</h5>
+                    
+                    <p>You agree not to:</p>
+                    
+                    <ul>
+                        <li>Use our Service for any illegal purpose</li>
+                        <li>Attempt to gain unauthorized access to any part of the Service</li>
+                        <li>Interfere with or disrupt the Service or servers</li>
+                        <li>Circumvent any access restrictions or security measures</li>
+                        <li>Copy, modify, or create derivative works based on our Service</li>
+                        <li>Use the Service to distribute unsolicited commercial messages</li>
+                    </ul>
+                    
+                    <h5>6. Intellectual Property Rights</h5>
+                    
+                    <p>Our Service, including its design, features, and content (excluding your uploaded content), is owned by Digital Property Showcase and protected by intellectual property laws. You may not use our trademarks, logos, or service marks without prior written consent.</p>
+                    
+                    <h5>7. Third-Party Services</h5>
+                    
+                    <p>Our Service may integrate with third-party services. Your use of such services is subject to their respective terms and privacy policies. We are not responsible for third-party services or content.</p>
+                    
+                    <h5>8. Termination</h5>
+                    
+                    <p>We may suspend or terminate your access to the Service for violation of these Terms, non-payment, or for any other reason at our discretion. Upon termination, your showcase websites will no longer be accessible.</p>
+                    
+                    <h5>9. Limitation of Liability</h5>
+                    
+                    <p>To the maximum extent permitted by law, Digital Property Showcase shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or relating to your use of the Service.</p>
+                    
+                    <h5>10. Disclaimer of Warranties</h5>
+                    
+                    <p>The Service is provided "as is" without any warranties, express or implied. We do not guarantee that the Service will be uninterrupted, error-free, or secure.</p>
+                    
+                    <h5>11. Indemnification</h5>
+                    
+                    <p>You agree to indemnify and hold harmless Digital Property Showcase from any claims, damages, liabilities, and expenses arising from your use of the Service or violation of these Terms.</p>
+                    
+                    <h5>12. Governing Law</h5>
+                    
+                    <p>These Terms shall be governed by the laws of Australia. Any disputes shall be resolved in the courts of Australia.</p>
+                    
+                    <h5>13. Changes to Terms</h5>
+                    
+                    <p>We may modify these Terms at any time. We will notify you of material changes through the Service or via email. Your continued use of the Service after such modifications constitutes acceptance of the updated Terms.</p>
+                    
+                    <h5>14. Contact Us</h5>
+                    
+                    <p>If you have questions about these Terms, please contact us at:</p>
+                    <p>Email: support@digitalpropertyshowcase.com</p>
+                </div>
+            </div>
+            <div class="tw-p-4 tw-border-t tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-justify-end">
+                <button onclick="closeLegalPopup('terms-of-service-popup')" class="lp-btn lp-btn-primary lp-btn-md">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Inline scripts that were at the end of your original file -->
     <script>
@@ -1717,5 +1981,105 @@
             setTimeout(updateHeroBackground, 500);
         });
     </script>
+    
+    <!-- Legal Popups JavaScript -->
+    <script>
+        // Function to open legal popup
+        function openLegalPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+                
+                // Focus on the popup for accessibility
+                const focusableElement = popup.querySelector('button');
+                if (focusableElement) {
+                    setTimeout(() => {
+                        focusableElement.focus();
+                    }, 100);
+                }
+                
+                // Add escape key listener
+                document.addEventListener('keydown', handleEscapeKey);
+                
+                // Add click outside listener
+                popup.addEventListener('click', handleOutsideClick);
+            }
+        }
+        
+        // Function to close legal popup
+        function closeLegalPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+                
+                // Remove event listeners
+                document.removeEventListener('keydown', handleEscapeKey);
+                popup.removeEventListener('click', handleOutsideClick);
+            }
+        }
+        
+        // Handle escape key press
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                const activePopup = document.querySelector('.legal-popup.active');
+                if (activePopup) {
+                    closeLegalPopup(activePopup.id);
+                }
+            }
+        }
+        
+        // Handle click outside the popup content
+        function handleOutsideClick(event) {
+            // Check if click is directly on the popup background (not its children)
+            if (event.target.classList.contains('legal-popup')) {
+                closeLegalPopup(event.target.id);
+            }
+        }
+        
+        // Initialize popup functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect the footer links to open the popups
+            const privacyPolicyLinks = document.querySelectorAll('a[href="#privacy-policy"]');
+            const termsOfServiceLinks = document.querySelectorAll('a[href="#terms-of-service"]');
+            
+            privacyPolicyLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openLegalPopup('privacy-policy-popup');
+                });
+            });
+            
+            termsOfServiceLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openLegalPopup('terms-of-service-popup');
+                });
+            });
+        });
+    </script>
+</body>
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"
+    integrity="sha512-B1lby8cGcAUU3GR+Fd809/ZxgHbfwJMp0jLTVfHiArTuUt++VqSlJpaJvhNtRf3NERaxDNmmxkdx2o+aHd4bvw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"
+    integrity="sha512-AY2+JxnBETJ0wcXnLPCcZJIJx0eimyhz3OJ55k2Jx4RtYC+XdIi2VtJQ+tP3BaTst4otlGG1TtPJ9fKrAUnRdQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js" integrity="sha512-hIlMpy2enepx9maXZF1gn0hsvPLerXoLHdb095CmRY5HG3bZfN7XPBZ14g+TUDH1aGgfLyPHmY9/zuU53smuMw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Custom Scripts -->
+<script src="/scripts/reel-components.js"></script> <!-- For property card reels -->
+<script src="/scripts/components.js"></script>
+<script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
+<script src="/index.js"></script>
 
 </html>
