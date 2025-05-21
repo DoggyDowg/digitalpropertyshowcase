@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       `https://maps.googleapis.com/maps/api/place/details/json?` +
       new URLSearchParams({
         place_id: placeId,
-        fields: 'name,rating,user_ratings_total,price_level,types,business_status',
+        fields: 'name,rating,user_ratings_total,price_level,types,business_status,address_components',
         key: apiKey
       })
     );

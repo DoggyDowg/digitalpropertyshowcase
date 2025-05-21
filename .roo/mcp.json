@@ -7,6 +7,9 @@
         "@supabase/mcp-server-supabase@latest",
         "--access-token",
         "sbp_e734a877e64b38f766c46fd444c131ec2b804555"
+      ],
+      "alwaysAllow": [
+        "list_projects"
       ]
     }
   }

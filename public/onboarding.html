@@ -53,7 +53,7 @@
                 color: white;
             }
             .step-indicator.completed {
-                background-color: #10b981;
+                background-color: #70ae6e;
                 color: white;
             }
             .step-line {
@@ -62,8 +62,11 @@
                 background-color: #e5e7eb;
                 transition: all 0.3s ease;
             }
-            .step-line.completed {
-                background-color: #10b981;
+            .progress-container .step-line.solid-completed {
+                background-color: #70ae6e;
+            }
+            .progress-container .step-line.gradient-completed {
+                background: linear-gradient(to right, #70ae6e, #3A24C7);
             }
             .form-card {
                 transition: all 0.3s ease;
@@ -89,6 +92,10 @@
                 outline: 2px solid var(--primary-color);
                 outline-offset: 2px;
                 border-color: transparent;
+            }
+            #onboarding-form .form-input.input-error {
+                border-color: #ef4444 !important; /* Red-600 */
+                box-shadow: 0 1px 2px 0 rgba(239, 68, 68, 0.05) !important;
             }
             #onboarding-form .form-label {
                 display: block;
@@ -117,6 +124,46 @@
 
             #step-2 h3 {
                 padding-top: 24px;
+            }
+
+            /* Explicit grid styles for Step 2 input groups */
+            #step-2 > div.tw-mb-5 > div.tw-grid, /* Targets Your Information grid */
+            #step-2 > div.tw-mb-6 > div.tw-grid, /* Targets Agency Information grid */
+            #step-2 > div.tw-mb-5 > div#selling_agent_fields > div.tw-grid /* Targets Selling Agent Information grid */
+            {
+                display: grid;
+                gap: 1rem; /* Corresponds to tw-gap-4 */
+            }
+
+            @media (min-width: 768px) { /* Corresponds to md breakpoint */
+                #step-2 > div.tw-mb-5 > div.tw-grid.md\:tw-grid-cols-3, /* Targets Your Information grid */
+                #step-2 > div.tw-mb-5 > div#selling_agent_fields > div.tw-grid.md\:tw-grid-cols-3 /* Targets Selling Agent Information grid */
+                {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+                #step-2 > div.tw-mb-6 > div.tw-grid.md\:tw-grid-cols-2 /* Targets Agency Information grid */
+                {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            /* Explicit grid/flex styles for Step 3 input groups */
+            #step-3 > div.tw-grid,
+            #step-3 > div#auction_fields > div.tw-grid {
+                display: grid;
+                gap: 1rem; /* Corresponds to tw-gap-4 */
+            }
+
+            #step-3 > div.tw-mt-5 > div.tw-flex {
+                display: flex;
+                gap: 0; /* No gap specified in HTML, keep it that way */
+            }
+
+            @media (min-width: 768px) { /* Corresponds to md breakpoint */
+                #step-3 > div.tw-grid.md\:tw-grid-cols-2,
+                #step-3 > div#auction_fields > div.tw-grid.md\:tw-grid-cols-2 {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
             }
 
             .progress-container {
@@ -293,7 +340,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.25rem;
-                color: #6b7280;
+                color: var(--primary-color);
                 text-decoration: none;
                 font-size: 0.875rem;
             }
@@ -588,10 +635,12 @@
                                 <div>
                                     <label for="user_email" class="form-label">Email Address <span class="tw-text-red-500">*</span></label>
                                     <input type="email" id="user_email" name="user_email" class="form-input" required>
+                                    <p id="user_email_error" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-hidden" style="font-size: 0.65rem;">Please enter a valid email address.</p>
                                 </div>
                                 <div>
                                     <label for="user_phone" class="form-label">Phone Number <span class="tw-text-red-500">*</span></label>
                                     <input type="tel" id="user_phone" name="user_phone" class="form-input" required>
+                                    <p id="user_phone_error" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-hidden" style="font-size: 0.65rem;">Please enter digits only.</p>
                                 </div>
                             </div>
                         </div>
@@ -624,10 +673,12 @@
                                     <div>
                                         <label for="agent_email" class="form-label">Agent Email <span class="tw-text-red-500">*</span></label>
                                         <input type="email" id="agent_email" name="agent_email" class="form-input">
+                                        <p id="agent_email_error" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-hidden" style="font-size: 0.65rem;">Please enter a valid email address.</p>
                                     </div>
                                     <div>
                                         <label for="agent_phone" class="form-label">Agent Phone <span class="tw-text-red-500">*</span></label>
                                         <input type="tel" id="agent_phone" name="agent_phone" class="form-input">
+                                        <p id="agent_phone_error" class="tw-text-red-600 tw-text-xs tw-mt-1 tw-hidden" style="font-size: 0.65rem;">Please enter digits only.</p>
                                     </div>
                                 </div>
                             </div>
@@ -644,13 +695,16 @@
                                 <div>
                                     <label for="agency_office" class="form-label">Office Location <span class="tw-text-red-500">*</span></label>
                                     <input type="text" id="agency_office" name="agency_office" class="form-input" required>
+                                    <p class="tw-text-xs tw-text-gray-500 tw-mt-1" style="font-size: 0.65rem;">
+                                        This is an identifier (e.g., "Head Office" or "Sydney CBD").
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="tw-flex tw-justify-between">
                             <button type="button" onclick="prevStep(2)" 
-                                    class="lp-btn lp-btn-outline lp-btn-md lp-btn-icon-left">
+                                    class="lp-btn lp-btn-outline-dark lp-btn-md lp-btn-icon-left">
                                 <i class="bi bi-arrow-left"></i>
                                 Back
                             </button>
@@ -726,16 +780,21 @@
                             <p class="tw-text-xs tw-text-gray-500 tw-mt-1">
                                 Choose a simple, memorable domain related to the property address.
                             </p>
+                            <p class="tw-text-xs tw-text-gray-500 tw-mt-1" style="font-size: 0.65rem;">
+                                Please note: We cannot guarantee the availability of any domains and will advise if there are any problems with the chosen domain.
+                            </p>
                         </div>
 
 
+                        <div id="form-message" class="tw-text-center tw-text-sm tw-mb-4" style="min-height: 1.2em;"></div>
+
                         <div class="tw-mt-8 tw-flex tw-justify-between">
-                            <button type="button" onclick="prevStep(3)" 
-                                    class="lp-btn lp-btn-outline lp-btn-md lp-btn-icon-left">
+                            <button type="button" onclick="prevStep(3)"
+                                    class="lp-btn lp-btn-outline-dark lp-btn-md lp-btn-icon-left">
                                 <i class="bi bi-arrow-left"></i>
                                 Back
                             </button>
-                            <button type="submit" 
+                            <button type="submit" id="submit-button"
                                     class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right">
                                 Submit
                                 <i class="bi bi-check2"></i>
@@ -818,33 +877,94 @@
             
             // Functions to navigate between steps
             function nextStep(currentStep) {
+                console.log(`nextStep called with currentStep: ${currentStep}`);
+                // Clear previous errors
+                document.querySelectorAll('.form-input').forEach(input => input.classList.remove('input-error'));
+                document.querySelectorAll('.tw-text-red-600').forEach(errorMsg => errorMsg.classList.add('tw-hidden'));
+
+
                 // Validate current step fields
-                if (currentStep === 1 && !selectedTier) {
-                    alert('Please select a showcase tier to continue');
-                    return;
-                }
-                
-                if (currentStep === 2) {
+                if (currentStep === 1) {
+                    if (!selectedTier) {
+                        alert('Please select a showcase tier to continue'); // Keep alert for tier selection
+                        return;
+                    }
+                } else if (currentStep === 2) {
                     const requiredFields = [
                         'user_name', 'user_email', 'user_phone', 'agency_name', 'agency_office'
                     ];
-                    
+
                     // Add agent fields if the user is not the selling agent
                     const isSellingAgent = document.querySelector('input[name="is_selling_agent"]:checked').value;
                     if (isSellingAgent === 'no') {
                         requiredFields.push('agent_name', 'agent_email', 'agent_phone');
                     }
-                    
+
+                    let hasError = false;
+
                     for (const field of requiredFields) {
                         const element = document.getElementById(field);
                         if (!element.value.trim()) {
-                            alert(`Please fill in the ${element.labels[0].textContent.replace(' *', '')}`);
-                            element.focus();
-                            return;
+                            // Use inline error for required fields too
+                            const errorElement = document.getElementById(`${field}_error`);
+                            if (errorElement) {
+                                errorElement.textContent = `Please fill in this field.`;
+                                errorElement.classList.remove('tw-hidden');
+                            }
+                            element.classList.add('input-error');
+                            hasError = true;
                         }
                     }
+
+                    // Email validation
+                    const emailFields = ['user_email'];
+                    if (isSellingAgent === 'no') {
+                        emailFields.push('agent_email');
+                    }
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    for (const fieldId of emailFields) {
+                        const emailElement = document.getElementById(fieldId);
+                        const errorElement = document.getElementById(`${fieldId}_error`);
+                        if (emailElement.value.trim() && !emailRegex.test(emailElement.value.trim())) {
+                            if (errorElement) {
+                                errorElement.textContent = 'Please enter a valid email address.';
+                                errorElement.classList.remove('tw-hidden');
+                            }
+                            emailElement.classList.add('input-error');
+                            hasError = true;
+                        }
+                    }
+
+                    // Phone number validation (digits only)
+                    const phoneFields = ['user_phone'];
+                    if (isSellingAgent === 'no') {
+                        phoneFields.push('agent_phone');
+                    }
+                    const phoneRegex = /^\d+$/;
+                    for (const fieldId of phoneFields) {
+                        const phoneElement = document.getElementById(fieldId);
+                        const errorElement = document.getElementById(`${fieldId}_error`);
+                        if (phoneElement.value.trim() && !phoneRegex.test(phoneElement.value.trim())) {
+                             if (errorElement) {
+                                errorElement.textContent = 'Please enter digits only.';
+                                errorElement.classList.remove('tw-hidden');
+                            }
+                            phoneElement.classList.add('input-error');
+                            hasError = true;
+                        }
+                    }
+
+                    if (hasError) {
+                        // Find the first element with an error and focus it
+                        const firstErrorElement = document.querySelector('.input-error');
+                        if (firstErrorElement) {
+                            firstErrorElement.focus();
+                        }
+                        return; // Stop if there are validation errors
+                    }
                 }
-                
+
+
                 // Hide current step
                 document.getElementById(`step-${currentStep}`).classList.remove('active');
                 
@@ -857,7 +977,26 @@
                 document.getElementById(`step-indicator-${currentStep + 1}`).classList.add('active');
                 
                 // Update connecting line
-                document.getElementById(`step-line-${currentStep}`).classList.add('completed');
+                const currentLine = document.getElementById(`step-line-${currentStep}`);
+                console.log(`nextStep: Found currentLine (step-line-${currentStep}):`, currentLine);
+                if (currentLine) {
+                    console.log(`nextStep: Removing 'completed' from step-line-${currentStep}`);
+                    currentLine.classList.remove('completed'); // Remove old class if it exists
+                    console.log(`nextStep: Adding 'gradient-completed' to step-line-${currentStep}`);
+                    currentLine.classList.add('gradient-completed'); // Add gradient class
+                }
+
+                // If there's a previous line, make it solid green
+                if (currentStep > 1) {
+                    const previousLine = document.getElementById(`step-line-${currentStep - 1}`);
+                    console.log(`nextStep: Found previousLine (step-line-${currentStep - 1}):`, previousLine);
+                    if (previousLine) {
+                        console.log(`nextStep: Removing 'gradient-completed' from step-line-${currentStep - 1}`);
+                        previousLine.classList.remove('gradient-completed'); // Remove gradient
+                        console.log(`nextStep: Adding 'solid-completed' to step-line-${currentStep - 1}`);
+                        previousLine.classList.add('solid-completed'); // Add solid green
+                    }
+                }
                 
                 // Scroll to top of the form
                 window.scrollTo({
@@ -867,6 +1006,7 @@
             }
             
             function prevStep(currentStep) {
+                console.log(`prevStep called with currentStep: ${currentStep}`);
                 // Hide current step
                 document.getElementById(`step-${currentStep}`).classList.remove('active');
                 
@@ -878,9 +1018,28 @@
                 document.getElementById(`step-indicator-${currentStep - 1}`).classList.remove('completed');
                 document.getElementById(`step-indicator-${currentStep - 1}`).classList.add('active');
                 
-                // Update connecting line
-                document.getElementById(`step-line-${currentStep - 1}`).classList.remove('completed');
-                
+                // Update connecting lines
+                // The line *after* the new active step (connecting currentStep-1 and currentStep) becomes grey
+                const lineAfterNewActive = document.getElementById(`step-line-${currentStep - 1}`);
+                console.log(`prevStep: Found lineAfterNewActive (step-line-${currentStep - 1}):`, lineAfterNewActive);
+                if (lineAfterNewActive) {
+                    console.log(`prevStep: Removing classes from step-line-${currentStep - 1}`);
+                    lineAfterNewActive.classList.remove('solid-completed');
+                    lineAfterNewActive.classList.remove('gradient-completed');
+                    lineAfterNewActive.classList.remove('completed'); // Clean up old class
+                }
+
+                // The line *before* the new active step (connecting currentStep-2 and currentStep-1) becomes gradient
+                if (currentStep > 2) {
+                    const lineBeforeNewActive = document.getElementById(`step-line-${currentStep - 2}`);
+                    console.log(`prevStep: Found lineBeforeNewActive (step-line-${currentStep - 2}):`, lineBeforeNewActive);
+                    if (lineBeforeNewActive) {
+                        console.log(`prevStep: Changing step-line-${currentStep - 2} to gradient`);
+                        lineBeforeNewActive.classList.remove('solid-completed');
+                        lineBeforeNewActive.classList.add('gradient-completed');
+                    }
+                }
+
                 // Scroll to top of the form
                 window.scrollTo({
                     top: document.querySelector('.progress-container').offsetTop - 100,
@@ -925,36 +1084,83 @@
             }
             
             // Form submission handler
-            document.getElementById('onboarding-form').addEventListener('submit', function(e) {
+            document.getElementById('onboarding-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                // Validate required fields in step 3
-                const requiredFields = [
-                    'street_address', 'suburb', 'state', 'price', 'preferred_domain'
-                ];
-                
-                // Add auction fields if auction is selected
-                const saleType = document.querySelector('input[name="sale_type"]:checked').value;
-                if (saleType === 'auction') {
-                    requiredFields.push('auction_date', 'auction_time');
+
+                const submitButton = document.getElementById('submit-button');
+                const messageArea = document.getElementById('form-message');
+
+                // Clear previous messages and show loading indicator
+                messageArea.textContent = '';
+                messageArea.style.color = ''; // Reset color
+                submitButton.disabled = true;
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.innerHTML = 'Submitting... <i class="bi bi-arrow-right tw-animate-pulse"></i>'; // Add simple loading text/icon
+
+                const form = e.target;
+                const formData = new FormData(form);
+                const data = {};
+
+                // Collect data from standard inputs
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                // Add selected tier
+                data['tier'] = selectedTier;
+
+                // Handle boolean for is_selling_agent
+                data['is_selling_agent'] = document.querySelector('input[name="is_selling_agent"]:checked').value === 'yes';
+
+                // Handle conditional fields based on is_selling_agent
+                if (data['is_selling_agent']) {
+                    data['agent_name'] = null;
+                    data['agent_email'] = null;
+                    data['agent_phone'] = null;
                 }
-                
-                for (const field of requiredFields) {
-                    const element = document.getElementById(field);
-                    if (!element.value.trim()) {
-                        alert(`Please fill in the ${element.labels[0].textContent.replace(' *', '')}`);
-                        element.focus();
-                        return;
+
+                // Handle conditional fields based on sale_type
+                if (data['sale_type'] !== 'auction') {
+                    data['auction_date'] = null;
+                    data['auction_time'] = null;
+                }
+
+                console.log('Submitting form data:', data);
+
+                try {
+                    const response = await fetch('/api/submit-onboarding', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        console.log('Submission successful:', result);
+                        messageArea.textContent = 'Form submitted successfully! Your data has been saved.';
+                        messageArea.style.color = '#10b981'; // Green color for success
+                        // Redirect to homepage or thank you page
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 2000); // Give user time to read success message
+                    } else {
+                        console.error('Submission failed:', result.error);
+                        messageArea.textContent = `Form submission failed: ${result.error || 'Unknown error'}`;
+                        messageArea.style.color = '#ef4444'; // Red color for error
                     }
+
+                } catch (error) {
+                    console.error('Error during form submission:', error);
+                    messageArea.textContent = 'An error occurred during form submission.';
+                    messageArea.style.color = '#ef4444'; // Red color for error
+                } finally {
+                    // Re-enable button and restore text
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
                 }
-                
-                // In a real implementation, you would send this data to your backend
-                alert('Form submitted successfully! Our team will contact you soon to complete your showcase setup.');
-                
-                // Redirect to homepage or thank you page
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1000);
             });
             
             // Initialize the form
@@ -1062,8 +1268,6 @@
                         console.log('Place details:', place);
                         let streetNumber = '';
                         let route = '';
-                        let suburb = '';
-                        let state = '';
 
                         if (place.address_components) {
                             place.address_components.forEach((component) => {
@@ -1074,19 +1278,11 @@
                                 if (types.includes('route')) {
                                     route = component.long_name;
                                 }
-                                if (types.includes('locality') || types.includes('sublocality_level_1')) {
-                                    suburb = component.long_name;
-                                }
-                                if (types.includes('administrative_area_level_1')) {
-                                    state = component.long_name;
-                                }
                             });
                         }
 
-                        // Populate the form fields
-                        addressInput.value = `${streetNumber} ${route}`.trim();
-                        suburbInput.value = suburb;
-                        stateInput.value = state;
+                        // Suggest domain based on street number and route
+                        suggestDomain(streetNumber, route);
 
                         // You might want to store latitude/longitude as well if needed later
                         // const latitude = place.geometry?.location?.lat();
@@ -1099,6 +1295,53 @@
                     console.error('Error fetching place details:', error);
                 }
             }
+
+            // Function to suggest a domain based on street number and route
+            function suggestDomain(streetNumber, route) {
+                const preferredDomainInput = document.getElementById('preferred_domain');
+                if (!preferredDomainInput) return;
+
+                if (!streetNumber || !route) {
+                    preferredDomainInput.value = ''; // Clear if address is incomplete
+                    return;
+                }
+
+                // Combine and clean up the address parts
+                let domainSuggestion = `${streetNumber}${route}`;
+
+                // Remove spaces and convert to lowercase
+                domainSuggestion = domainSuggestion.replace(/\s+/g, '').toLowerCase();
+
+                // Abbreviate common street types (basic implementation)
+                const streetTypeMap = {
+                    'grove': 'gve',
+                    'street': 'st',
+                    'road': 'rd',
+                    'avenue': 'ave',
+                    'lane': 'ln',
+                    'court': 'ct',
+                    'boulevard': 'blvd',
+                    'terrace': 'tce',
+                    'parade': 'pde',
+                    'crescent': 'cres',
+                    'place': 'pl',
+                    'way': 'wy',
+                    'close': 'cl'
+                    // Add more abbreviations as needed
+                };
+
+                for (const type in streetTypeMap) {
+                    // Use regex to replace the full word only if it's at the end of the string
+                    const regex = new RegExp(`${type}$`);
+                    domainSuggestion = domainSuggestion.replace(regex, streetTypeMap[type]);
+                }
+
+                // Append .com
+                domainSuggestion += '.com';
+
+                preferredDomainInput.value = domainSuggestion;
+            }
+
 
             // The initAutocomplete function is no longer needed for client-side API calls
             // but we'll keep a placeholder or remove it depending on future needs.
