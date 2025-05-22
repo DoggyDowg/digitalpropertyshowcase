@@ -115,6 +115,8 @@
         <!-- The <style> block for this section (property-reel, scrolling-wrapper, property-card CSS)
              has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
 
+        <!-- Centralized Pricing Data -->
+        <script src="/scripts/pricingData.js"></script>
     </head>
     <body
         class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#fcfcfc]
@@ -722,7 +724,7 @@
                         <h3 class="tw-text-2xl tw-font-semibold">Essential</h3>
                     </div>
                     <div class="tw-text-center">
-                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold">AU$770</span>
+                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold" id="pricing-essential-price"></span>
                         <!-- Removed setup fee from Essential -->
                     </div>
                     <p class="tw-mt-3 tw-text-center tw-text-gray-800 dark:tw-text-gray-100">
@@ -782,8 +784,8 @@
                         <h3 class="tw-text-2xl tw-font-semibold">Premium</h3>
                     </div>
                     <div class="tw-text-center">
-                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold">AU$960</span>
-                        <p class="tw-text-lg tw-text-gray-500 dark:tw-text-gray-400">+ $220 setup</p>
+                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold" id="pricing-premium-price"></span>
+                        <p class="tw-text-lg tw-text-gray-500 dark:tw-text-gray-400" id="pricing-premium-setup-fee"></p>
                     </div>
                     <p class="tw-mt-3 tw-text-center tw-text-gray-800 dark:tw-text-gray-100">
                         Everything in Essential, plus more
@@ -840,8 +842,8 @@
                         <h3 class="tw-text-2xl tw-font-semibold">Prestige</h3>
                     </div>
                     <div class="tw-text-center">
-                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold">AU$1,260</span>
-                        <p class="tw-text-lg tw-text-gray-500 dark:tw-text-gray-400">+ $220 setup</p>
+                        <span class="tw-text-5xl max-md:tw-text-3xl tw-font-semibold" id="pricing-prestige-price"></span>
+                        <p class="tw-text-lg tw-text-gray-500 dark:tw-text-gray-400" id="pricing-prestige-setup-fee"></p>
                     </div>
                     <p class="tw-mt-3 tw-text-center tw-text-gray-800 dark:tw-text-gray-100">
                         Everything in Premium, plus premium features
@@ -1429,6 +1431,23 @@
     <script src="/scripts/components.js"></script>
     <script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
     <script src="/index.js"></script>
+
+    <script>
+        // Function to populate pricing section from the data object
+        function populatePricingSection() {
+            document.getElementById('pricing-essential-price').textContent = pricingData.essential.price;
+            // Note: Essential tier does not display setup fee in index.html
+
+            document.getElementById('pricing-premium-price').textContent = pricingData.premium.price;
+            document.getElementById('pricing-premium-setup-fee').textContent = pricingData.premium.setupFee;
+
+            document.getElementById('pricing-prestige-price').textContent = pricingData.prestige.price;
+            document.getElementById('pricing-prestige-setup-fee').textContent = pricingData.prestige.setupFee;
+        }
+
+        // Run this function when the document is ready
+        document.addEventListener('DOMContentLoaded', populatePricingSection);
+    </script>
 
     <!-- Terms of Service and Privacy Policy Popups -->
     <div id="privacy-policy-popup" class="legal-popup">

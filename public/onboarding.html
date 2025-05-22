@@ -443,6 +443,9 @@
                 background-color: #f3f4f6;
             }
         </style>
+
+        <!-- Centralized Pricing Data -->
+        <script src="/scripts/pricingData.js"></script>
     </head>
     <body class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#fcfcfc] tw-text-black">
         <!-- Fixed header with centered logo -->
@@ -511,8 +514,8 @@
                                         <div class="tier-checkbox-inner tw-hidden"></div>
                                     </div>
                                 </div>
-                                <p class="tier-price">AU$770</p>
-                                <p class="tier-period">+ setup: $0</p>
+                                <p class="tier-price" id="essential-price"></p>
+                                <p class="tier-period" id="essential-setup-fee"></p>
                                 
                                 <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
                                 
@@ -553,8 +556,8 @@
                                         <div class="tier-checkbox-inner tw-hidden"></div>
                                     </div>
                                 </div>
-                                <p class="tier-price">AU$960</p>
-                                <p class="tier-period">+ setup: $220</p>
+                                <p class="tier-price" id="premium-price"></p>
+                                <p class="tier-period" id="premium-setup-fee"></p>
                                 
                                 <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
                                 
@@ -594,8 +597,8 @@
                                         <div class="tier-checkbox-inner tw-hidden"></div>
                                     </div>
                                 </div>
-                                <p class="tier-price">AU$1,260</p>
-                                <p class="tier-period">+ setup: $220</p>
+                                <p class="tier-price" id="prestige-price"></p>
+                                <p class="tier-period" id="prestige-setup-fee"></p>
                                 
                                 <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
                                 
@@ -841,6 +844,16 @@
             let selectedTier = '';
             let featuresVisible = false;
             
+            // Function to populate tier prices from the data object
+            function populateTierPrices() {
+                document.getElementById('essential-price').textContent = pricingData.essential.price;
+                document.getElementById('essential-setup-fee').textContent = pricingData.essential.setupFee;
+                document.getElementById('premium-price').textContent = pricingData.premium.price;
+                document.getElementById('premium-setup-fee').textContent = pricingData.premium.setupFee;
+                document.getElementById('prestige-price').textContent = pricingData.prestige.price;
+                document.getElementById('prestige-setup-fee').textContent = pricingData.prestige.setupFee;
+            }
+
             // Function to select tier
             function selectTier(tier) {
                 selectedTier = tier;
@@ -1187,6 +1200,9 @@
             
             // Initialize the form
             document.addEventListener('DOMContentLoaded', function() {
+                // Populate the tier prices
+                populateTierPrices();
+
                 // Pre-select Essential tier as default
                 selectTier('premium');
             });
