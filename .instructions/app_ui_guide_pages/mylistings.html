@@ -1,0 +1,270 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9f8fb] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e9e8f2] px-10 py-3">
+          <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4 text-[#100f1a]">
+              <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                </svg>
+              </div>
+              <h2 class="text-[#100f1a] text-lg font-bold leading-tight tracking-[-0.015em]">Property Central</h2>
+            </div>
+            <div class="flex items-center gap-9">
+              <a class="text-[#100f1a] text-sm font-medium leading-normal" href="#">Dashboard</a>
+              <a class="text-[#100f1a] text-sm font-medium leading-normal" href="#">Listings</a>
+              <a class="text-[#100f1a] text-sm font-medium leading-normal" href="#">Clients</a>
+              <a class="text-[#100f1a] text-sm font-medium leading-normal" href="#">Analytics</a>
+            </div>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <label class="flex flex-col min-w-40 !h-10 max-w-64">
+              <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                <div
+                  class="text-[#5b5393] flex border-none bg-[#e9e8f2] items-center justify-center pl-4 rounded-l-xl border-r-0"
+                  data-icon="MagnifyingGlass"
+                  data-size="24px"
+                  data-weight="regular"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  placeholder="Search"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#100f1a] focus:outline-0 focus:ring-0 border-none bg-[#e9e8f2] focus:border-none h-full placeholder:text-[#5b5393] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  value=""
+                />
+              </div>
+            </label>
+            <button
+              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e9e8f2] text-[#100f1a] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+            >
+              <div class="text-[#100f1a]" data-icon="Bell" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path
+                    d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                  ></path>
+                </svg>
+              </div>
+            </button>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnnFzEnQFYibdrHD4fHOX7pCRrLq9eu97Yiijh8uicEaQ_j7PcwMupbJAQTD-uG7JCntzIWKlDQk9wRot_NuLN3WBgZkp0KyHd2BxQ9rHzypyOxw2I1h4I_WEN5nAGMdr1eTnjRuLFKQDhmRvs4RzAAJCjGgVZiCGoyMMn4W_Rvr3BJjb4IpRpuWzU5031j8N8DbL0UhnnQafq4n7muHzsXKgRvTcqz9jWfngmi6nagzFdumo1xLdj9M8fS3h-rTooWz5UCFjTnkw");'
+            ></div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p class="text-[#100f1a] tracking-light text-[32px] font-bold leading-tight min-w-72">My Listings</p>
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal"
+              >
+                <span class="truncate">Add New Listing</span>
+              </button>
+            </div>
+            <div class="px-4 py-3">
+              <label class="flex flex-col min-w-40 h-12 w-full">
+                <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                  <div
+                    class="text-[#5b5393] flex border-none bg-[#e9e8f2] items-center justify-center pl-4 rounded-l-xl border-r-0"
+                    data-icon="MagnifyingGlass"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <input
+                    placeholder="Search by address or listing ID"
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#100f1a] focus:outline-0 focus:ring-0 border-none bg-[#e9e8f2] focus:border-none h-full placeholder:text-[#5b5393] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                    value=""
+                  />
+                </div>
+              </label>
+            </div>
+            <div class="flex gap-3 p-3 flex-wrap pr-4">
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-[#e9e8f2] pl-4 pr-2">
+                <p class="text-[#100f1a] text-sm font-medium leading-normal">Status</p>
+                <div class="text-[#100f1a]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                  </svg>
+                </div>
+              </button>
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-[#e9e8f2] pl-4 pr-2">
+                <p class="text-[#100f1a] text-sm font-medium leading-normal">Property Type</p>
+                <div class="text-[#100f1a]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                  </svg>
+                </div>
+              </button>
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-[#e9e8f2] pl-4 pr-2">
+                <p class="text-[#100f1a] text-sm font-medium leading-normal">Price Range</p>
+                <div class="text-[#100f1a]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                  </svg>
+                </div>
+              </button>
+            </div>
+            <div class="px-4 py-3 @container">
+              <div class="flex overflow-hidden rounded-xl border border-[#d4d1e5] bg-[#f9f8fb]">
+                <table class="flex-1">
+                  <thead>
+                    <tr class="bg-[#f9f8fb]">
+                      <th class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 px-4 py-3 text-left text-[#100f1a] w-[400px] text-sm font-medium leading-normal">Address</th>
+                      <th class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 px-4 py-3 text-left text-[#100f1a] w-60 text-sm font-medium leading-normal">Status</th>
+                      <th class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 px-4 py-3 text-left text-[#100f1a] w-[400px] text-sm font-medium leading-normal">
+                        Property Type
+                      </th>
+                      <th class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 px-4 py-3 text-left text-[#100f1a] w-[400px] text-sm font-medium leading-normal">Price</th>
+                      <th class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 px-4 py-3 text-left text-[#100f1a] w-60 text-[#5b5393] text-sm font-medium leading-normal">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-t border-t-[#d4d1e5]">
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 h-[72px] px-4 py-2 w-[400px] text-[#100f1a] text-sm font-normal leading-normal">
+                        123 Oak Street, Anytown, CA
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button
+                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal w-full"
+                        >
+                          <span class="truncate">Active</span>
+                        </button>
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">
+                        Single Family Home
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">$850,000</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 h-[72px] px-4 py-2 w-60 text-[#5b5393] text-sm font-bold leading-normal tracking-[0.015em]">
+                        View/Edit
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#d4d1e5]">
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 h-[72px] px-4 py-2 w-[400px] text-[#100f1a] text-sm font-normal leading-normal">
+                        456 Maple Avenue, Anytown, CA
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button
+                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal w-full"
+                        >
+                          <span class="truncate">Pending</span>
+                        </button>
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">Condo</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">$420,000</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 h-[72px] px-4 py-2 w-60 text-[#5b5393] text-sm font-bold leading-normal tracking-[0.015em]">
+                        View/Edit
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#d4d1e5]">
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 h-[72px] px-4 py-2 w-[400px] text-[#100f1a] text-sm font-normal leading-normal">
+                        789 Pine Lane, Anytown, CA
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button
+                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal w-full"
+                        >
+                          <span class="truncate">Sold</span>
+                        </button>
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">
+                        Townhouse
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">$600,000</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 h-[72px] px-4 py-2 w-60 text-[#5b5393] text-sm font-bold leading-normal tracking-[0.015em]">
+                        View/Edit
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#d4d1e5]">
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 h-[72px] px-4 py-2 w-[400px] text-[#100f1a] text-sm font-normal leading-normal">
+                        101 Elm Street, Anytown, CA
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button
+                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal w-full"
+                        >
+                          <span class="truncate">Active</span>
+                        </button>
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">
+                        Single Family Home
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">$920,000</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 h-[72px] px-4 py-2 w-60 text-[#5b5393] text-sm font-bold leading-normal tracking-[0.015em]">
+                        View/Edit
+                      </td>
+                    </tr>
+                    <tr class="border-t border-t-[#d4d1e5]">
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120 h-[72px] px-4 py-2 w-[400px] text-[#100f1a] text-sm font-normal leading-normal">
+                        222 Cedar Road, Anytown, CA
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button
+                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e9e8f2] text-[#100f1a] text-sm font-medium leading-normal w-full"
+                        >
+                          <span class="truncate">Pending</span>
+                        </button>
+                      </td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">Condo</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480 h-[72px] px-4 py-2 w-[400px] text-[#5b5393] text-sm font-normal leading-normal">$380,000</td>
+                      <td class="table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600 h-[72px] px-4 py-2 w-60 text-[#5b5393] text-sm font-bold leading-normal tracking-[0.015em]">
+                        View/Edit
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <style>
+                          @container(max-width:120px){.table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-120{display: none;}}
+                @container(max-width:240px){.table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-240{display: none;}}
+                @container(max-width:360px){.table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-360{display: none;}}
+                @container(max-width:480px){.table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-480{display: none;}}
+                @container(max-width:600px){.table-d8fa007e-0fdd-4c8d-aa0f-5b58b77c15c0-column-600{display: none;}}
+              </style>
+            </div>
+          </div>
+        </div>
+        <footer class="flex justify-center">
+          <div class="flex max-w-[960px] flex-1 flex-col">
+            <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                <a class="text-[#5b5393] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
+                <a class="text-[#5b5393] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
+                <a class="text-[#5b5393] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
+              </div>
+              <p class="text-[#5b5393] text-base font-normal leading-normal">@2024 Property Central. All rights reserved.</p>
+            </footer>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

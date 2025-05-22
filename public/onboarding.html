@@ -3,13 +3,20 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Get Started - Digital Property Showcase</title>
-        <meta name="description" content="Start creating your premium property showcase in minutes." />
+        <title>Get Started - Create Your Prestige Property Showcase</title>
+        <meta name="description" content="Begin creating your custom-branded digital property showcase in a few simple steps to impress sellers and win more listings." />
 
         <!-- Favicon -->
-        <link rel="icon" href="/favicon.png" type="image/png" />
-        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/assets/logo/favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/assets/logo/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png" />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="Get Started - Create Your Prestige Property Showcase" />
+        <meta property="og:description" content="Begin creating your custom-branded digital property showcase in a few simple steps to impress sellers and win more listings." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://digitalpropertyshowcase.com/onboarding.html" />
+        <meta property="og:image" content="/assets/images/background/BGImg (Tablet).png" />
 
         <!-- Custom Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +37,26 @@
 
         <!-- Custom styles for the onboarding form -->
         <style>
+            body {
+                position: relative; /* Needed for pseudo-element positioning */
+                /* You might need to remove or adjust the body background color if it covers the image */
+            }
+
+            body::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('/assets/images/background/BGImg (Desktop).png'); /* Path to your image */
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+                opacity: 0.4; /* 30% opacity */
+                z-index: -1; /* Ensure it is behind content */
+            }
+
             .step-container {
                 display: none;
             }
@@ -40,7 +67,7 @@
                 width: 32px;
                 height: 32px;
                 border-radius: 50%;
-                background-color: #e5e7eb;
+                background-color: #fff;
                 color: #6b7280;
                 display: flex;
                 align-items: center;
@@ -59,7 +86,7 @@
             .step-line {
                 flex: 1;
                 height: 2px;
-                background-color: #e5e7eb;
+                background-color: #fff;
                 transition: all 0.3s ease;
             }
             .progress-container .step-line.solid-completed {
@@ -120,6 +147,7 @@
             }
             #onboarding-form {
                 padding: 36px;
+                opacity: 0.9; /* 80% opaque */
             }
 
             #step-2 h3 {
@@ -329,11 +357,12 @@
             
             .header-content {
                 display: flex;
-                justify-content: space-between;
+                justify-content: flex-start;
                 align-items: center;
                 width: 100%;
                 max-width: 1200px;
                 padding: 0 1rem;
+                position: relative;
             }
             
             .back-link {
@@ -419,20 +448,16 @@
         <!-- Fixed header with centered logo -->
         <header class="page-header">
             <div class="header-content">
-                <div class="tw-w-24">
-                    <!-- Empty div to balance the header -->
-                </div>
+                <a href="/" class="back-link">
+                    <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
                 
-                <a href="/" class="tw-text-center">
+                <a href="/" class="tw-absolute tw-left-1/2 tw-transform tw--translate-x-1/2">
                     <img 
                         src="/assets/logo/logo_lightgb.png" 
                         alt="Digital Property Showcase" 
                         class="tw-h-10 tw-w-auto"
                     />
-                </a>
-                
-                <a href="/" class="back-link">
-                    <i class="bi bi-arrow-left"></i> Back to Home
                 </a>
             </div>
         </header>
@@ -454,7 +479,7 @@
 
                 <!-- Progress Steps -->
                 <div class="progress-container">
-                    <div class="tw-flex tw-items-center tw-mb-2">
+                    <div class="tw-flex tw-items-center tw-mt-4 tw-mb-2">
                         <div class="step-indicator active" id="step-indicator-1">1</div>
                         <div class="step-line" id="step-line-1"></div>
                         <div class="step-indicator" id="step-indicator-2">2</div>
@@ -469,7 +494,7 @@
                 </div>
 
                 <!-- Form Container -->
-                <form id="onboarding-form" class="tw-bg-white tw-rounded-xl tw-shadow-md tw-px-4 tw-py-6 sm:tw-p-6">
+                <form id="onboarding-form" class="tw-bg-white tw-rounded-xl tw-shadow-md tw-px-4 tw-py-6 sm:tw-p-6 tw-pb-6 tw-mb-6">
                     <!-- Step 1: Tier Selection -->
                     <div class="step-container active" id="step-1">
                         <h2 class="tw-text-2xl tw-font-semibold tw-mb-3 center-heading">Step 1: Choose Your Showcase Tier</h2>
@@ -802,16 +827,13 @@
                         </div>
                     </div>
                 </form>
-
-                <div class="tw-mt-5 tw-text-center tw-text-gray-500">
-                    <p class="tw-text-xs tw-mb-1" style="font-size: 12px; margin-bottom: 4px;">Need help? <a href="mailto:info@digitalpropertyshowcase.com" class="tw-text-[var(--primary-color)] tw-underline">Contact our support team</a></p>
-                </div>
             </div>
         </main>
 
-        <footer class="tw-bg-gray-100 tw-py-4 tw-mt-auto">
+        <footer class="tw-bg-gray-100 tw-py-4 tw-mt-6">
             <div class="tw-container tw-mx-auto tw-px-4 tw-text-center tw-text-gray-600">
-                <p class="tw-text-xs" style="font-size: 12px; padding-top: 4px; padding-bottom: 4px;">© 2025 Digital Property Showcase. All rights reserved.</p>
+                <p class="tw-text-xs tw-mb-1" style="font-size: 12px; margin-top: 8px;">Need help? <a href="mailto:info@digitalpropertyshowcase.com" class="tw-text-[var(--primary-color)] tw-underline">Contact our support team</a></p>
+                <p class="tw-text-xs" style="font-size: 12px; padding-top: 0px; padding-bottom: 8px;">© 2025 Digital Property Showcase. All rights reserved.</p>
             </div>
         </footer>
 
