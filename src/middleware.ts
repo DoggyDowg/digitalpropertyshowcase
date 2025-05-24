@@ -101,8 +101,8 @@ export async function middleware(request: NextRequest) {
       if (!propertyId) {
         console.log(`[Middleware] Domain ${hostname} not in cache, querying database`)
         
-        // Create Supabase client
-        const supabase = createRouteHandlerClient({ cookies })
+        // Create Supabase client - use middleware client instead of route handler client
+        const supabase = createMiddlewareClient({ req: request, res })
         
         // Query the properties table to find the property with this custom domain
         const { data: property, error } = await supabase
@@ -114,12 +114,18 @@ export async function middleware(request: NextRequest) {
 
         if (error) {
           console.error('[Middleware] Custom domain query error:', { hostname, error: error.message })
-          return res
+          // Show a proper error page for the domain lookup failure
+          const errorUrl = new URL('/404', request.url)
+          errorUrl.searchParams.set('error', 'domain_lookup_failed')
+          return NextResponse.rewrite(errorUrl)
         }
 
         if (!property) {
           console.error('[Middleware] Custom domain not found:', { hostname })
-          return res
+          // Show a proper error page for domain not found
+          const errorUrl = new URL('/404', request.url)
+          errorUrl.searchParams.set('error', 'domain_not_found')
+          return NextResponse.rewrite(errorUrl)
         }
 
         // Store in cache
@@ -148,7 +154,10 @@ export async function middleware(request: NextRequest) {
       return response
     } catch (err) {
       console.error('[Middleware] Error in custom domain handling:', err)
-      return res
+      // Handle unexpected errors properly by showing an error page
+      const errorUrl = new URL('/404', request.url)
+      errorUrl.searchParams.set('error', 'unexpected_error')
+      return NextResponse.rewrite(errorUrl)
     }
   }
 
