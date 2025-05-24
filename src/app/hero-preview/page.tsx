@@ -21,7 +21,6 @@ export default function HeroPreviewPage() {
       try {
         setLoading(true);
         const fetchedProperty = await getProperty(propertyId);
-        console.log('[HeroPreviewPage] Fetched Property Data:', JSON.stringify(fetchedProperty, null, 2));
         if (fetchedProperty) {
           setProperty(fetchedProperty);
         } else {

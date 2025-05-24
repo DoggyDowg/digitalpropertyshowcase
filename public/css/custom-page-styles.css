@@ -47,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
     z-index: -1;
     filter: blur(8px);
     color: white;
-    text-shadow: 0 0 15px white, 0 0 20px white;
+    text-shadow: 0 0 30px white, 0 0 40px white;
     opacity: 0.8;
 }
 
@@ -1001,8 +1001,8 @@ p { /* This is a very general selector, be careful it doesn't override too much.
 .footer-container {
     position: relative;
     width: 100%;
-    padding: 100px 0 40px; /* Increased top padding */
-    margin-top: 80px;
+    padding: 24px 0 40px; /* Reduced top padding */
+    margin-top: 24px;
     color: #333;
     overflow: hidden;
 }
@@ -1269,4 +1269,16 @@ p { /* This is a very general selector, be careful it doesn't override too much.
         justify-content: center;
         margin-top: 15px;
     }
+}
+
+/* Add a new class for the text shadow effect */
+.hero-shadowed-text {
+    /* Using the exact text-shadow value from the style attribute */
+    text-shadow: rgba(0, 0, 0, 0.3) 0px 2px, rgba(0, 0, 0, 0.2) 0px 0px;
+    color: inherit; /* Ensure text color is inherited properly */
+}
+
+/* Override any text-shadow on the highlight-text in the hero section */
+#hero-text-content-wrapper .highlight-text {
+    text-shadow: none !important; /* Force remove any text shadow */
 }

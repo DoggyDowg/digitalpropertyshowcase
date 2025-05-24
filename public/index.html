@@ -28,6 +28,7 @@
         <link rel="stylesheet" href="/css/index.css" />
         <link rel="stylesheet" href="/css/custom-page-styles.css"> <!-- Create this file and add your styles -->
         <link rel="stylesheet" href="/css/legal-popups.css"> <!-- Added CSS for legal popups -->
+        <link rel="stylesheet" href="/css/animations.css"> <!-- Added CSS for animations -->
 
         <link
             rel="stylesheet"
@@ -262,7 +263,7 @@
                             class="reveal-up tw-text-4xl md:tw-text-5xl tw-font-semibold tw-leading-normal max-md:tw-leading-snug tw-text-white md:tw-text-left text-center"
                             style="color: white !important;"
                         >
-                            Prestige Listings Deserve <br /><span class="highlight-text" data-text="Prestige Marketing">Prestige Marketing</span>
+                            <span class="hero-shadowed-text">Prestige Listings Deserve</span> <br /><span class="highlight-text" data-text="Prestige Marketing">Prestige Marketing</span>
                         </h2>
                     </div>
 
@@ -303,14 +304,14 @@
          <!-- === PROBLEM SECTION === -->
         <!-- Illustrating the issue of generic property listings that all look the same -->
         <!-- Property Listings Scrolling Reel -->
-        <section id="property-reel-1" class="property-reel tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
+        <section id="property-reel-1" class="property-reel reveal-up tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
             <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
                 <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
             </div>
 
             <!-- Scrolling Container -->
-            <div class="scrolling-wrapper">
+            <div class="scrolling-wrapper reveal-up">
                 <div class="scrolling-content">
                     <!-- Property cards will be injected here by JavaScript -->
                 </div>
@@ -321,7 +322,7 @@
         </section>
 
         <!-- Second reel of overlapping properties (part of the Problem illustration) -->
-        <section id="property-reel-2" class="property-reel tw-relative tw-overflow-hidden" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent; transform: rotate(-4deg) !important; transform-origin: center center !important; width: 100vw !important; margin-left: 0vw;">
+        <section id="property-reel-2" class="property-reel reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent;">
             <!-- Scrolling Container (Reverse Direction) -->
             <div class="scrolling-wrapper" style="transform: none !important; width: 110% !important;">
                 <div class="scrolling-content-reverse">
@@ -496,7 +497,7 @@
         <!-- Showcase Preview Section - Your elegant property showcase solution -->
         <section class="tw-relative tw-flex tw-w-full tw-py-8 tw-pb-0 tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-visible">
             <!-- Solution copy -->
-            <div class="tw-container tw-mx-auto tw-mb-8 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+            <div class="reveal-up tw-container tw-mx-auto tw-mb-8 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
                 <p class="reveal-up standard-paragraph tw-text-center">
                     With DPS, each listing becomes a <span class="highlight-text tw-font-bold" data-text="tailored, prestige experience">tailored, prestige experience</span>—proving you're committed to delivering elite marketing that stands apart from the crowd.
                 </p>
@@ -505,7 +506,7 @@
                 </p>
 
                 <!-- Animated Arrow -->
-                <div class="arrow bounce" aria-hidden="true">
+                <div class="arrow bounce reveal-up" aria-hidden="true">
                     <i class="bi bi-chevron-down" style="font-size: 4rem; color: var(--primary-color);"></i>
                 </div>
             </div>
@@ -516,7 +517,7 @@
 
             <!-- prompt container -->
             <div
-                class="reveal-up tw-relative tw-flex tw-w-full tw-place-content-center tw-place-items-center tw-flex-col tw-overflow-visible tw-pb-0"
+                class="tw-relative tw-flex tw-w-full tw-place-content-center tw-place-items-center tw-flex-col tw-overflow-visible tw-pb-0"
                 id="dashboard-container"
                 style="width: 100% !important; max-width: 100% !important; overflow: visible !important; padding-bottom: 0 !important; margin-bottom: 0 !important;"
             >
@@ -578,8 +579,110 @@
                 </div>
                 <a href="#" id="live-showcase-banner"
                    target="_blank" rel="noopener noreferrer"
-                   class="lp-btn lp-btn-primary lp-btn-md">
+                   class="lp-btn lp-btn-primary lp-btn-md reveal-up">
                     See it live <i class="bi bi-box-arrow-up-right tw-ml-2"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- === HOW IT WORKS SECTION === -->
+        <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center" id="how-it-works" style="padding-top: 100px !important; padding-bottom: 64px;">
+            <div class="tw-container tw-mx-auto tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+                <h2 class="reveal-up tw-text-4xl tw-font-semibold tw-leading-tight tw-text-center tw-mb-8">How It Works:<br><span class="highlight-text" data-text="Your Showcase Journey"> Showcase Your Listing</span></h2>
+                <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center tw-mb-12">
+                    From initial contact to impressing vendors, our streamlined process makes creating your showcase effortless.
+                </p>
+            </div>
+
+            <!-- Step-by-step process -->
+            <div class="tw-container tw-mx-auto tw-w-full tw-flex tw-justify-center tw-items-stretch tw-gap-8 tw-mt-4" style="max-width: 944px; flex-direction: column;">
+                <style>
+                    /* Styling for How It Works section content width on mobile/tablet */
+                    @media (max-width: 1023.98px) { /* Below lg breakpoint */
+                        #how-it-works > .tw-container {
+                            max-width: 80vw !important;
+                            margin-left: auto !important;
+                            margin-right: auto !important;
+                        }
+                        /* Limit individual card and Zero Risk section width */
+                        #how-it-works-steps > div {
+                            max-width: 600px !important;
+                            margin-left: auto !important;
+                            margin-right: auto !important;
+                        }
+                        /* Specifically target the Zero Risk guarantee section */
+                        #how-it-works > .reveal-up.tw-mx-auto.tw-text-center {
+                            max-width: min(80vw, 600px) !important; /* Limit to 80vw or 600px, whichever is smaller */
+                            margin-left: auto !important;
+                            margin-right: auto !important;
+                        }
+                    }
+                    /* Styling for row layout on desktop */
+                    @media (min-width: 1024px) {
+                        #how-it-works-steps {
+                            flex-direction: row !important;
+                        }
+                        #how-it-works-steps > div {
+                            width: calc(33.333% - 1.333rem) !important; /* Adjust width calculation for gap */
+                        }
+                    }
+                </style>
+                
+                <div id="how-it-works-steps" class="tw-w-full tw-flex tw-flex-col lg:tw-flex-row tw-justify-center tw-items-stretch tw-gap-8" style="flex-direction: column;">
+                <!-- Step 1 -->
+                <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
+                    <img src="/assets/images/howitworks-icons/step1.svg" alt="Get Started icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
+                        1
+                    </div>
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Get Started</h3>
+                    <p class="tw-text-center tw-text-gray-600 tw-text-sm">
+                        Complete our simple form with basic details about your listing. Takes just 1-2 minutes of your time.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
+                    <img src="/assets/images/howitworks-icons/step2.svg" alt="We Reach Out icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
+                        2
+                    </div>
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">We Reach Out</h3>
+                    <p class="tw-text-center tw-text-gray-600 tw-text-sm">
+                        Within 24 business hours, we'll contact you to collect listing details and assets needed for your showcase.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
+                    <img src="/assets/images/howitworks-icons/step3.svg" alt="We Reach Out icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
+                        3
+                    </div>                   
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Showcase Goes Live</h3>
+                    <p class="tw-text-center tw-text-gray-600 tw-text-sm">
+                        Within 48 hours of receiving all information, your impressive showcase will be live and ready to win listings.
+                    </p>
+                </div>
+                </div>
+            </div>
+
+            <!-- No-risk callout -->
+            <div class="reveal-up tw-mt-6 tw-max-w-2xl tw-mx-auto tw-text-center">
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem;">
+                    <img src="/assets/images/howitworks-icons/zerorisk.svg" alt="Zero Risk Guarantee Shield Icon" style="width: 120px; height: 120px;">
+                </div>
+                <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Zero Risk Guarantee</h3>
+                <p class="tw-text-gray-600">
+                    You don't pay a cent until your showcase is ready and you're completely satisfied with the result.
+                </p>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="reveal-up tw-mt-10">
+                <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-lg lp-btn-icon-right">
+                    <span>Start Your Showcase</span>
+                    <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
         </section>
@@ -597,7 +700,7 @@
                             Premium Marketing Features
                         </h2>
 
-                        <a href="/admin" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
+                        <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
                             Win More Listings
                         </a>
                     </div>
@@ -895,17 +998,17 @@
             
             <div class="tw-mt-8 tw-text-center tw-max-w-[800px]">
                 <p class="tw-text-gray-600">Each showcase website is live for 3 months, extendable month-to-month for AU$80 per month. No long-term contracts.</p>
-                <p class="tw-text-gray-600 tw-mt-2">Discounted rates available for high-volume agents. <a href="#" class="tw-text-[var(--primary-color)] tw-underline">Contact us</a> for details.</p>
+                <p class="tw-text-gray-600 tw-mt-2">Discounted rates available for high-volume agents. <a href="#contact" class="tw-text-[var(--primary-color)] tw-underline">Contact us</a> for details.</p>
             </div>
         </section>
         
         <!-- === FAQ SECTION === -->
         <section
-            class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%]"
+            class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-6 tw-p-[5%] tw-px-[10%]"
             id="faq"
         >
             <h3
-                class="tw-text-4xl tw-font-medium max-md:tw-text-2xl"
+                class="tw-text-4xl tw-font-medium max-md:tw-text-xl tw-mb-6"
             >
                 Frequently Asked Questions
             </h3>
@@ -923,11 +1026,11 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>We offer three tiers: Essential Showcase at AU$770, Premium Showcase at AU$960, and Prestige Showcase at AU$1,260. Premium and Prestige tiers have an additional AU$220 first-time setup fee.</p>
+                            <p>We offer three tiers: Essential Showcase, Premium Showcase, and Prestige Showcase. For full pricing details, please visit our <a href="#pricing" class="tw-text-[var(--primary-color)] tw-underline">Pricing section</a>.</p>
                             <p class="tw-mt-2 tw-text-gray-600">Pricing varies by package, with additional setup fees for Premium and Prestige tiers. Discounted rates are available for high-volume agents.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -944,7 +1047,7 @@
                             </ul>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -957,7 +1060,7 @@
                         </div>
                     </div>
                 </div>
-                <hr class="tw-border-t-2">
+                <hr class="tw-border-t-2 tw-my-6">
                 
                 <!-- Benefits for Real Estate Agents -->
                 <div class="faq-category">
@@ -982,7 +1085,7 @@
                         </div>
                     </div>
                 </div>
-                <hr class="tw-border-t-2">
+                <hr class="tw-border-t-2 tw-my-6">
                 
                 <!-- Website Customization -->
                 <div class="faq-category">
@@ -998,7 +1101,7 @@
                             <p>Yes, Premium and Prestige tiers offer fully branded websites reflecting your agency's unique style, including fonts, colors, logos, and backlinks.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1010,7 +1113,7 @@
                             <p>We send a Style Selection Proposal with icon, font, and color styles aligned with your agency's brand. You'll choose from logo design examples. This one-time selection guides future logos for your listings.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1023,7 +1126,7 @@
                         </div>
                     </div>
                 </div>
-                <hr class="tw-border-t-2">
+                <hr class="tw-border-t-2 tw-my-6">
                 
                 <!-- Content and Support -->
                 <div class="faq-category">
@@ -1039,7 +1142,7 @@
                             <p>No, you can upload as many photos and videos as needed to showcase the property.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1051,7 +1154,7 @@
                             <p>Once we have all necessary information, files, and style approval, your showcase will be ready for final approval within 2 business days.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1063,7 +1166,7 @@
                             <p>We provide email support 24/7 and phone support during business hours. We set up a WhatsApp group for each project to facilitate easy collaboration.</p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1076,7 +1179,7 @@
                         </div>
                     </div>
                 </div>
-                <hr class="tw-border-t-2">
+                <hr class="tw-border-t-2 tw-my-6">
                 
                 <!-- Marketing and Visibility -->
                 <div class="faq-category">
@@ -1093,7 +1196,7 @@
                             <p class="tw-font-medium tw-mt-2"><strong>This is as much a marketing tool for you and your agency as it is for your listings.</strong></p>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
@@ -1117,9 +1220,9 @@
         <!-- === FINAL CTA SECTION === -->
         <section
             id="final-cta"
-            class="tw-relative tw-flex tw-p-2  tw-w-full tw-min-h-[60vh]  tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden"
+            class="tw-relative tw-flex tw-p-2  tw-w-full tw-min-h-[60vh]  tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-bg-[#e5e7eb] dark:tw-bg-[#171717]"
         >
-             <div class="reveal-up tw-w-full tw-h-full tw-min-h-[450px] max-lg:tw-max-w-full tw-rounded-md lg:tw-py-[5%] tw-bg-[#f6f7fb] dark:tw-bg-[#171717] tw-place-content-center tw-items-center
+             <div class="reveal-up tw-w-full tw-h-full tw-min-h-[450px] max-lg:tw-max-w-full tw-rounded-md lg:tw-py-[5%] tw-place-content-center tw-items-center
                         tw-flex tw-flex-col tw-max-w-[80%] tw-gap-4 tw-p-4">
 
                 <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-3xl tw-text-center tw-leading-normal">
@@ -1159,7 +1262,7 @@
  
 
         <!-- === CONTACT FORM SECTION === -->
-        <section class="tw-relative tw-w-full tw-py-16 tw-flex tw-flex-col tw-items-center tw-justify-center" id="contact" 
+        <section class="tw-relative tw-w-full tw-py-8 tw-flex tw-flex-col tw-items-center tw-justify-center" id="contact" 
                 style="background-image: url('/assets/images/background/contactform.jpg'); 
                        background-size: cover; 
                        background-position: center;
@@ -1167,13 +1270,13 @@
                        background-repeat: no-repeat;
                        min-width: 100vw;
                        position: relative;
-                       margin-top: 40px;
-                       margin-bottom: 40px;">
+                       margin-top: 20px;
+                       margin-bottom: 0px;">
   
           <!-- Dark overlay with 50% opacity -->
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
           
-          <div class="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-max-w-5xl tw-relative tw-flex tw-flex-col tw-items-center" style="z-index: 2; margin-top: 40px; margin-bottom: 40px;">
+          <div class="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-max-w-5xl tw-relative tw-flex tw-flex-col tw-items-center" style="z-index: 2; margin-top: 60px; margin-bottom: 20px;">
             <div class="tw-text-center tw-mb-10">
               <h2 class="reveal-up tw-text-4xl tw-font-bold" style="color: white !important;">
                 Get in Touch
@@ -1189,7 +1292,7 @@
               method="POST"
               id="contact-form" 
               class="reveal-up tw-rounded-xl tw-shadow-lg tw-p-8 tw-w-full tw-max-w-xl tw-border tw-border-gray-100 hover:tw-shadow-xl tw-transition-all tw-duration-300"
-              style="background-color: rgba(255, 255, 255, 0.8);"
+              style="background-color: rgba(255, 255, 255, 0.8); margin-top: 24px; margin-bottom: 24px;"
             >
               <div class="tw-space-y-5">
         <!-- Name and Agency row -->
@@ -1411,20 +1514,23 @@
         </footer>
     </body>
 
+    <!-- External library scripts -->
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"
-        integrity="sha512-B1lby8cGcAUU3GR+Fd809/ZxgHbfwJMp0jLTVfHiArTuUt++VqSlJpaJvhNtRf3NERaxDNmmxkdx2o+aHd4bvw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
     ></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"
-        integrity="sha512-AY2+JxnBETJ0wcXnLPCcZJIJx0eimyhz3OJ55k2Jx4RtYC+XdIi2VtJQ+tP3BaTst4otlGG1TtPJ9fKrAUnRdQ=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
     ></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js" integrity="sha512-hIlMpy2enepx9maXZF1gn0hsvPLerXoLHdb095CmRY5HG3bZfN7XPBZ14g+TUDH1aGgfLyPHmY9/zuU53smuMw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"
+    ></script>
 
     <!-- Custom Scripts -->
     <script src="/scripts/reel-components.js"></script> <!-- For property card reels -->
@@ -1641,7 +1747,7 @@
         </div>
     </div>
 
-    <!-- Inline scripts that were at the end of your original file -->
+    <!-- Inline script for setting dashboard size -->
     <script>
         // Function to set dashboard size
         function setDashboardSize() {
@@ -1653,7 +1759,7 @@
                 dashboard.style.minHeight = '500px';
                 dashboard.style.maxWidth = 'none';
                 dashboard.style.maxHeight = 'none';
-                console.log('Dashboard size set to:', dashboard.style.width, dashboard.style.height);
+                // console.log('Dashboard size set to:', dashboard.style.width, dashboard.style.height);
             }
         }
 
@@ -1667,6 +1773,7 @@
         setTimeout(setDashboardSize, 500);
     </script>
 
+    <!-- Inline script for setting viewport height custom property -->
     <script>
         // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
         function setViewportHeight() {
@@ -1684,21 +1791,157 @@
         window.addEventListener('orientationchange', setViewportHeight);
     </script>
 
+    <!-- Add specific dashboard tilt animation with GSAP -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure GSAP and ScrollTrigger are loaded
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                console.log("Initializing dashboard tilt-up animation with GSAP");
+                
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // Get the dashboard container element
+                const dashboardContainer = document.getElementById('dashboard-container');
+                
+                if (dashboardContainer) {
+                    // Apply perspective and preserve-3d to allow proper 3D transforms
+                    dashboardContainer.style.perspective = "1000px";
+                    dashboardContainer.style.transformStyle = "preserve-3d";
+                    
+                    // Remove any default opacity and transform from CSS that might interfere
+                    dashboardContainer.style.opacity = '1';
+                    dashboardContainer.classList.remove('reveal-up');
+                    
+                    // Animation timeline for more control
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: dashboardContainer,
+                            start: "top 75%", // Start animation when the top of the element is 75% from the top of viewport
+                            end: "top 25%",   // End when the top is 25% from the top of viewport
+                            scrub: 0.8,       // Smooth scrubbing with 0.8s of smoothing
+                            toggleActions: "play none none reverse", // Play forward when entering, reverse when leaving
+                            // markers: true, // Uncomment for debugging
+                            id: "dashboard-tilt" // Name for the ScrollTrigger instance
+                        }
+                    });
+                    
+                    // Setup the animation sequence
+                    tl.fromTo(dashboardContainer, 
+                        {
+                            rotateX: 30,            // Start tilted back
+                            y: 100,                 // Start lower
+                            opacity: 0,             // Start invisible
+                            transformOrigin: "center bottom", // Tilt from the bottom
+                            immediateRender: true   // Ensure the starting state is applied immediately
+                        }, 
+                        {
+                            rotateX: 0,             // End flat
+                            y: 0,                   // End at natural position
+                            opacity: 1,             // End fully visible
+                            duration: 1,            // Animation duration relative to scroll distance
+                            ease: "power2.out"      // Easing function
+                        }
+                    );
+                    
+                    // Add a subtle bounce effect at the end of the animation
+                    tl.to(dashboardContainer, {
+                        y: -10,                     // Slight bounce up
+                        duration: 0.2,
+                        ease: "power1.out"
+                    }).to(dashboardContainer, {
+                        y: 0,                       // Return to natural position
+                        duration: 0.3,
+                        ease: "elastic.out(1, 0.3)" // Elastic bounce
+                    });
+                    
+                    console.log("Enhanced dashboard tilt-up animation configured");
+                } else {
+                    console.warn("Dashboard container element not found");
+                }
+            } else {
+                console.error("GSAP or ScrollTrigger not loaded! Cannot initialize dashboard animation");
+            }
+        });
+    </script>
+
+    <!-- Add CSS support for 3D transforms -->
+    <style>
+        /* Ensure proper 3D perspective for the dashboard container */
+        #dashboard-container {
+            position: relative;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            z-index: 10;
+            overflow: visible !important;
+        }
+        
+        /* Make sure child elements display properly in 3D space */
+        #dashboard {
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            will-change: transform;
+            z-index: 11;
+            overflow: hidden;
+        }
+    </style>
+
+    <!-- Direct animation script for other reveal-up elements -->
+    <script>
+        // Immediate animation setup
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Direct animation script loaded");
+            
+            // Function to check if element is in viewport
+            function isElementInViewport(el) {
+                var rect = el.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 && 
+                    rect.bottom >= 0
+                );
+            }
+            
+            // Function to handle animation
+            function handleAnimation() {
+                // Explicitly exclude the dashboard container - it has its own GSAP animation
+                var elements = document.querySelectorAll('.reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe)');
+                
+                elements.forEach(function(element) {
+                    if (isElementInViewport(element)) {
+                        element.style.opacity = "1";
+                        element.style.transform = "translateY(0)";
+                        element.classList.add('is-revealed');
+                    }
+                });
+            }
+            
+            // Initial check
+            handleAnimation();
+            
+            // Listen for scroll events
+            window.addEventListener('scroll', handleAnimation);
+            
+            // Also check on resize
+            window.addEventListener('resize', handleAnimation);
+        });
+    </script>
+
+    <!-- Inline script for fixing hero section height and background image positioning -->
     <script>
         // Simple script to fix hero section height and background image positioning
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Hero height script running!');
+            // console.log('Hero height script running!');
 
             // Get elements
             const heroSection = document.getElementById('hero-section');
             const heroBackground = document.querySelector('.hero-bg-gradient');
 
             if (!heroSection || !heroBackground) {
-                console.error('Could not find hero elements');
+                // console.error('Could not find hero elements');
                 return;
             }
 
-            console.log('Found hero elements');
+            // console.log('Found hero elements');
 
             // Breakpoints for responsive design
             const TABLET_BREAKPOINT = 900;
@@ -1731,11 +1974,11 @@
                 addParagraphTextShadow(paragraph);
 
                 if (viewportWidth <= TABLET_BREAKPOINT) { // Mobile and Tablet
-                    console.log('Applying Mobile/Tablet hero content layout');
+                    // console.log('Applying Mobile/Tablet hero content layout');
 
                     // Only show overlay on tablet, not on mobile
                     if (viewportWidth > MOBILE_BREAKPOINT) { // Tablet only
-                        console.log('Enabling overlay for tablet');
+                        // console.log('Enabling overlay for tablet');
                         tabletOverlay.style.display = 'block';
 
                         // Ensure buttons are in a row for tablet view
@@ -1790,9 +2033,9 @@
                         buttonContainer.style.marginTop = '0';
                         buttonContainer.classList.add('tw-justify-center');
                         buttonContainer.classList.remove('tw-flex-col');
-
-                    } else { // Mobile specific (<577px)
-                        console.log('Applying Mobile-specific layout');
+                    } 
+                    else { // Mobile specific (<577px)
+                        // console.log('Applying Mobile-specific layout');
                         tabletOverlay.style.display = 'block'; // Show overlay for mobile too
 
                         // Reset any previous layout structures
@@ -1882,9 +2125,9 @@
                             button.style.margin = '6px auto'; // Center buttons and add vertical spacing
                         });
                     }
-
-                } else { // Desktop View
-                    console.log('Applying Desktop hero content layout');
+                } 
+                else { // Desktop View
+                    // console.log('Applying Desktop hero content layout');
 
                     // Hide overlay on desktop
                     tabletOverlay.style.display = 'none';
@@ -1961,26 +2204,26 @@
                 heroSection.style.height = '100vh';
                 heroSection.style.maxHeight = '800px';
 
-                console.log('Hero section with min-height: 600px, height: 100vh, max-height: 800px');
+                // console.log('Hero section with min-height: 600px, height: 100vh, max-height: 800px');
 
                 // Apply different background images and styles based on viewport width
                 if (viewportWidth <= MOBILE_BREAKPOINT) {
                     // Mobile view
-                    console.log('Using mobile background');
+                    // console.log('Using mobile background');
                     heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Mobile).png')";
                     heroBackground.style.backgroundSize = "cover";
                     heroBackground.style.backgroundPosition = "center center";
                 }
                 else if (viewportWidth <= TABLET_BREAKPOINT) {
                     // Tablet view
-                    console.log('Using tablet background');
+                    // console.log('Using tablet background');
                     heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Tablet).png')";
                     heroBackground.style.backgroundSize = "cover";
                     heroBackground.style.backgroundPosition = "center center";
                 }
                 else {
                     // Desktop view
-                    console.log('Using desktop background');
+                    // console.log('Using desktop background');
                     heroBackground.style.backgroundImage = "url('/assets/images/background/BGImg (Desktop).png')";
                     heroBackground.style.backgroundSize = "cover";
                     heroBackground.style.backgroundPosition = "center center";
@@ -2078,27 +2321,101 @@
             });
         });
     </script>
+    
+    <!-- Problem Section Animation Script -->
+    <script>
+        // Execute this script immediately to ensure animations work
+        (function() {
+            console.log("Page animations script loaded");
+            
+            // Wait for DOM to be fully loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get all reveal-up elements across the entire page, EXCLUDING specific dashboard elements
+                const allRevealElements = document.querySelectorAll(".reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe)");
+                console.log(`Found ${allRevealElements.length} elements to animate across the page (excluding dashboard)`);
+                
+                // Apply the rotation to property-reel-2 first to avoid animation conflicts
+                const propertyReel2 = document.getElementById('property-reel-2');
+                if (propertyReel2) {
+                    const rotation = propertyReel2.getAttribute('data-rotation') || '-4deg';
+                    propertyReel2.style.transform = `rotate(${rotation})`;
+                    propertyReel2.style.transformOrigin = 'center center';
+                    propertyReel2.style.width = '100vw';
+                    propertyReel2.style.marginLeft = '0vw';
+                }
+                
+                // Set initial state directly with inline styles
+                allRevealElements.forEach(element => {
+                    // Skip setting transform on elements that have special handling (like property-reel-2)
+                    if (element.id === 'property-reel-2') {
+                        element.style.opacity = "0";
+                        // Don't set transform as it would conflict with the rotation
+                    } else {
+                        element.style.opacity = "0";
+                        element.style.transform = "translateY(40px)";
+                    }
+                    element.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
+                });
+                
+                // Function to check if an element is in viewport
+                function isInViewport(element) {
+                    const rect = element.getBoundingClientRect();
+                    return (
+                        rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
+                        rect.bottom >= 0
+                    );
+                }
+                
+                // Function to handle reveal animation with staggered effect
+                function revealElements() {
+                    let delay = 0;
+                    let lastSectionId = null;
+                    
+                    allRevealElements.forEach((element, index) => {
+                        // Only animate if it's in the viewport and hasn't been animated yet
+                        if (isInViewport(element) && element.style.opacity !== "1") {
+                            // Find the closest parent section for this element
+                            let currentSection = element.closest('section');
+                            let currentSectionId = currentSection ? currentSection.id : null;
+                            
+                            // Reset delay when entering a new section for more coordinated animations
+                            if (currentSectionId && currentSectionId !== lastSectionId) {
+                                delay = 0;
+                                lastSectionId = currentSectionId;
+                            }
+                            
+                            // Apply staggered animation
+                            setTimeout(() => {
+                                console.log(`Animating element ${index} with delay ${delay}ms`);
+                                element.style.opacity = "1";
+                                
+                                // Handle elements that had specific initial transforms set in CSS
+                                if (element.id === 'property-reel-2') {
+                                     // Transform is handled by JS initially, no need to set translateY(0)
+                                } else {
+                                    element.style.transform = "translateY(0)";
+                                }
+                                
+                                element.classList.add("is-revealed"); // Add class for CSS fallback/state
+                            }, delay);
+                            
+                            // Increment delay for staggered effect
+                            delay += 80; // 80ms between each element animation
+                        }
+                    });
+                }
+                
+                // Check elements on initial load with a short delay to ensure page is rendered
+                setTimeout(revealElements, 100);
+                
+                // Check elements on scroll
+                window.addEventListener('scroll', revealElements);
+                
+                // Also check on resize
+                window.addEventListener('resize', revealElements);
+            });
+        })();
+    </script>
 </body>
-
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"
-    integrity="sha512-B1lby8cGcAUU3GR+Fd809/ZxgHbfwJMp0jLTVfHiArTuUt++VqSlJpaJvhNtRf3NERaxDNmmxkdx2o+aHd4bvw=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-></script>
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"
-    integrity="sha512-AY2+JxnBETJ0wcXnLPCcZJIJx0eimyhz3OJ55k2Jx4RtYC+XdIi2VtJQ+tP3BaTst4otlGG1TtPJ9fKrAUnRdQ=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js" integrity="sha512-hIlMpy2enepx9maXZF1gn0hsvPLerXoLHdb095CmRY5HG3bZfN7XPBZ14g+TUDH1aGgfLyPHmY9/zuU53smuMw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<!-- Custom Scripts -->
-<script src="/scripts/reel-components.js"></script> <!-- For property card reels -->
-<script src="/scripts/components.js"></script>
-<script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
-<script src="/index.js"></script>
 
 </html>
