@@ -1,0 +1,327 @@
+/* Styles consolidated from index.html inline <style> blocks */
+
+/* From line ~240 */
+.property-reel {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+    box-sizing: border-box !important;
+}
+
+body {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+.hero-section {
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.hero-bg-gradient {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+.scrolling-wrapper {
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    contain: layout paint !important;
+}
+
+#property-reel-2 {
+    position: relative !important;
+    overflow: hidden !important;
+    transform-style: flat !important;
+    isolation: isolate !important;
+}
+
+section {
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+/* From line ~360 */
+/* Ensure all property reels handle overflow properly */
+.property-reel {
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrolling-wrapper {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Make second reel wider with consistent sizing */
+#property-reel-2 .scrolling-wrapper {
+    width: 200vw !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+}
+
+/* Force property cards in first reel to exact dimensions */
+#property-reel-1 .property-card {
+    width: 180px !important;
+    height: 150px !important;
+    margin-right: 15px !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+#property-reel-1 .property-image {
+    width: 100% !important;
+    height: 90px !important;
+    overflow: hidden !important;
+}
+
+#property-reel-1 .property-details {
+    padding: 8px !important;
+    height: 60px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+/* Make property cards in second reel 10% larger with deeper shadow */
+#property-reel-2 .property-card {
+    width: 198px !important; /* 10% larger */
+    height: 165px !important; /* 10% larger */
+    margin-right: 15px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important; /* Much deeper shadow */
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    z-index: 5 !important;
+}
+
+#property-reel-2 .property-image {
+    width: 100% !important;
+    height: 99px !important; /* 10% larger */
+    overflow: hidden !important;
+}
+
+#property-reel-2 .property-details {
+    padding: 8px !important;
+    height: 66px !important; /* 10% larger */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+/* Ensure both price and suburb text is visible */
+.property-price {
+    font-size: 0.95em !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    margin: 0 0 2px 0 !important;
+    white-space: normal !important;
+}
+
+.property-suburb {
+    font-size: 0.8em !important;
+    color: #666 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+}
+
+/* From line ~643 */
+#how-it-works-steps {
+    flex-direction: column;
+}
+
+#how-it-works-steps > div {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1023.98px) { /* Below lg breakpoint */
+    #how-it-works > .tw-container {
+        max-width: 80vw !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    /* Limit individual card and Zero Risk section width */
+    #how-it-works-steps > div {
+        max-width: 600px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    /* Specifically target the Zero Risk guarantee section */
+    #how-it-works > .reveal-up.tw-mx-auto.tw-text-center {
+        max-width: min(80vw, 600px) !important; /* Limit to 80vw or 600px, whichever is smaller */
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+/* Styling for row layout on desktop */
+@media (min-width: 1024px) {
+    #how-it-works-steps {
+        flex-direction: row !important;
+    }
+    #how-it-works-steps > div {
+        width: calc(33.333% - 1.333rem) !important; /* Adjust width calculation for gap */
+    }
+}
+
+/* From line ~1251 */
+/* Ensure proper 3D perspective for the dashboard container */
+#dashboard-container {
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    will-change: transform, opacity;
+    z-index: 10;
+    overflow: visible !important;
+}
+
+/* Make sure child elements display properly in 3D space */
+#dashboard {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform;
+    z-index: 11;
+    overflow: hidden;
+}
+
+/* CSS-based edge masking - better alternative to JavaScript-generated masks */
+/* This uses pseudo-elements to create edge masks that are part of the document flow */
+.property-reel {
+    position: relative;
+    margin: 0 auto;
+    max-width: 100vw;
+    overflow: hidden;
+}
+
+/* Left edge mask */
+.property-reel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(to right, #fcfcfc 20%, rgba(252, 252, 252, 0));
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Right edge mask */
+.property-reel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(to left, #fcfcfc 20%, rgba(252, 252, 252, 0));
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Fix for mobile overflow issues that might cause white borders */
+html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Enhanced mobile fixes */
+@media (max-width: 767px) {
+    /* Adjust sizing for mobile to prevent white borders */
+    html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Ensure sections don't break out of viewport */
+    section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Fix for transform animations that might cause overflow */
+    .reveal-up {
+        transform: translateY(40px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        will-change: transform, opacity;
+    }
+    
+    .reveal-up.is-revealed {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    /* Tighter edge masks for mobile */
+    .property-reel::before,
+    .property-reel::after {
+        width: 20px; /* Smaller on mobile */
+    }
+    
+    /* Critical fix for mobile white borders - this ensures the viewport is properly constrained */
+    body {
+        position: relative;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        /* Force hardware acceleration and prevent white borders during scroll */
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        -webkit-perspective: 1000;
+    }
+    
+    /* Ensure all fixed/absolute positioned elements stay within viewport */
+    .tw-fixed-container,
+    [class*="tw-fixed"],
+    [class*="tw-absolute"] {
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Handle any elements with vw units to prevent overflow */
+    [style*="vw"] {
+        max-width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+} 

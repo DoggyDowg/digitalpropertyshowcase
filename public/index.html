@@ -29,6 +29,7 @@
         <link rel="stylesheet" href="/css/custom-page-styles.css"> <!-- Create this file and add your styles -->
         <link rel="stylesheet" href="/css/legal-popups.css"> <!-- Added CSS for legal popups -->
         <link rel="stylesheet" href="/css/animations.css"> <!-- Added CSS for animations -->
+        <link rel="stylesheet" href="/css/landing-page.css"> <!-- Consolidated landing page styles -->
 
         <link
             rel="stylesheet"
@@ -112,9 +113,6 @@
                 box-sizing: border-box !important;
             }
         </style>
-
-        <!-- The <style> block for this section (property-reel, scrolling-wrapper, property-card CSS)
-             has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
 
         <!-- Centralized Pricing Data -->
         <script src="/scripts/pricingData.js"></script>
@@ -436,48 +434,23 @@
         <script>
             // Function to apply professional edge masking to property reels
             function applyReelMasks() {
-                // Background color for mask gradients (matching page background)
-                const bgColor = getComputedStyle(document.body).backgroundColor || '#fcfcfc';
+                // Instead of creating fixed elements that can cause issues,
+                // we'll use the CSS pseudo-elements defined in landing-page.css
+                // This is now a safer implementation that avoids white borders on mobile
                 
-                // FORGET GRADIENTS - Let's use solid edge covers that are guaranteed to work
-                
-                // Apply solid edge masks to the entire document body to cover ALL reels
-                const leftMask = document.createElement('div');
-                leftMask.className = 'global-edge-mask left-mask';
-                leftMask.style.position = 'fixed';
-                leftMask.style.top = '0';
-                leftMask.style.left = '0';
-                leftMask.style.width = '40px'; // Solid width to cover edge
-                leftMask.style.height = '100vh';
-                leftMask.style.backgroundColor = bgColor;
-                leftMask.style.zIndex = '9999'; // Extremely high z-index
-                leftMask.style.pointerEvents = 'none'; // Don't block clicks
-                document.body.appendChild(leftMask);
-                
-                const rightMask = document.createElement('div');
-                rightMask.className = 'global-edge-mask right-mask';
-                rightMask.style.position = 'fixed';
-                rightMask.style.top = '0';
-                rightMask.style.right = '0';
-                rightMask.style.width = '40px'; // Solid width to cover edge
-                rightMask.style.height = '100vh';
-                rightMask.style.backgroundColor = bgColor;
-                rightMask.style.zIndex = '9999'; // Extremely high z-index
-                rightMask.style.pointerEvents = 'none'; // Don't block clicks
-                document.body.appendChild(rightMask);
-                
-                // Additional adjustments for second reel
+                // We still need to adjust the second reel for proper styling
                 const secondReel = document.getElementById('property-reel-2');
                 if (secondReel) {
                     // Increase container height to show full card shadows
                     secondReel.style.paddingBottom = '30px'; // Add padding below cards
                     secondReel.style.marginBottom = '70px'; // Increase bottom margin
                     
-                    // Make the second wrapper much wider to eliminate edge visibility
+                    // Make the second wrapper wider to eliminate edge visibility
                     const wrapper = secondReel.querySelector('.scrolling-wrapper');
                     if (wrapper) {
-                        wrapper.style.width = '200vw';
-                        wrapper.style.marginLeft = '-50vw';
+                        // Use percentage-based width instead of vw to prevent overflow issues
+                        wrapper.style.width = '100%';
+                        wrapper.style.maxWidth = '100%';
                         wrapper.style.paddingBottom = '30px'; // Add padding for shadows
                     }
                 }
@@ -485,8 +458,7 @@
             
             // Run our masking function when the page loads and after a delay to handle any async rendering
             document.addEventListener('DOMContentLoaded', function() {
-                // applyReelMasks(); // Apply immediately
-                // setTimeout(applyReelMasks, 500); // Apply again after a delay to be sure
+                applyReelMasks(); // Apply immediately but with safer implementation
                 
                 // Run again after any window resize
                 window.addEventListener('resize', applyReelMasks);
@@ -1554,6 +1526,64 @@
         // Run this function when the document is ready
         document.addEventListener('DOMContentLoaded', populatePricingSection);
     </script>
+    
+    <!-- Failsafe for mobile white border issue -->
+    <script>
+        // This is a failsafe script that specifically addresses the white border issue on mobile
+        // It runs periodically during scrolling to ensure the body is properly constrained
+        (function() {
+            // Only run on mobile devices
+            function isMobile() {
+                return window.innerWidth < 768;
+            }
+            
+            // Function to fix body overflow and prevent white borders
+            function fixMobileWhiteBorders() {
+                if (!isMobile()) return;
+                
+                // Ensure body is properly constrained
+                document.body.style.width = '100%';
+                document.body.style.maxWidth = '100%';
+                document.body.style.overflowX = 'hidden';
+                document.body.style.position = 'relative';
+                
+                // Force hardware acceleration to prevent rendering issues
+                document.body.style.transform = 'translate3d(0,0,0)';
+                document.body.style.webkitTransform = 'translate3d(0,0,0)';
+                
+                // Also check if there are any horizontally overflowing elements
+                const allElements = document.querySelectorAll('*');
+                for (let el of allElements) {
+                    if (el.offsetWidth > window.innerWidth) {
+                        el.style.maxWidth = '100vw';
+                        el.style.overflowX = 'hidden';
+                    }
+                }
+            }
+            
+            // Run on load
+            document.addEventListener('DOMContentLoaded', fixMobileWhiteBorders);
+            
+            // Run on scroll with throttling
+            let scrollTimer;
+            window.addEventListener('scroll', function() {
+                if (isMobile()) {
+                    if (!scrollTimer) {
+                        scrollTimer = setTimeout(function() {
+                            fixMobileWhiteBorders();
+                            scrollTimer = null;
+                        }, 100); // Check every 100ms during scroll
+                    }
+                }
+            });
+            
+            // Run on resize
+            window.addEventListener('resize', fixMobileWhiteBorders);
+            
+            // Run after a delay to catch any dynamic content loading
+            setTimeout(fixMobileWhiteBorders, 1000);
+        })();
+    </script>
 
     <!-- Terms of Service and Privacy Policy Popups -->
     <div id="privacy-policy-popup" class="legal-popup">
@@ -1901,28 +1931,65 @@
                 );
             }
             
-            // Function to handle animation
+            // Function to handle animation with mobile safeguards
             function handleAnimation() {
                 // Explicitly exclude the dashboard container - it has its own GSAP animation
                 var elements = document.querySelectorAll('.reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe)');
                 
+                // Check if we're on mobile
+                const isMobile = window.innerWidth < 768;
+                
                 elements.forEach(function(element) {
                     if (isElementInViewport(element)) {
+                        // Make sure the element has opacity 1
                         element.style.opacity = "1";
-                        element.style.transform = "translateY(0)";
+                        
+                        // Apply transform safely
+                        if (isMobile) {
+                            // On mobile, use a simpler transform to avoid potential layout issues
+                            element.style.transform = "translate3d(0, 0, 0)";
+                        } else {
+                            // On desktop, use the standard animation
+                            element.style.transform = "translateY(0)";
+                        }
+                        
+                        // Mark as revealed
                         element.classList.add('is-revealed');
                     }
                 });
+                
+                // Extra check for body width - critical to prevent white borders
+                if (isMobile) {
+                    document.body.style.width = '100%';
+                    document.body.style.maxWidth = '100%';
+                    document.body.style.overflowX = 'hidden';
+                }
             }
             
             // Initial check
             handleAnimation();
             
-            // Listen for scroll events
-            window.addEventListener('scroll', handleAnimation);
+            // Listen for scroll events - using throttling to improve performance
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (!scrollTimeout) {
+                    scrollTimeout = setTimeout(function() {
+                        handleAnimation();
+                        scrollTimeout = null;
+                    }, 20); // Throttle to every 20ms
+                }
+            });
             
-            // Also check on resize
-            window.addEventListener('resize', handleAnimation);
+            // Also check on resize with throttling
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                if (!resizeTimeout) {
+                    resizeTimeout = setTimeout(function() {
+                        handleAnimation();
+                        resizeTimeout = null;
+                    }, 50); // Throttle to every 50ms for resize
+                }
+            });
         });
     </script>
 
