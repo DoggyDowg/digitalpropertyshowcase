@@ -89,18 +89,18 @@ const propertyData = [
 /**
  * Applies the needed inline styles to property card elements
  * @param {HTMLElement} card - The card element to style
- * @param {boolean} isSecondReel - Whether this card is in the second reel
+ * @param {boolean} isSecondReeel - Whether this card is in the second reel
  */
-function applyCardStyles(card, isSecondReel) {
+function applyCardStyles(card, isSecondReeel) {
     // Card dimensions and basic styles
-    const cardWidth = isSecondReel ? 198 : 180; // 10% larger for second reel
-    const cardHeight = isSecondReel ? 165 : 150; // 10% larger for second reel
+    const cardWidth = isSecondReeel ? 198 : 180; // 10% larger for second reel
+    const cardHeight = isSecondReeel ? 165 : 150; // 10% larger for second reel
     
     // Image height 
-    const imageHeight = isSecondReel ? 99 : 90; // 10% larger for second reel
+    const imageHeight = isSecondReeel ? 99 : 90; // 10% larger for second reel
     
     // Shadow - deeper for second reel
-    const shadowValue = isSecondReel 
+    const shadowValue = isSecondReeel 
         ? '0 8px 20px rgba(0, 0, 0, 0.3)' 
         : '0 2px 5px rgba(0, 0, 0, 0.1)';
     
@@ -158,26 +158,6 @@ function applyCardStyles(card, isSecondReel) {
 }
 
 /**
- * Make the second reel wrapper wider with negative margin to avoid edge visibility
- */
-function fixSecondReelWrapper() {
-    setTimeout(() => {
-        const secondReel = document.getElementById('property-reel-2');
-        if (secondReel) {
-            // Make sure the reel itself has overflow: hidden
-            secondReel.style.overflow = 'hidden';
-            
-            // Make the wrapper wider and center it
-            const wrapper = secondReel.querySelector('.scrolling-wrapper');
-            if (wrapper) {
-                wrapper.style.width = '120vw';
-                wrapper.style.marginLeft = '-10vw';
-            }
-        }
-    }, 100); // Small delay to ensure the elements are available
-}
-
-/**
  * Populates a reel container with property cards.
  * @param {string} containerSelector - CSS selector for the reel's content div.
  * @param {Array} data - The array of property data objects.
@@ -199,6 +179,8 @@ function populatePropertyReel(containerSelector, data, duplicateCount = 8) {
 
     container.innerHTML = ''; // Clear any existing static cards
 
+    // Ensure enough duplicates to fill the entire width (we need more cards for 100vw)
+    // For wider viewports, we may need more duplicates
     let cardsToRender = [];
     for (let i = 0; i < duplicateCount; i++) {
         cardsToRender = cardsToRender.concat(data);
@@ -222,21 +204,17 @@ function populatePropertyReel(containerSelector, data, duplicateCount = 8) {
 
         container.appendChild(cardClone);
     });
-    
-    // Fix the second reel wrapper if needed
-    if (isSecondReel) {
-        fixSecondReelWrapper();
-    }
 }
 
 // Wait for the DOM to be fully loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
+    // Use more duplicates for wider screens
+    const screenWidth = window.innerWidth;
+    const duplicateCount = Math.max(8, Math.ceil(screenWidth / 500)); // Adjust based on card width
+    
     const firstReelContentSelector = '#property-reel-1 .scrolling-wrapper .scrolling-content';
-    populatePropertyReel(firstReelContentSelector, propertyData);
+    populatePropertyReel(firstReelContentSelector, propertyData, duplicateCount);
 
     const secondReelContentSelector = '#property-reel-2 .scrolling-wrapper .scrolling-content-reverse';
-    populatePropertyReel(secondReelContentSelector, propertyData);
-    
-    // Additional fix for the second reel wrapper in case it wasn't applied during population
-    fixSecondReelWrapper();
+    populatePropertyReel(secondReelContentSelector, propertyData, duplicateCount);
 });

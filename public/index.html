@@ -320,16 +320,13 @@
         </section>
 
         <!-- Second reel of overlapping properties (part of the Problem illustration) -->
-        <section id="property-reel-2" class="property-reel reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent;">
+        <section id="property-reel-2" class="property-reel reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent; width: 100vw; max-width: 100vw; margin-left: 0; margin-right: 0;">
             <!-- Scrolling Container (Reverse Direction) -->
-            <div class="scrolling-wrapper" style="transform: none !important; width: 110% !important;">
+            <div class="scrolling-wrapper" style="transform: none !important; width: 100vw !important; margin-left: 0 !important; margin-right: 0 !important;">
                 <div class="scrolling-content-reverse">
                     <!-- Property cards will be injected here by JavaScript -->
                 </div>
             </div>
-
-            <!-- The <style> block for this section (scrolling-content-reverse CSS)
-                 has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
         </section>
 
         <!-- Complete reel masking fix -->
@@ -338,6 +335,10 @@
             .property-reel {
                 overflow: hidden !important;
                 position: relative !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
             }
             
             /* Hide scrollbars but keep functionality */
@@ -352,9 +353,9 @@
             
             /* Make second reel wider with consistent sizing */
             #property-reel-2 .scrolling-wrapper {
-                width: 200vw !important;
-                margin-left: -50vw !important;
-                margin-right: -50vw !important;
+                width: 100vw !important; 
+                margin-left: 0 !important;
+                margin-right: 0 !important;
             }
             
             /* Force property cards in first reel to exact dimensions */
@@ -444,13 +445,20 @@
                     // Increase container height to show full card shadows
                     secondReel.style.paddingBottom = '30px'; // Add padding below cards
                     secondReel.style.marginBottom = '70px'; // Increase bottom margin
+                    // Ensure full width
+                    secondReel.style.width = '100vw';
+                    secondReel.style.maxWidth = '100vw';
+                    secondReel.style.marginLeft = '0';
+                    secondReel.style.marginRight = '0';
                     
                     // Make the second wrapper wider to eliminate edge visibility
                     const wrapper = secondReel.querySelector('.scrolling-wrapper');
                     if (wrapper) {
-                        // Use percentage-based width instead of vw to prevent overflow issues
-                        wrapper.style.width = '100%';
-                        wrapper.style.maxWidth = '100%';
+                        // Use full viewport width
+                        wrapper.style.width = '100vw';
+                        wrapper.style.maxWidth = '100vw';
+                        wrapper.style.marginLeft = '0';
+                        wrapper.style.marginRight = '0';
                         wrapper.style.paddingBottom = '30px'; // Add padding for shadows
                     }
                 }
