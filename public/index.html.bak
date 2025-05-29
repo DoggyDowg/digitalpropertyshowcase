@@ -48,15 +48,15 @@
             #features .sticky-parent {
                 position: relative !important;
                 height: auto !important;
-                /* min-height: 800px !important; */ /* Original problematic style, now handled by inline for base and media query for desktop */
+                min-height: 800px !important;
                 overflow: visible !important;
             }
             
             #features .sticky-element {
-                /* position: -webkit-sticky !important; */ /* Base is now static via inline */
-                /* position: sticky !important; */
-                /* top: 120px !important; */
-                z-index: 50 !important; /* Keep z-index for desktop */
+                position: -webkit-sticky !important;
+                position: sticky !important;
+                top: 120px !important;
+                z-index: 50 !important;
                 overflow: visible !important;
             }
             
@@ -72,43 +72,6 @@
             
             section#features {
                 overflow: visible !important;
-            }
-            
-            /* Only apply sticky behavior on desktop */
-            @media (max-width: 1023px) {
-                /* Sticky parent height is handled by inline style now */
-                /* AGGRESSIVE TEST OVERRIDE FOR MOBILE/TABLET - REMOVING THESE */
-                /* #features .sticky-parent {
-                    min-height: 50px !important; 
-                    background-color: red !important; 
-                } */
-                /* #features .sticky-element {
-                    position: relative !important; 
-                    background-color: blue !important; 
-                } */
-            }
-            
-            /* Restore sticky behavior specifically for desktop */
-            @media (min-width: 1024px) {
-                #features .sticky-element {
-                    position: -webkit-sticky !important;
-                    position: sticky !important;
-                    top: 120px !important;
-                }
-                
-                #features .sticky-parent {
-                    min-height: 400px !important; /* Reduced from 800px */
-                }
-
-                /* Override inline centering styles for desktop */
-                #features .tw-group\/card {
-                    text-align: left !important;
-                }
-
-                #features .tw-flex.tw-items-center[style*="margin-left: auto"] {
-                    margin-left: 0 !important;
-                    margin-right: 0 !important;
-                }
             }
         </style>
 
@@ -428,6 +391,7 @@
             </div>
             <button
                 class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden"
+                onclick="toggleHeader()"
                 aria-label="menu"
                 id="collapse-btn"
             ></button>
@@ -915,50 +879,38 @@
         </section>
 
         <!-- === PREMIUM MARKETING FEATURES SECTION === -->
-        <section class="tw-relative tw-mt-6 lg:tw-mt-10 tw-flex lg:tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col lg:tw-place-content-center tw-place-items-center lg:tw-p-6" id="features">
-            <div class="reveal-up max-lg:tw-mt-12 lg:tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-start lg:tw-place-content-center
+        <section class="tw-relative tw-mt-6 lg:tw-mt-10 tw-flex tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center lg:tw-p-6" id="features">
+            <div class="reveal-up tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-center
                     tw-gap-2 tw-p-4 max-lg:tw-max-w-full max-lg:tw-flex-col" style="position: relative; overflow: visible;">
 
-                <!-- Title and button for mobile/tablet, directly in the flow -->
-                <div class="lg:tw-hidden tw-w-full tw-flex tw-flex-col tw-items-center tw-mb-12">
-                    <h2 class="tw-text-5xl tw-text-center tw-font-medium max-md:tw-text-3xl">
-                        Premium Marketing Features
-                    </h2>
-                    <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
-                        Win More Listings
-                    </a>
-                </div>
-
-                <!-- Spacer for mobile/tablet - with guaranteed height -->
-                <div class="lg:tw-hidden" style="height: 48px; display: block;"></div>
-
-                <!-- Desktop sticky left column (hidden on mobile/tablet) -->
-                <div class="tw-flex tw-max-w-[30%] max-lg:tw-hidden tw-flex-col
-                        tw-place-items-start tw-gap-4 tw-p-2 max-lg:tw-place-content-center max-lg:tw-w-full sticky-parent" 
-                     style="position: relative !important; height: auto !important; min-height: auto !important;">
-                    <div class="tw-flex tw-flex-col tw-items-start tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] sticky-element"
-                         style="position: static !important; top: 120px !important; z-index: 20 !important;">
-                        <h2 class="tw-text-5xl tw-text-left tw-font-medium max-md:tw-text-3xl">
+                <div class="tw-flex tw-max-w-[30%] max-lg:tw-max-w-full tw-flex-col
+                        tw-place-items-start tw-gap-4 tw-p-2 max-lg:tw-place-items-center
+                        max-lg:tw-place-content-center max-lg:tw-w-full sticky-parent" 
+                     style="position: relative; height: auto; min-height: 800px; overflow: visible;">
+                    <div class="tw-flex tw-flex-col tw-place-items-center tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] sticky-element"
+                         style="position: sticky; top: 120px; z-index: 10; overflow: visible;">
+                        <h2 class="tw-text-5xl tw-text-center tw-font-medium max-md:tw-text-3xl">
                             Premium Marketing Features
                         </h2>
+
                         <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
                             Win More Listings
                         </a>
                     </div>
                 </div>
 
-                <!-- Right column with feature cards -->
-                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full max-lg:tw-w-full lg:tw-max-w-1/2 lg:tw-px-2 max-lg:tw-px-4 max-lg:tw-gap-3 
+                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full tw-max-w-1/2 max-lg:tw-max-w-full tw-px-[10%]
+                             max-lg:tw-px-4 max-lg:tw-gap-3 max-lg:tw-w-full
                         tw-place-items-center">
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl
                                     dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all
-                                tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                                tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/branded.svg" alt="Branded Property Sites" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Fully Branded Property Sites
                                 </h3>
@@ -970,13 +922,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl
-                                dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl
+                                dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/map.svg" alt="Interactive Local Maps" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Interactive Local Maps
                                 </h3>
@@ -988,13 +940,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl tw-duration-300
-                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl tw-duration-300
+                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/instagram.svg" alt="Automated Instagram Carousel" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Automated Instagram Carousel
                                 </h3>
@@ -1006,13 +958,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full dark:tw-shadow-[#171717] tw-gap-8 tw-rounded-xl tw-duration-300
-                        tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full dark:tw-shadow-[#171717] tw-gap-8 tw-rounded-xl tw-duration-300
+                        tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/media.svg" alt="Unlimited Media" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Unlimited Media
                                 </h3>
@@ -1024,13 +976,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] tw-duration-300
-                            tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] tw-duration-300
+                            tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/openhomes.svg" alt="Advanced SEO & Open Home Integration" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Advanced SEO & Open Home Integration
                                 </h3>
@@ -1778,7 +1730,6 @@
     <script src="/scripts/reel-components.js"></script> <!-- For property card reels -->
     <script src="/scripts/scroll-reels.js"></script> <!-- For scroll-triggered reel animations -->
     <script src="/scripts/components.js"></script>
-    <script src="/js/index.js"></script> <!-- Added this line -->
     <script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
     <script src="/index.js"></script>
 

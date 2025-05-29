@@ -95,7 +95,7 @@ hr{
 }
 
 .animated-collapse{
-    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    transition: width 0.3s ease;
 }
 
 
@@ -659,78 +659,28 @@ hr{
 
 
 @media not all and (min-width: 1024px) {
-    /* These are the new styles for the mobile header menu */
     header .collapsible-header {
         position: fixed;
-        top: 0;
-        right: 0; /* Anchor to the right */
-        width: 80vw;
-        max-width: 400px; /* Optional: max width for very large tablets */
-        height: 100vh;
-        
+        top: 60px;
+        left: 0px;
         flex-direction: column;
-        align-items: flex-start; /* Align content inside to the left */
-        justify-content: flex-start; /* Content starts from top */
-        
-        padding: 20px;
-        padding-top: 80px; /* Generous top padding; Hamburger is fixed, so menu appears under it */
-        
-        background-color: rgba(255, 255, 255, 0.80); /* Semi-transparent white */
+        opacity: 0;
+        height: 0vh;
+        min-height: 0vh;
+        /* height: 100dvh; */
+        width: 100vw;
+        justify-content: space-between;
+        padding: 5px;
+        padding-top: 5%;
+        padding-bottom: 5%;
+        place-items: center;
+        text-align: center;
+        background-color: var(--header-bg);
+        /* color: #373636; */
+        overflow-y: auto;
         -webkit-backdrop-filter: blur(10px);
         backdrop-filter: blur(10px);
-        
-        box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
-        border-top-left-radius: 0.75rem;    /* Added for rounded edges */
-        border-bottom-left-radius: 0.75rem; /* Added for rounded edges */
-        
-        transform: translateX(100%); /* Initial state: off-screen */
-        opacity: 0;
-        visibility: hidden; /* Hidden initially */
-        
-        /* Transition for transform (slide), opacity (fade), and visibility (accessibility) */
-        /* Delay visibility change for closing */
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
-        
-        overflow-y: auto;
-        z-index: 1030; 
-    }
-
-    header .collapsible-header.mobile-menu-is-open {
-        transform: translateX(0%);
-        opacity: 1;
-        visibility: visible;
-        /* Immediate visibility for opening */
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0s linear 0s; 
-    }
-
-    /* Adjust internal elements of the menu */
-    header .collapsible-header nav,
-    header .collapsible-header div.lg\:tw-mx-4 { /* Targets the Get Started button container */
-        width: 100%; 
-        text-align: left; 
-        display: flex;
-        flex-direction: column; 
-        align-items: flex-start; 
-        gap: 15px; 
-    }
-
-    header .collapsible-header nav a.header-links {
-        margin-left: 0; 
-        margin-right: auto; 
-        padding: 10px 0 10px 48px; /* 48px left padding for text links */ 
-        width: fit-content; 
-    }
-
-    header .collapsible-header div.lg\:tw-mx-4 a.lp-btn { /* Specific styling for the Get Started button */
-        margin-left: 48px; /* 48px left margin to align with text links */
-        margin-right: auto; 
-        padding: 10px 15px; /* Standard button padding, no extra left padding here */
-        width: fit-content; 
-        /* .lp-btn already includes justify-content: center and align-items: center */
-    }
-
-    #collapse-btn.bi-x {
-      z-index: 1031; /* Higher than the open menu */
+        box-shadow: 0px 2px 3px 2px #9f9f9f7c;
     }
 
     /* .header-links{

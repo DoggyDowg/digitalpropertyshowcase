@@ -11,20 +11,27 @@
 //   }
 // }
 
-window.toggleHeader = function toggleHeader() {
-  const headerItems = document.getElementById('collapsed-header-items');
-  const btn = document.getElementById('collapse-btn');
+// Global configuration for videos
+// const videoConfig = {
+//  desktopSrc: "https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_wide_z4tsad.mp4",
+//  mobileSrc: "https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_mobile_1_cs0pkp.mp4",
+//  breakpoint: 768 // Mobile breakpoint in pixels
+// };
+
+// window.toggleHeader = function toggleHeader() {
+//  const headerItems = document.getElementById('collapsed-header-items');
+//  const btn = document.getElementById('collapse-btn');
   
-  if (headerItems) {
-    if (headerItems.classList.contains('show')) {
-      headerItems.classList.remove('show');
-      if (btn) btn.className = 'bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden';
-    } else {
-      headerItems.classList.add('show');
-      if (btn) btn.className = 'bi bi-x tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden';
-    }
-  }
-}
+//  if (headerItems) {
+//    if (headerItems.classList.contains('show')) {
+//      headerItems.classList.remove('show');
+//      if (btn) btn.className = 'bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden';
+//    } else {
+//      headerItems.classList.add('show');
+//      if (btn) btn.className = 'bi bi-x tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden';
+//    }
+//  }
+// }
 
 // Smoothly animate values
 // function smoothLerp(current, target, factor = 0.1) {
@@ -38,6 +45,8 @@ window.toggleHeader = function toggleHeader() {
 // let animationFrame = null;
 
 // Dashboard 3D animation on scroll
+// Function is currently unused but kept for reference
+/* 
 function handleScroll() {
   console.log("handleScroll called");
   const dashboard = document.getElementById('dashboard');
@@ -80,46 +89,104 @@ function handleScroll() {
     console.warn("Dashboard element not found!");
   }
 }
+*/
 
 // Open and close video modal
-window.openVideo = function openVideo() {
-  const videoContainer = document.getElementById('video-container-bg');
-  const videoContent = document.getElementById('video-container');
+// window.openVideo = function openVideo() {
+//  console.log("openVideo called");
+//  const videoContainer = document.getElementById('video-container-bg');
+//  const videoContent = document.getElementById('video-container');
+//  const desktopVideo = document.getElementById('desktop-video');
+//  const mobileVideo = document.getElementById('mobile-video');
   
-  if (videoContainer && videoContent) {
-    videoContainer.classList.remove('tw-scale-0', 'tw-opacity-0');
-    videoContainer.classList.add('tw-scale-100', 'tw-opacity-100');
+//  // Reset and prepare videos
+//  if (desktopVideo) {
+//    console.log("Desktop video found");
+//    desktopVideo.currentTime = 0;
+//    desktopVideo.pause();
+//    // Ensure proper display
+//    if (window.innerWidth >= videoConfig.breakpoint) {
+//      desktopVideo.style.display = 'block';
+//    }
+//  }
+  
+//  if (mobileVideo) {
+//    console.log("Mobile video found");
+//    mobileVideo.currentTime = 0;
+//    mobileVideo.pause();
+//    // Ensure proper display for 9:16 vertical video
+//    if (window.innerWidth < videoConfig.breakpoint) {
+//      // For mobile view - set up vertical format
+//      mobileVideo.style.display = 'block';
+//      mobileVideo.style.visibility = 'visible';
+//      mobileVideo.style.opacity = '1';
+//      mobileVideo.style.width = '100%';
+//      mobileVideo.style.height = '100%';
+//      mobileVideo.style.objectFit = 'contain';
+      
+//      // Make sure the container fits the vertical video
+//      const mobileContainer = mobileVideo.parentElement;
+//      if (mobileContainer) {
+//        mobileContainer.style.aspectRatio = '9/16';
+//        mobileContainer.style.height = 'auto';
+//        mobileContainer.style.maxWidth = '100%';
+//        mobileContainer.style.margin = '0 auto';
+//      }
+//    }
+//  }
+  
+//  if (videoContainer && videoContent) {
+//    console.log("Video container found, showing modal");
+//    // Remove the scale-0 and opacity-0 classes
+//    videoContainer.classList.remove('tw-scale-0', 'tw-opacity-0');
+//    // Add scale-100 and opacity-100 classes
+//    videoContainer.classList.add('tw-scale-100', 'tw-opacity-100');
     
-    setTimeout(() => {
-      videoContent.classList.add('tw-scale-100');
-      document.body.classList.add('modal-open');
-    }, 300);
-  }
-}
+//    setTimeout(() => {
+//      videoContent.classList.add('tw-scale-100');
+//      document.body.classList.add('modal-open');
+      
+//      // Play the appropriate video based on screen size
+//      if (window.innerWidth < videoConfig.breakpoint && mobileVideo) {
+//        console.log("Playing mobile video");
+//        mobileVideo.style.display = 'block';
+//        mobileVideo.style.visibility = 'visible';
+//        mobileVideo.style.opacity = '1';
+//        mobileVideo.play().catch(e => console.log('Auto-play prevented:', e));
+//      } else if (desktopVideo) {
+//        console.log("Playing desktop video");
+//        desktopVideo.play().catch(e => console.log('Auto-play prevented:', e));
+//      }
+//    }, 300);
+//  } else {
+//    console.log("Video container or content not found!");
+//  }
+// }
 
-window.closeVideo = function closeVideo() {
-  const videoContainer = document.getElementById('video-container-bg');
-  const videoContent = document.getElementById('video-container');
-  const cloudinaryIframe = document.getElementById('cloudinaryPlayer'); // Get the iframe player
+// window.closeVideo = function closeVideo() {
+//  const videoContainer = document.getElementById('video-container-bg');
+//  const videoContent = document.getElementById('video-container');
+//  const desktopVideo = document.getElementById('desktop-video');
+//  const mobileVideo = document.getElementById('mobile-video');
 
-  if (cloudinaryIframe) {
-    // Reload the iframe to stop the video
-    const originalSrc = cloudinaryIframe.src;
-    cloudinaryIframe.src = ''; // Set to empty first to ensure it stops
-    cloudinaryIframe.src = originalSrc; // Then reset to original to be ready for next play
-    // A simpler way that often works for stopping: 
-    // cloudinaryIframe.src = cloudinaryIframe.src;
-  }
+//  // Pause both videos
+//  if (desktopVideo) {
+//    desktopVideo.pause();
+//  }
   
-  if (videoContainer && videoContent) {
-    videoContent.classList.remove('tw-scale-100');
-    setTimeout(() => {
-      videoContainer.classList.remove('tw-scale-100', 'tw-opacity-100');
-      videoContainer.classList.add('tw-scale-0', 'tw-opacity-0');
-      document.body.classList.remove('modal-open');
-    }, 300);
-  }
-}
+//  if (mobileVideo) {
+//    mobileVideo.pause();
+//  }
+  
+//  if (videoContainer && videoContent) {
+//    videoContent.classList.remove('tw-scale-100');
+//    setTimeout(() => {
+//      videoContainer.classList.remove('tw-scale-100', 'tw-opacity-100');
+//      videoContainer.classList.add('tw-scale-0', 'tw-opacity-0');
+//      document.body.classList.remove('modal-open');
+//    }, 300);
+//  }
+// }
 
 // Initialize dropdown functionality and other DOM-dependent scripts
 document.addEventListener('DOMContentLoaded', function() {
@@ -140,6 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  
+  // No initialization needed for video players anymore - direct HTML5 video elements with fixed sources
   
   // Initial call to set starting position
 
@@ -370,7 +439,7 @@ function initFaqAccordions() {
       const content = accordion.nextElementSibling;
 
       // Temporarily remove constraints to measure true height
-      const originalMaxHeight = content.style.maxHeight;
+      // const originalMaxHeight = content.style.maxHeight; // Not used, so commented out
       content.style.maxHeight = 'none';
 
       // Get actual height and restore

@@ -29,10 +29,6 @@
         <link rel="stylesheet" href="/css/custom-page-styles.css"> <!-- Create this file and add your styles -->
         <link rel="stylesheet" href="/css/legal-popups.css"> <!-- Added CSS for legal popups -->
         <link rel="stylesheet" href="/css/animations.css"> <!-- Added CSS for animations -->
-        
-        <!-- TEMPORARILY DISABLED - TESTING FOR CONFLICTS -->
-        <!-- <link rel="stylesheet" href="/css/landing-page.css"> -->
-        <!-- <link rel="stylesheet" href="/css/scroll-reels.css"> -->
 
         <link
             rel="stylesheet"
@@ -41,76 +37,6 @@
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
         />
-
-        <!-- Critical CSS for features section sticky positioning -->
-        <style>
-            /* Ultra-specific selectors to force sticky behavior */
-            #features .sticky-parent {
-                position: relative !important;
-                height: auto !important;
-                /* min-height: 800px !important; */ /* Original problematic style, now handled by inline for base and media query for desktop */
-                overflow: visible !important;
-            }
-            
-            #features .sticky-element {
-                /* position: -webkit-sticky !important; */ /* Base is now static via inline */
-                /* position: sticky !important; */
-                /* top: 120px !important; */
-                z-index: 50 !important; /* Keep z-index for desktop */
-                overflow: visible !important;
-            }
-            
-            /* Remove any conflicting sticky behaviors */
-            #features * {
-                transform: none;
-            }
-            
-            /* Ensure no overflow issues break stickiness */
-            body, html, #features, #features > * {
-                overflow-x: visible !important;
-            }
-            
-            section#features {
-                overflow: visible !important;
-            }
-            
-            /* Only apply sticky behavior on desktop */
-            @media (max-width: 1023px) {
-                /* Sticky parent height is handled by inline style now */
-                /* AGGRESSIVE TEST OVERRIDE FOR MOBILE/TABLET - REMOVING THESE */
-                /* #features .sticky-parent {
-                    min-height: 50px !important; 
-                    background-color: red !important; 
-                } */
-                /* #features .sticky-element {
-                    position: relative !important; 
-                    background-color: blue !important; 
-                } */
-            }
-            
-            /* Restore sticky behavior specifically for desktop */
-            @media (min-width: 1024px) {
-                #features .sticky-element {
-                    position: -webkit-sticky !important;
-                    position: sticky !important;
-                    top: 120px !important;
-                }
-                
-                #features .sticky-parent {
-                    min-height: 400px !important; /* Reduced from 800px */
-                }
-
-                /* Override inline centering styles for desktop */
-                #features .tw-group\/card {
-                    text-align: left !important;
-                }
-
-                #features .tw-flex.tw-items-center[style*="margin-left: auto"] {
-                    margin-left: 0 !important;
-                    margin-right: 0 !important;
-                }
-            }
-        </style>
 
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-"></script>
@@ -185,178 +111,13 @@
                 position: relative !important;
                 box-sizing: border-box !important;
             }
-
-            /* Video container popup styles - ONLY keeping z-index */
-            #video-container-bg {
-                z-index: 100 !important; /* Higher than header's z-index of 50 */
-            }
-            
-            /* Fix for mobile video player display issues */
-            @media (max-width: 767px) {
-                #video-container {
-                    width: 95vw !important;
-                    max-width: 95vw !important;
-                    height: auto !important;
-                    min-height: 520px !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    padding: 12px !important;
-                }
-                
-                /* Video wrapper for 9:16 aspect ratio */
-                #video-container .md\:tw-hidden {
-                    width: 100% !important;
-                    aspect-ratio: 9/16 !important;
-                    height: auto !important;
-                    min-height: 420px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    background: black !important;
-                    margin: 0 auto !important;
-                    overflow: hidden !important;
-                }
-                
-                #mobile-video {
-                    display: block !important;
-                    width: 100% !important;
-                    height: auto !important;
-                    max-height: 100% !important;
-                    object-fit: contain !important;
-                    vertical-align: middle !important;
-                }
-                
-                /* Content wrapper properly sized */
-                #video-container .tw-flex.tw-flex-col {
-                    flex: 1 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    min-height: 420px !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                }
-                
-                .md\:tw-hidden {
-                    display: block !important;
-                }
-                
-                .max-md\:tw-hidden {
-                    display: none !important;
-                }
-            }
-            
-            /* Additional fixes for video container */
-            #video-container-bg.tw-scale-100 {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-            
-            #video-container.tw-scale-100 {
-                transform: scale(1) !important;
-                opacity: 1 !important;
-            }
-            
-            /* Make modal-open prevent scrolling */
-            body.modal-open {
-                overflow: hidden;
-            }
         </style>
+
+        <!-- The <style> block for this section (property-reel, scrolling-wrapper, property-card CSS)
+             has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
 
         <!-- Centralized Pricing Data -->
         <script src="/scripts/pricingData.js"></script>
-
-        <!-- Fixes for video modal display -->
-        <style>
-            /* Video container background - ensure full screen coverage */
-            #video-container-bg {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                background: rgba(0, 0, 0, 0.9) !important;
-                z-index: 9999 !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                overflow: hidden !important;
-                transform: none !important;
-                transition: opacity 0.3s ease !important;
-            }
-            
-            /* Hide by default */
-            #video-container-bg.tw-scale-0 {
-                opacity: 0 !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
-            }
-            
-            /* Show when active */
-            #video-container-bg.tw-scale-100 {
-                opacity: 1 !important;
-                visibility: visible !important;
-                pointer-events: auto !important;
-                transform: none !important;
-            }
-            
-            /* Video container - proper sizing */
-            #video-container {
-                background: white !important;
-                border-radius: 12px !important;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
-                overflow: hidden !important;
-                margin: 0 auto !important;
-                display: flex !important;
-                flex-direction: column !important;
-                opacity: 0;
-                transform: scale(0.8);
-                transition: transform 0.3s ease, opacity 0.3s ease !important;
-            }
-            
-            #video-container.tw-scale-100 {
-                opacity: 1 !important;
-                transform: scale(1) !important;
-            }
-            
-            /* Mobile specific fixes */
-            @media (max-width: 767px) {
-                #video-container {
-                    width: 90vw !important;
-                    max-width: 90vw !important;
-                    min-height: auto !important;
-                    padding: 8px !important;
-                }
-                
-                #video-container-bg {
-                    padding: 0 !important;
-                }
-
-                /* Fix for CTA embedded video player aspect ratio on mobile */
-                #final-cta .tw-relative.tw-bg-black {
-                    padding-top: 0 !important;
-                    aspect-ratio: 9/16 !important;
-                    height: auto !important;
-                    max-width: 100% !important;
-                }
-
-                #final-cta video {
-                   height: 100% !important;
-                   width: 100% !important;
-                   object-fit: contain !important;
-                }
-            }
-            
-            /* Desktop specific fixes */
-            @media (min-width: 768px) {
-                #video-container {
-                    width: 80vw !important;
-                    max-width: 1000px !important;
-                    height: 80vh !important;
-                    max-height: 80vh !important;
-                }
-            }
-        </style>
     </head>
     <body
         class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#fcfcfc]
@@ -428,6 +189,7 @@
             </div>
             <button
                 class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-gray-500 lg:tw-hidden"
+                onclick="toggleHeader()"
                 aria-label="menu"
                 id="collapse-btn"
             ></button>
@@ -439,42 +201,34 @@
             style="min-height: 600px; height: 100vh; max-height: 800px; overflow: hidden; width: 100vw !important; margin-left: 0; margin-right: 0; box-sizing: border-box; left: 0; right: 0; position: relative;"
         >
                 <!-- video container -->
-            <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-0 tw-z-[100] tw-transition-opacity
+            <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-z-20 tw-transition-opacity
                 tw-duration-300 tw-scale-0 tw-opacity-0 tw-p-2
-                tw-w-screen tw-h-screen tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg" 
-                style="position: fixed !important; width: 100vw !important; height: 100vh !important;">
+                tw-w-full tw-h-full tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg">
 
-                <div class="tw-max-w-[80vw] max-md:tw-max-w-[95vw] max-md:tw-w-[95vw] tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl max-md:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md
-                            tw-h-[90vh] max-md:tw-h-auto max-md:tw-min-h-[520px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full"
-                             id="video-container" style="position: relative !important; z-index: 101 !important; margin: 0 auto !important; display: flex; flex-direction: column;">
-                    <div class="tw-w-full tw-flex tw-justify-end">
-                        <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl tw-p-2" title="close" style="z-index: 102;">
+                <div class="tw-max-w-[80vw] max-md:tw-max-w-full max-md:tw-w-full tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl max-md:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md
+                            tw-h-[90vh] max-md:tw-h-auto max-md:tw-min-h-[400px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full
+                            " id="video-container">
+                    <div class="tw-w-full tw-flex">
+                        <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl" title="close">
                             <i class="bi bi-x-circle-fill"></i>
                         </button>
                     </div>
-                    
-                    <!-- Simple HTML5 video players - one for desktop, one for mobile -->
-                    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-w-full tw-h-full" style="flex: 1; padding: 0;">
-                        <!-- DESKTOP VIDEO CONTAINER -->
-                        <div class="max-md:tw-hidden tw-w-full tw-h-full tw-bg-black tw-rounded-md tw-overflow-hidden">
-                            <video id="desktop-video" class="tw-w-full tw-h-full" controls playsinline>
-                                <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_wide_z4tsad.mp4" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
+                    <div class="tw-flex tw-w-full  tw-rounded-xl tw-px-[5%] max-md:tw-px-2 tw-min-h-[300px] tw-max-h-[90%] tw-h-full">
+
+                        <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
+                            <!-- Cloudinary video player -->
+                            <iframe
+                                id="cloudinaryPlayer"
+                                class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full"
+                                src="https://player.cloudinary.com/embed/?cloud_name=dxljgvhwe&public_id=lvpnomocwwmskybl1vho&profile=cld-default&controls=true"
+                                style="border:none;"
+                                allow="fullscreen; encrypted-media; picture-in-picture"
+                                allowfullscreen
+                                frameborder="0"
+                                title="Digital Property Showcase Introduction Video">
+                            </iframe>
                         </div>
 
-                        <!-- MOBILE VIDEO CONTAINER - with explicit dimensions and positioning -->
-                        <div class="md:tw-hidden tw-w-full tw-h-auto tw-flex tw-items-center tw-justify-center tw-bg-black tw-rounded-md tw-overflow-hidden tw-mx-auto"
-                             style="aspect-ratio: 9/16; max-width: 100%; margin: 0 auto;">
-                            <video id="mobile-video" 
-                                  style="width: 100%; height: 100%; object-fit: contain;"
-                                  controls 
-                                  playsinline 
-                                  preload="auto">
-                                <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_mobile_1_cs0pkp.mp4" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -550,8 +304,8 @@
          <!-- === PROBLEM SECTION === -->
         <!-- Illustrating the issue of generic property listings that all look the same -->
         <!-- Property Listings Scrolling Reel -->
-        <section id="property-reel-1" class="property-reel scroll-triggered reveal-up tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
-            <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-top: 120px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+        <section id="property-reel-1" class="property-reel reveal-up tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
+            <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
                 <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
             </div>
@@ -568,13 +322,16 @@
         </section>
 
         <!-- Second reel of overlapping properties (part of the Problem illustration) -->
-        <section id="property-reel-2" class="property-reel scroll-triggered reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -150px; margin-bottom: 50px; z-index: 2; background-color: transparent; width: 100vw; max-width: 100vw; margin-left: 0; margin-right: 0;">
+        <section id="property-reel-2" class="property-reel reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -80px; margin-bottom: 50px; z-index: 2; background-color: transparent;">
             <!-- Scrolling Container (Reverse Direction) -->
-            <div class="scrolling-wrapper" style="transform: none !important; width: 100vw !important; margin-left: 0 !important; margin-right: 0 !important;">
+            <div class="scrolling-wrapper" style="transform: none !important; width: 110% !important;">
                 <div class="scrolling-content-reverse">
                     <!-- Property cards will be injected here by JavaScript -->
                 </div>
             </div>
+
+            <!-- The <style> block for this section (scrolling-content-reverse CSS)
+                 has been REMOVED and its content MUST BE MOVED to your external CSS file. -->
         </section>
 
         <!-- Complete reel masking fix -->
@@ -583,10 +340,6 @@
             .property-reel {
                 overflow: hidden !important;
                 position: relative !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
             }
             
             /* Hide scrollbars but keep functionality */
@@ -601,9 +354,9 @@
             
             /* Make second reel wider with consistent sizing */
             #property-reel-2 .scrolling-wrapper {
-                width: 100vw !important; 
-                margin-left: 0 !important;
-                margin-right: 0 !important;
+                width: 200vw !important;
+                margin-left: -50vw !important;
+                margin-right: -50vw !important;
             }
             
             /* Force property cards in first reel to exact dimensions */
@@ -683,30 +436,48 @@
         <script>
             // Function to apply professional edge masking to property reels
             function applyReelMasks() {
-                // Instead of creating fixed elements that can cause issues,
-                // we'll use the CSS pseudo-elements defined in landing-page.css
-                // This is now a safer implementation that avoids white borders on mobile
+                // Background color for mask gradients (matching page background)
+                const bgColor = getComputedStyle(document.body).backgroundColor || '#fcfcfc';
                 
-                // We still need to adjust the second reel for proper styling
+                // FORGET GRADIENTS - Let's use solid edge covers that are guaranteed to work
+                
+                // Apply solid edge masks to the entire document body to cover ALL reels
+                const leftMask = document.createElement('div');
+                leftMask.className = 'global-edge-mask left-mask';
+                leftMask.style.position = 'fixed';
+                leftMask.style.top = '0';
+                leftMask.style.left = '0';
+                leftMask.style.width = '40px'; // Solid width to cover edge
+                leftMask.style.height = '100vh';
+                leftMask.style.backgroundColor = bgColor;
+                leftMask.style.zIndex = '9999'; // Extremely high z-index
+                leftMask.style.pointerEvents = 'none'; // Don't block clicks
+                document.body.appendChild(leftMask);
+                
+                const rightMask = document.createElement('div');
+                rightMask.className = 'global-edge-mask right-mask';
+                rightMask.style.position = 'fixed';
+                rightMask.style.top = '0';
+                rightMask.style.right = '0';
+                rightMask.style.width = '40px'; // Solid width to cover edge
+                rightMask.style.height = '100vh';
+                rightMask.style.backgroundColor = bgColor;
+                rightMask.style.zIndex = '9999'; // Extremely high z-index
+                rightMask.style.pointerEvents = 'none'; // Don't block clicks
+                document.body.appendChild(rightMask);
+                
+                // Additional adjustments for second reel
                 const secondReel = document.getElementById('property-reel-2');
                 if (secondReel) {
                     // Increase container height to show full card shadows
                     secondReel.style.paddingBottom = '30px'; // Add padding below cards
                     secondReel.style.marginBottom = '70px'; // Increase bottom margin
-                    // Ensure full width
-                    secondReel.style.width = '100vw';
-                    secondReel.style.maxWidth = '100vw';
-                    secondReel.style.marginLeft = '0';
-                    secondReel.style.marginRight = '0';
                     
-                    // Make the second wrapper wider to eliminate edge visibility
+                    // Make the second wrapper much wider to eliminate edge visibility
                     const wrapper = secondReel.querySelector('.scrolling-wrapper');
                     if (wrapper) {
-                        // Use full viewport width
-                        wrapper.style.width = '100vw';
-                        wrapper.style.maxWidth = '100vw';
-                        wrapper.style.marginLeft = '0';
-                        wrapper.style.marginRight = '0';
+                        wrapper.style.width = '200vw';
+                        wrapper.style.marginLeft = '-50vw';
                         wrapper.style.paddingBottom = '30px'; // Add padding for shadows
                     }
                 }
@@ -714,7 +485,8 @@
             
             // Run our masking function when the page loads and after a delay to handle any async rendering
             document.addEventListener('DOMContentLoaded', function() {
-                applyReelMasks(); // Apply immediately but with safer implementation
+                // applyReelMasks(); // Apply immediately
+                // setTimeout(applyReelMasks, 500); // Apply again after a delay to be sure
                 
                 // Run again after any window resize
                 window.addEventListener('resize', applyReelMasks);
@@ -725,7 +497,7 @@
         <!-- Showcase Preview Section - Your elegant property showcase solution -->
         <section class="tw-relative tw-flex tw-w-full tw-py-8 tw-pb-0 tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-visible">
             <!-- Solution copy -->
-            <div class="reveal-up tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+            <div class="reveal-up tw-container tw-mx-auto tw-mb-8 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
                 <p class="reveal-up standard-paragraph tw-text-center">
                     With DPS, each listing becomes a <span class="highlight-text tw-font-bold" data-text="tailored, prestige experience">tailored, prestige experience</span>—proving you're committed to delivering elite marketing that stands apart from the crowd.
                 </p>
@@ -735,7 +507,7 @@
 
                 <!-- Animated Arrow -->
                 <div class="arrow bounce reveal-up" aria-hidden="true">
-                    <i class="bi bi-chevron-down" style="font-size: 8rem; color: var(--primary-color);"></i>
+                    <i class="bi bi-chevron-down" style="font-size: 4rem; color: var(--primary-color);"></i>
                 </div>
             </div>
 
@@ -749,7 +521,7 @@
                 id="dashboard-container"
                 style="width: 100% !important; max-width: 100% !important; overflow: visible !important; padding-bottom: 0 !important; margin-bottom: 0 !important;"
             >
-                <div class="purple-bg-grad no-animation tw-absolute tw-left-1/2 tw--translate-x-1/2 tw-top-[5%] tw-h-[200px] tw-w-[200px]"
+                <div class="purple-bg-grad reveal-up tw-absolute tw-left-1/2 tw--translate-x-1/2 tw-top-[5%] tw-h-[200px] tw-w-[200px]"
                 ></div>
 
                 <div
@@ -760,7 +532,7 @@
                     <!-- The <style> block for #dashboard responsive sizes was here.
                          It MUST be moved to your external CSS file. -->
 
-                    <div class="purple-bg-grad tw-max-w-[80%] no-animation tw-absolute tw-left-1/2 tw--translate-x-1/2 tw-top-[0%] lg:tw-max-w-[1000px] tw-h-full tw-w-full"
+                    <div class="purple-bg-grad tw-max-w-[80%] reveal-up tw-absolute tw-left-1/2 tw--translate-x-1/2 tw-top-[0%] lg:tw-max-w-[1000px] tw-h-full tw-w-full"
                     ></div>
                     <div class="animated-border tw-w-full tw-h-full tw-p-[2px] tw-pb-0" style="padding-bottom: 0 !important; margin-bottom: 0 !important;">
                         <div class="tw-w-full tw-h-full tw-rounded-xl tw-overflow-hidden tw-flex tw-relative">
@@ -796,8 +568,9 @@
                             <!-- END: Loader HTML -->
                             <iframe
                                 id="hero-preview-iframe"
+                                class="loading" /* Start with loading class */
                                 src="/hero-preview"
-                                style="width: 100%; height: 100%; border: none;"
+                                style="/* Critical styles moved to .loaded class or already default */"
                                 title="Property Showcase Preview"
                             ></iframe>
                         </div>
@@ -806,7 +579,7 @@
                 </div>
                 <a href="#" id="live-showcase-banner"
                    target="_blank" rel="noopener noreferrer"
-                   class="lp-btn lp-btn-primary lp-btn-md">
+                   class="lp-btn lp-btn-primary lp-btn-md reveal-up">
                     See it live <i class="bi bi-box-arrow-up-right tw-ml-2"></i>
                 </a>
             </div>
@@ -915,50 +688,36 @@
         </section>
 
         <!-- === PREMIUM MARKETING FEATURES SECTION === -->
-        <section class="tw-relative tw-mt-6 lg:tw-mt-10 tw-flex lg:tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col lg:tw-place-content-center tw-place-items-center lg:tw-p-6" id="features">
-            <div class="reveal-up max-lg:tw-mt-12 lg:tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-start lg:tw-place-content-center
-                    tw-gap-2 tw-p-4 max-lg:tw-max-w-full max-lg:tw-flex-col" style="position: relative; overflow: visible;">
+        <section class="tw-relative tw-mt-10 tw-flex tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center lg:tw-p-6" id="features">
+            <div class="reveal-up tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-center
+                    tw-gap-2 tw-p-4 max-lg:tw-max-w-full max-lg:tw-flex-col">
 
-                <!-- Title and button for mobile/tablet, directly in the flow -->
-                <div class="lg:tw-hidden tw-w-full tw-flex tw-flex-col tw-items-center tw-mb-12">
-                    <h2 class="tw-text-5xl tw-text-center tw-font-medium max-md:tw-text-3xl">
-                        Premium Marketing Features
-                    </h2>
-                    <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
-                        Win More Listings
-                    </a>
-                </div>
-
-                <!-- Spacer for mobile/tablet - with guaranteed height -->
-                <div class="lg:tw-hidden" style="height: 48px; display: block;"></div>
-
-                <!-- Desktop sticky left column (hidden on mobile/tablet) -->
-                <div class="tw-flex tw-max-w-[30%] max-lg:tw-hidden tw-flex-col
-                        tw-place-items-start tw-gap-4 tw-p-2 max-lg:tw-place-content-center max-lg:tw-w-full sticky-parent" 
-                     style="position: relative !important; height: auto !important; min-height: auto !important;">
-                    <div class="tw-flex tw-flex-col tw-items-start tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] sticky-element"
-                         style="position: static !important; top: 120px !important; z-index: 20 !important;">
-                        <h2 class="tw-text-5xl tw-text-left tw-font-medium max-md:tw-text-3xl">
+                <div class="tw-relative tw-flex tw-max-w-[30%] max-lg:tw-max-w-full tw-flex-col
+                        tw-place-items-start tw-gap-4 tw-p-2 max-lg:tw-place-items-center
+                        max-lg:tw-place-content-center max-lg:tw-w-full">
+                    <div class="tw-top-40 tw-flex tw-flex-col lg:tw-sticky tw-place-items-center tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] tw-overflow-hidden">
+                        <h2 class="tw-text-5xl tw-text-center tw-font-medium max-md:tw-text-3xl">
                             Premium Marketing Features
                         </h2>
+
                         <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8">
                             Win More Listings
                         </a>
                     </div>
                 </div>
 
-                <!-- Right column with feature cards -->
-                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full max-lg:tw-w-full lg:tw-max-w-1/2 lg:tw-px-2 max-lg:tw-px-4 max-lg:tw-gap-3 
+                <div class="tw-flex tw-flex-col tw-gap-10 tw-h-full tw-max-w-1/2 max-lg:tw-max-w-full tw-px-[10%]
+                             max-lg:tw-px-4 max-lg:tw-gap-3 max-lg:tw-w-full lg:tw-top-[20%]
                         tw-place-items-center">
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl
                                     dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all
-                                tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                                tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/branded.svg" alt="Branded Property Sites" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Fully Branded Property Sites
                                 </h3>
@@ -970,13 +729,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl
-                                dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl
+                                dark:tw-shadow-[#171717] tw-duration-300 tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/map.svg" alt="Interactive Local Maps" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Interactive Local Maps
                                 </h3>
@@ -988,13 +747,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl tw-duration-300
-                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl tw-duration-300
+                            tw-transition-all dark:tw-shadow-[#171717] tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/instagram.svg" alt="Automated Instagram Carousel" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Automated Instagram Carousel
                                 </h3>
@@ -1006,13 +765,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full dark:tw-shadow-[#171717] tw-gap-8 tw-rounded-xl tw-duration-300
-                        tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full dark:tw-shadow-[#171717] tw-gap-8 tw-rounded-xl tw-duration-300
+                        tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/media.svg" alt="Unlimited Media" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Unlimited Media
                                 </h3>
@@ -1024,13 +783,13 @@
                     </div>
 
                     <div class="reveal-up tw-w-[450px] max-md:tw-w-full">
-                        <div class="tw-flex max-lg:tw-flex-col max-lg:tw-items-center tw-w-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] tw-duration-300
-                            tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800" style="text-align: center;">
-                            <div class="tw-flex tw-items-center max-lg:tw-mx-auto max-lg:tw-mb-4" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px; margin-left: auto; margin-right: auto;">
+                        <div class="tw-flex tw-w-full tw-gap-8 tw-rounded-xl dark:tw-shadow-[#171717] tw-duration-300
+                            tw-transition-all tw-p-8 tw-group/card tw-bg-gray-100 dark:tw-bg-gray-800">
+                            <div class="tw-flex tw-items-center tw-justify-center" style="min-width: 100px; width: 100px; min-height: 80px; height: 80px;">
                                 <img src="/assets/images/feature-icons/openhomes.svg" alt="Advanced SEO & Open Home Integration" style="width: 100px; height: 80px;" class="!tw-w-[100px] !tw-h-[80px]">
                             </div>
 
-                            <div class="tw-flex tw-flex-col max-lg:tw-items-center max-lg:tw-text-center tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">
                                     Advanced SEO & Open Home Integration
                                 </h3>
@@ -1477,17 +1236,16 @@
                 <!-- Embedded Video Player -->
                 <div class="reveal-up tw-w-full tw-max-w-[800px] tw-mt-8 tw-rounded-xl tw-overflow-hidden tw-shadow-lg">
                     <div class="tw-relative tw-bg-black" style="padding-top: 56.25%;">
-                        <!-- Desktop Video (hidden on mobile) -->
-                        <video id="cta-desktop-video" class="max-md:tw-hidden tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full" controls playsinline>
-                            <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_wide_z4tsad.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        
-                        <!-- Mobile Video (hidden on desktop) -->
-                        <video id="cta-mobile-video" class="md:tw-hidden tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full" controls playsinline>
-                            <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_mobile_1_cs0pkp.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <iframe
+                            id="cta-video-player"
+                            class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full"
+                            src="https://player.cloudinary.com/embed/?cloud_name=dxljgvhwe&public_id=lvpnomocwwmskybl1vho&profile=cld-default&controls=true"
+                            style="border:none;"
+                            allow="fullscreen; encrypted-media; picture-in-picture"
+                            allowfullscreen
+                            frameborder="0"
+                            title="Digital Property Showcase Introduction Video">
+                        </iframe>
                     </div>
                 </div>
 
@@ -1776,56 +1534,10 @@
 
     <!-- Custom Scripts -->
     <script src="/scripts/reel-components.js"></script> <!-- For property card reels -->
-    <script src="/scripts/scroll-reels.js"></script> <!-- For scroll-triggered reel animations -->
     <script src="/scripts/components.js"></script>
-    <script src="/js/index.js"></script> <!-- Added this line -->
     <script src="/scripts/newsletter.js"></script> <!-- Newsletter functionality -->
     <script src="/index.js"></script>
 
-    <!-- GSAP Initialization Check -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // We're simplifying to just use CSS for the animation
-            console.log("Using simple fade-in only animation");
-        });
-    </script>
-
-    <!-- Dashboard Preview Animation Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Simple fade animation initialized");
-            
-            // Small delay to ensure everything is properly loaded
-            setTimeout(function() {
-                const dashboard = document.getElementById('dashboard');
-                const showcaseBanner = document.getElementById('live-showcase-banner');
-                
-                if (dashboard) {
-                    // ONLY fade in - no transforms of any kind to avoid tilting
-                    dashboard.style.opacity = '0';
-                    
-                    // Simple fade-in transition - no GSAP, no transforms
-                    dashboard.style.transition = 'opacity 1s ease-out';
-                    dashboard.style.opacity = '1';
-                    
-                    console.log("Fade-in applied to dashboard");
-                }
-                
-                if (showcaseBanner) {
-                    // Also fade in the banner
-                    showcaseBanner.style.opacity = '0';
-                    
-                    // Delayed fade-in for banner
-                    setTimeout(function() {
-                        showcaseBanner.style.transition = 'opacity 0.8s ease-out';
-                        showcaseBanner.style.opacity = '1';
-                    }, 600);
-                }
-            }, 300);
-        });
-    </script>
-    
-    <!-- Function to populate pricing section from the data object -->
     <script>
         // Function to populate pricing section from the data object
         function populatePricingSection() {
@@ -1841,64 +1553,6 @@
 
         // Run this function when the document is ready
         document.addEventListener('DOMContentLoaded', populatePricingSection);
-    </script>
-    
-    <!-- Failsafe for mobile white border issue -->
-    <script>
-        // This is a failsafe script that specifically addresses the white border issue on mobile
-        // It runs periodically during scrolling to ensure the body is properly constrained
-        (function() {
-            // Only run on mobile devices
-            function isMobile() {
-                return window.innerWidth < 768;
-            }
-            
-            // Function to fix body overflow and prevent white borders
-            function fixMobileWhiteBorders() {
-                if (!isMobile()) return;
-                
-                // Ensure body is properly constrained
-                document.body.style.width = '100%';
-                document.body.style.maxWidth = '100%';
-                document.body.style.overflowX = 'hidden';
-                document.body.style.position = 'relative';
-                
-                // Force hardware acceleration to prevent rendering issues
-                document.body.style.transform = 'translate3d(0,0,0)';
-                document.body.style.webkitTransform = 'translate3d(0,0,0)';
-                
-                // Also check if there are any horizontally overflowing elements
-                const allElements = document.querySelectorAll('*');
-                for (let el of allElements) {
-                    if (el.offsetWidth > window.innerWidth) {
-                        el.style.maxWidth = '100vw';
-                        el.style.overflowX = 'hidden';
-                    }
-                }
-            }
-            
-            // Run on load
-            document.addEventListener('DOMContentLoaded', fixMobileWhiteBorders);
-            
-            // Run on scroll with throttling
-            let scrollTimer;
-            window.addEventListener('scroll', function() {
-                if (isMobile()) {
-                    if (!scrollTimer) {
-                        scrollTimer = setTimeout(function() {
-                            fixMobileWhiteBorders();
-                            scrollTimer = null;
-                        }, 100); // Check every 100ms during scroll
-                    }
-                }
-            });
-            
-            // Run on resize
-            window.addEventListener('resize', fixMobileWhiteBorders);
-            
-            // Run after a delay to catch any dynamic content loading
-            setTimeout(fixMobileWhiteBorders, 1000);
-        })();
     </script>
 
     <!-- Terms of Service and Privacy Policy Popups -->
@@ -2093,6 +1747,32 @@
         </div>
     </div>
 
+    <!-- Inline script for setting dashboard size -->
+    <script>
+        // Function to set dashboard size
+        function setDashboardSize() {
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard) {
+                const isDesktop = window.innerWidth >= 1024;
+                dashboard.style.width = isDesktop ? '80vw' : '90vw';
+                dashboard.style.height = '90vh';
+                dashboard.style.minHeight = '500px';
+                dashboard.style.maxWidth = 'none';
+                dashboard.style.maxHeight = 'none';
+                // console.log('Dashboard size set to:', dashboard.style.width, dashboard.style.height);
+            }
+        }
+
+        // Run immediately
+        setDashboardSize();
+        // Run after page load
+        window.addEventListener('load', setDashboardSize);
+        // Run on resize
+        window.addEventListener('resize', setDashboardSize);
+        // Try again after a short delay to override any other scripts
+        setTimeout(setDashboardSize, 500);
+    </script>
+
     <!-- Inline script for setting viewport height custom property -->
     <script>
         // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
@@ -2111,29 +1791,139 @@
         window.addEventListener('orientationchange', setViewportHeight);
     </script>
 
-    <!-- Inline script for setting dashboard size -->
+    <!-- Add specific dashboard tilt animation with GSAP -->
     <script>
-        // Function to set dashboard size
-        function setDashboardSize() {
-            const dashboard = document.getElementById('dashboard');
-            if (dashboard) {
-                const isDesktop = window.innerWidth >= 1024;
-                dashboard.style.width = isDesktop ? '80vw' : '90vw';
-                dashboard.style.height = '90vh';
-                dashboard.style.minHeight = '500px';
-                dashboard.style.maxWidth = 'none';
-                dashboard.style.maxHeight = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure GSAP and ScrollTrigger are loaded
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                console.log("Initializing dashboard tilt-up animation with GSAP");
+                
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // Get the dashboard container element
+                const dashboardContainer = document.getElementById('dashboard-container');
+                
+                if (dashboardContainer) {
+                    // Apply perspective and preserve-3d to allow proper 3D transforms
+                    dashboardContainer.style.perspective = "1000px";
+                    dashboardContainer.style.transformStyle = "preserve-3d";
+                    
+                    // Remove any default opacity and transform from CSS that might interfere
+                    dashboardContainer.style.opacity = '1';
+                    dashboardContainer.classList.remove('reveal-up');
+                    
+                    // Animation timeline for more control
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: dashboardContainer,
+                            start: "top 75%", // Start animation when the top of the element is 75% from the top of viewport
+                            end: "top 25%",   // End when the top is 25% from the top of viewport
+                            scrub: 0.8,       // Smooth scrubbing with 0.8s of smoothing
+                            toggleActions: "play none none reverse", // Play forward when entering, reverse when leaving
+                            // markers: true, // Uncomment for debugging
+                            id: "dashboard-tilt" // Name for the ScrollTrigger instance
+                        }
+                    });
+                    
+                    // Setup the animation sequence
+                    tl.fromTo(dashboardContainer, 
+                        {
+                            rotateX: 30,            // Start tilted back
+                            y: 100,                 // Start lower
+                            opacity: 0,             // Start invisible
+                            transformOrigin: "center bottom", // Tilt from the bottom
+                            immediateRender: true   // Ensure the starting state is applied immediately
+                        }, 
+                        {
+                            rotateX: 0,             // End flat
+                            y: 0,                   // End at natural position
+                            opacity: 1,             // End fully visible
+                            duration: 1,            // Animation duration relative to scroll distance
+                            ease: "power2.out"      // Easing function
+                        }
+                    );
+                    
+                    // Add a subtle bounce effect at the end of the animation
+                    tl.to(dashboardContainer, {
+                        y: -10,                     // Slight bounce up
+                        duration: 0.2,
+                        ease: "power1.out"
+                    }).to(dashboardContainer, {
+                        y: 0,                       // Return to natural position
+                        duration: 0.3,
+                        ease: "elastic.out(1, 0.3)" // Elastic bounce
+                    });
+                    
+                    console.log("Enhanced dashboard tilt-up animation configured");
+                } else {
+                    console.warn("Dashboard container element not found");
+                }
+            } else {
+                console.error("GSAP or ScrollTrigger not loaded! Cannot initialize dashboard animation");
             }
-        }
+        });
+    </script>
 
-        // Run immediately
-        setDashboardSize();
-        // Run after page load
-        window.addEventListener('load', setDashboardSize);
-        // Run on resize
-        window.addEventListener('resize', setDashboardSize);
-        // Try again after a short delay to override any other scripts
-        setTimeout(setDashboardSize, 500);
+    <!-- Add CSS support for 3D transforms -->
+    <style>
+        /* Ensure proper 3D perspective for the dashboard container */
+        #dashboard-container {
+            position: relative;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            z-index: 10;
+            overflow: visible !important;
+        }
+        
+        /* Make sure child elements display properly in 3D space */
+        #dashboard {
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            will-change: transform;
+            z-index: 11;
+            overflow: hidden;
+        }
+    </style>
+
+    <!-- Direct animation script for other reveal-up elements -->
+    <script>
+        // Immediate animation setup
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Direct animation script loaded");
+            
+            // Function to check if element is in viewport
+            function isElementInViewport(el) {
+                var rect = el.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 && 
+                    rect.bottom >= 0
+                );
+            }
+            
+            // Function to handle animation
+            function handleAnimation() {
+                // Explicitly exclude the dashboard container - it has its own GSAP animation
+                var elements = document.querySelectorAll('.reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe)');
+                
+                elements.forEach(function(element) {
+                    if (isElementInViewport(element)) {
+                        element.style.opacity = "1";
+                        element.style.transform = "translateY(0)";
+                        element.classList.add('is-revealed');
+                    }
+                });
+            }
+            
+            // Initial check
+            handleAnimation();
+            
+            // Listen for scroll events
+            window.addEventListener('scroll', handleAnimation);
+            
+            // Also check on resize
+            window.addEventListener('resize', handleAnimation);
+        });
     </script>
 
     <!-- Inline script for fixing hero section height and background image positioning -->
@@ -2453,7 +2243,7 @@
             setTimeout(updateHeroBackground, 500);
         });
     </script>
-
+    
     <!-- Legal Popups JavaScript -->
     <script>
         // Function to open legal popup
@@ -2540,8 +2330,8 @@
             
             // Wait for DOM to be fully loaded
             document.addEventListener('DOMContentLoaded', function() {
-                // Get all reveal-up elements across the entire page, EXCLUDING ALL dashboard elements and their children
-                const allRevealElements = document.querySelectorAll(".reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe):not([id^='dashboard']):not(#dashboard-container *)");
+                // Get all reveal-up elements across the entire page, EXCLUDING specific dashboard elements
+                const allRevealElements = document.querySelectorAll(".reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe)");
                 console.log(`Found ${allRevealElements.length} elements to animate across the page (excluding dashboard)`);
                 
                 // Apply the rotation to property-reel-2 first to avoid animation conflicts
@@ -2553,29 +2343,9 @@
                     propertyReel2.style.width = '100vw';
                     propertyReel2.style.marginLeft = '0vw';
                 }
-
-                // Ensure dashboard elements don't get animations
-                const dashboardContainer = document.getElementById('dashboard-container');
-                if (dashboardContainer) {
-                    // Add no-animation class to ensure no animations are applied
-                    dashboardContainer.classList.add('no-animation');
-                    
-                    // Add to all children
-                    const dashboardElements = dashboardContainer.querySelectorAll('*');
-                    dashboardElements.forEach(el => {
-                        el.classList.add('no-animation');
-                        el.classList.remove('reveal-up');
-                    });
-                }
                 
                 // Set initial state directly with inline styles
                 allRevealElements.forEach(element => {
-                    // Skip animation for any elements that might be in or related to the dashboard
-                    if (element.closest('#dashboard-container') || element.id === 'dashboard' || 
-                        element.id === 'dashboard-container' || element.id === 'hero-preview-iframe') {
-                        return;
-                    }
-                    
                     // Skip setting transform on elements that have special handling (like property-reel-2)
                     if (element.id === 'property-reel-2') {
                         element.style.opacity = "0";
@@ -2602,22 +2372,11 @@
                     let lastSectionId = null;
                     
                     allRevealElements.forEach((element, index) => {
-                        // Skip animation for any elements that might be in or related to the dashboard
-                        if (element.closest('#dashboard-container') || element.id === 'dashboard' || 
-                            element.id === 'dashboard-container' || element.id === 'hero-preview-iframe') {
-                            return;
-                        }
-                        
                         // Only animate if it's in the viewport and hasn't been animated yet
                         if (isInViewport(element) && element.style.opacity !== "1") {
                             // Find the closest parent section for this element
                             let currentSection = element.closest('section');
                             let currentSectionId = currentSection ? currentSection.id : null;
-                            
-                            // Skip animation if this is in the solution section with the dashboard
-                            if (currentSection && currentSection.querySelector('#dashboard-container')) {
-                                return;
-                            }
                             
                             // Reset delay when entering a new section for more coordinated animations
                             if (currentSectionId && currentSectionId !== lastSectionId) {
@@ -2656,360 +2415,6 @@
                 window.addEventListener('resize', revealElements);
             });
         })();
-    </script>
-
-    <!-- After the dashboard animation script, add iframe loading handler -->
-    <script>
-        // Handle iframe loading transition
-        document.addEventListener('DOMContentLoaded', function() {
-            const iframe = document.getElementById('hero-preview-iframe');
-            const loader = document.getElementById('iframe-loader');
-            
-            if (iframe && loader) {
-                // Add load event listener to the iframe
-                iframe.addEventListener('load', function() {
-                    // Add a short delay to ensure content is rendered
-                    setTimeout(function() {
-                        // Hide loader
-                        loader.style.opacity = '0';
-                        loader.style.transition = 'opacity 0.5s ease-out';
-                        
-                        // Show iframe with smooth transition
-                        iframe.classList.add('loaded');
-                        
-                        // After transition completes, remove loader from layout
-                        setTimeout(function() {
-                            loader.style.display = 'none';
-                        }, 500);
-                    }, 300);
-                });
-            }
-        });
-    </script>
-
-    <!-- Simple iframe loading handler
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Simple iframe loading script initialized");
-            
-            const iframe = document.getElementById('hero-preview-iframe');
-            const loader = document.getElementById('iframe-loader');
-            
-            if (iframe && loader) {
-                console.log("Adding load event listener to iframe");
-                
-                // Set up transition for loader
-                loader.style.transition = 'opacity 0.5s ease-out';
-                
-                // Add load event listener to the iframe
-                iframe.addEventListener('load', function() {
-                    console.log("Iframe loaded, hiding loader");
-                    
-                    // Simple CSS transition to hide loader
-                    loader.style.opacity = '0';
-                    setTimeout(function() {
-                        loader.style.display = 'none';
-                        console.log("Loader hidden");
-                    }, 500);
-                    
-                    // Show iframe with CSS transition
-                    iframe.classList.add('loaded');
-                    console.log("Iframe visible");
-                });
-                
-                // Add a timeout to ensure the loader is hidden even if iframe load event fails
-                setTimeout(function() {
-                    if (loader.style.display !== 'none') {
-                        console.log("Iframe load timeout - hiding loader anyway");
-                        loader.style.opacity = '0';
-                        setTimeout(function() {
-                            loader.style.display = 'none';
-                        }, 500);
-                        iframe.classList.add('loaded');
-                    }
-                }, 5000); // 5 second safety timeout
-            }
-        });
-    </script>
-
-    <!-- Simple styles for the showcase preview -->
-    <style>
-        /* Basic styling for the showcase components */
-        #dashboard-container {
-            position: relative;
-            z-index: 10;
-            overflow: visible !important;
-        }
-        
-        /* Remove all conditional animation classes */
-        
-        #dashboard {
-            z-index: 11;
-            overflow: hidden;
-            /* No transform properties at all */
-        }
-
-        /* Remove all keyframe animations */
-        
-        /* Only apply no-animations class when JS adds it explicitly */
-        .no-animation {
-            animation: none !important;
-            transition: none !important;
-            transform: none !important;
-            opacity: 1 !important;
-        }
-        
-        /* Start with iframe invisible until loaded */
-        #hero-preview-iframe {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        
-        /* When iframe is loaded */
-        #hero-preview-iframe.loaded {
-            opacity: 1;
-        }
-        
-        /* Loader styling */
-        #iframe-loader {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 12;
-        }
-    </style>
-
-    <!-- Direct animation script for other reveal-up elements -->
-    <script>
-        // Immediate animation setup
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Direct animation script loaded");
-            
-            // Function to check if element is in viewport
-            function isElementInViewport(el) {
-                var rect = el.getBoundingClientRect();
-                return (
-                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 && 
-                    rect.bottom >= 0
-                );
-            }
-            
-            // Function to handle animation with mobile safeguards
-            function handleAnimation() {
-                // Exclude the dashboard container elements and ALL their children
-                var elements = document.querySelectorAll('.reveal-up:not(#dashboard-container):not(#dashboard):not(#hero-preview-iframe):not([id^="dashboard"]):not(#dashboard-container *)');
-                
-                // We no longer force no-animation on dashboard - GSAP handles this now
-                
-                // Check if we're on mobile
-                const isMobile = window.innerWidth < 768;
-                
-                elements.forEach(function(element) {
-                    // Skip any dashboard related elements
-                    if (element.closest('#dashboard-container') || 
-                        element.id === 'dashboard' || 
-                        element.id === 'dashboard-container' || 
-                        element.id === 'hero-preview-iframe') {
-                        return;
-                    }
-                    
-                    if (isElementInViewport(element)) {
-                        // Make sure the element has opacity 1
-                        element.style.opacity = "1";
-                        
-                        // Apply transform safely
-                        if (isMobile) {
-                            // On mobile, use a simpler transform to avoid potential layout issues
-                            element.style.transform = "translate3d(0, 0, 0)";
-                        } else {
-                            // On desktop, use the standard animation
-                            element.style.transform = "translateY(0)";
-                        }
-                        
-                        // Mark as revealed
-                        element.classList.add('is-revealed');
-                    }
-                });
-                
-                // Extra check for body width - critical to prevent white borders
-                if (isMobile) {
-                    document.body.style.width = '100%';
-                    document.body.style.maxWidth = '100%';
-                    document.body.style.overflowX = 'hidden';
-                }
-            }
-            
-            // Initial check
-            handleAnimation();
-            
-            // Listen for scroll events - using throttling to improve performance
-            let scrollTimeout;
-            window.addEventListener('scroll', function() {
-                if (!scrollTimeout) {
-                    scrollTimeout = setTimeout(function() {
-                        handleAnimation();
-                        scrollTimeout = null;
-                    }, 20); // Throttle to every 20ms
-                }
-            });
-            
-            // Also check on resize with throttling
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                if (!resizeTimeout) {
-                    resizeTimeout = setTimeout(function() {
-                        handleAnimation();
-                        resizeTimeout = null;
-                    }, 50); // Throttle to every 50ms for resize
-                }
-            });
-        });
-    </script>
-
-    <!-- Inline script for fixing hero section height and background image positioning -->
-    <script>
-        // Simple function to handle iframe loading
-        document.addEventListener('DOMContentLoaded', function() {
-            const iframe = document.getElementById('hero-preview-iframe');
-            const loader = document.getElementById('iframe-loader');
-            
-            if (iframe && loader) {
-                iframe.addEventListener('load', function() {
-                    // Hide the loader when iframe is loaded
-                    loader.style.display = 'none';
-                });
-            }
-        });
-    </script>
-
-    <!-- Sticky Features Section Fix -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elements
-            const featuresSection = document.getElementById('features');
-            if (!featuresSection) return;
-            
-            // Find the container that should have the sticky element
-            const stickyContainer = featuresSection.querySelector('.tw-max-w-\\[30\\%\\]');
-            if (!stickyContainer) return;
-            
-            // Find the element that should be sticky
-            const stickyElement = stickyContainer.querySelector('.tw-flex.tw-flex-col.tw-place-items-center');
-            if (!stickyElement) return;
-            
-            console.log("Applying sticky behavior to features section");
-            
-            // Set explicit styles
-            stickyContainer.style.cssText = "position: relative !important; height: auto !important; min-height: 800px !important;";
-            stickyElement.style.cssText = "position: -webkit-sticky !important; position: sticky !important; top: 120px !important; z-index: 20 !important;";
-            
-            // Implement custom sticky behavior with scroll listener as fallback
-            const applySticky = function() {
-                const sectionRect = featuresSection.getBoundingClientRect();
-                const containerRect = stickyContainer.getBoundingClientRect();
-                
-                // Only apply sticky behavior when section is visible
-                if (sectionRect.top <= 0 && sectionRect.bottom >= window.innerHeight) {
-                    const maxTop = containerRect.height - stickyElement.offsetHeight;
-                    const scrollPosition = Math.min(Math.max(0, -sectionRect.top), maxTop);
-                    
-                    if (scrollPosition <= maxTop) {
-                        stickyElement.style.transform = `translateY(${scrollPosition}px)`;
-                    }
-                }
-            };
-            
-            // Add scroll event listener as a fallback
-            window.addEventListener('scroll', function() {
-                // Check if the native sticky positioning is working
-                const stickyWorking = window.getComputedStyle(stickyElement).position === 'sticky';
-                
-                if (!stickyWorking) {
-                    // If native sticky isn't working, use our custom implementation
-                    applySticky();
-                }
-            });
-            
-            // Initial call
-            setTimeout(applySticky, 100);
-        });
-    </script>
-
-    <!-- Ensure sticky features section works -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Checking sticky behavior");
-            
-            // Wait a moment for all CSS to load and apply
-            setTimeout(function() {
-                // Find our elements
-                const stickyParent = document.querySelector('#features .sticky-parent');
-                const stickyElement = document.querySelector('#features .sticky-element');
-                
-                if (!stickyParent || !stickyElement) {
-                    console.error("Could not find sticky elements");
-                    return;
-                }
-                
-                // Check if the computed style shows sticky is being applied
-                const computedStyle = window.getComputedStyle(stickyElement);
-                console.log("Sticky element position:", computedStyle.position);
-                
-                if (computedStyle.position !== 'sticky' && computedStyle.position !== '-webkit-sticky') {
-                    console.warn("Sticky position is not applied correctly, applying manual fix");
-                    
-                    // Apply direct style overrides with !important
-                    stickyParent.style.cssText = `
-                        position: relative !important;
-                        height: auto !important;
-                        min-height: 800px !important;
-                        overflow: visible !important;
-                    `;
-                    
-                    stickyElement.style.cssText = `
-                        position: -webkit-sticky !important;
-                        position: sticky !important;
-                        top: 120px !important;
-                        z-index: 50 !important;
-                        overflow: visible !important;
-                    `;
-                    
-                    // Re-check if that worked
-                    setTimeout(function() {
-                        const newComputedStyle = window.getComputedStyle(stickyElement);
-                        console.log("Sticky element position after fix:", newComputedStyle.position);
-                        
-                        // If still not working, try a different approach by disabling potentially conflicting CSS
-                        if (newComputedStyle.position !== 'sticky' && newComputedStyle.position !== '-webkit-sticky') {
-                            console.warn("Still not sticky, attempting to disable conflicting CSS");
-                            
-                            // Find and disable potentially conflicting stylesheets
-                            const stylesheets = document.styleSheets;
-                            for (let i = 0; i < stylesheets.length; i++) {
-                                try {
-                                    const sheet = stylesheets[i];
-                                    const href = sheet.href || '';
-                                    
-                                    // Check if this is one of the new CSS files
-                                    if (href.includes('landing-page.css') || href.includes('scroll-reels.css')) {
-                                        console.log("Disabling potentially conflicting stylesheet:", href);
-                                        sheet.disabled = true;
-                                    }
-                                } catch (e) {
-                                    console.error("Error checking stylesheet:", e);
-                                }
-                            }
-                        }
-                    }, 100);
-                }
-            }, 500);
-        });
     </script>
 </body>
 

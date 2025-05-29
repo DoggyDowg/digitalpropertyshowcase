@@ -1,0 +1,100 @@
+/* Animation styles */
+.reveal-up {
+    visibility: visible; /* Ensure the element is visible for the animation */
+    will-change: opacity, transform; /* Hint to browser for optimization */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Fallback transition */
+    backface-visibility: hidden; /* Prevents flickering in some browsers */
+    -webkit-font-smoothing: antialiased; /* Better text rendering during animations */
+    -moz-osx-font-smoothing: grayscale;
+    opacity: 0; /* Start invisible */
+    transform: translateY(40px); /* Start below final position */
+}
+
+/* Class-based animation for fallback */
+.reveal-up.is-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* For browsers that don't support JS or have it disabled */
+@media (prefers-reduced-motion: reduce) {
+    .reveal-up {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* Advanced transition delays for staggered animations */
+.reveal-up[data-delay="100"] {
+    transition-delay: 0.1s;
+}
+.reveal-up[data-delay="200"] {
+    transition-delay: 0.2s;
+}
+.reveal-up[data-delay="300"] {
+    transition-delay: 0.3s;
+}
+.reveal-up[data-delay="400"] {
+    transition-delay: 0.4s;
+}
+.reveal-up[data-delay="500"] {
+    transition-delay: 0.5s;
+}
+
+/* Different animation speeds */
+.reveal-up.reveal-fast {
+    transition-duration: 0.5s;
+}
+.reveal-up.reveal-slow {
+    transition-duration: 1.2s;
+}
+
+/* Make sure all sectional animations appear properly */
+section .reveal-up {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+section .reveal-up.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Special handling for property reels */
+#property-reel-2 {
+    transition: opacity 0.8s ease-out !important;
+    transform-origin: center center !important;
+    width: 100vw !important;
+    margin-left: 0vw !important;
+}
+
+#property-reel-2.reveal-up.is-revealed {
+    opacity: 1 !important;
+    /* Transform is handled by JS to preserve rotation */
+}
+
+/* Bounce animation for arrow */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+.arrow.bounce {
+    animation: bounce 2s infinite;
+    opacity: 1 !important; /* Ensure the arrow is always visible */
+}
+
+/* Make sure arrow bounce animation isn't affected by reveal animation */
+.arrow.bounce.reveal-up {
+    opacity: 1;
+    transform: translateY(0);
+    animation: bounce 2s infinite;
+} 

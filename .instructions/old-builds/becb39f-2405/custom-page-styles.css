@@ -676,8 +676,6 @@ p { /* This is a very general selector, be careful it doesn't override too much.
 #property-reel-2 {
     width: 100%; /* Container stays at 100% width */
     overflow: hidden; /* Prevent horizontal scrolling */
-    position: relative;
-    top: -70px; /* Adjust this value to control overlap */
 }
 
 #property-reel-2 .scrolling-wrapper {
@@ -1283,10 +1281,4 @@ p { /* This is a very general selector, be careful it doesn't override too much.
 /* Override any text-shadow on the highlight-text in the hero section */
 #hero-text-content-wrapper .highlight-text {
     text-shadow: none !important; /* Force remove any text shadow */
-}
-
-@media (min-width: 1024px) {
-    #features > .reveal-up { /* Targets the flex container of the columns */
-        justify-content: center !important;
-    }
 }

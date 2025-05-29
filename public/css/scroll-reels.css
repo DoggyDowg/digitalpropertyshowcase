@@ -1,0 +1,120 @@
+/**
+ * Styles for scroll-triggered horizontal reels
+ */
+
+/* Ensure smooth scrolling for the page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Container styles for scrollable reels */
+.property-reel.scroll-triggered {
+    position: relative !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    /* Increase space around the reel for better trigger timing */
+    padding-top: 20px !important;
+    padding-bottom: 40px !important;
+    /* Ensure trigger points are clearly defined */
+    min-height: 250px !important;
+}
+
+/* Wrapper styles for scroll-triggered reels */
+.scroll-triggered .scrolling-wrapper {
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    /* Ensure the wrapper doesn't scroll on its own */
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    will-change: transform !important; /* Optimize for animations */
+}
+
+/* Content styles for scroll-triggered reels */
+.scroll-triggered .scrolling-content,
+.scroll-triggered .scrolling-content-reverse {
+    display: flex !important;
+    position: relative !important;
+    /* Remove any existing transform that might interfere with GSAP */
+    /* transform: none !important;  -- REMOVED */
+    /* Prevent touch scrolling on mobile (controlled by GSAP) */
+    touch-action: none !important;
+    will-change: transform !important; /* Optimize for animations */
+}
+
+/* Second reel specific styles */
+#property-reel-2.scroll-triggered {
+    margin-top: -60px !important; /* Keep the overlapping appearance */
+    z-index: 2 !important; /* Ensure it stays above other elements */
+    /* Apply rotation for the tilted effect */
+    transform: rotate(-4deg) !important;
+    transform-origin: center center !important;
+}
+
+/* Edge masks - enhanced for scroll-triggered reels */
+.scroll-triggered.property-reel::before,
+.scroll-triggered.property-reel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 60px; /* Slightly wider for better masking */
+    z-index: 100;
+    pointer-events: none;
+}
+
+.scroll-triggered.property-reel::before {
+    left: 0;
+    background: linear-gradient(to right, #fcfcfc 20%, rgba(252, 252, 252, 0));
+}
+
+.scroll-triggered.property-reel::after {
+    right: 0;
+    background: linear-gradient(to left, #fcfcfc 20%, rgba(252, 252, 252, 0));
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+    .scroll-triggered.property-reel {
+        /* Smaller padding on mobile */
+        padding-top: 10px !important;
+        padding-bottom: 20px !important;
+    }
+    
+    .scroll-triggered.property-reel::before,
+    .scroll-triggered.property-reel::after {
+        width: 30px; /* Narrower masks on mobile */
+    }
+    
+    /* Ensure proper display on mobile */
+    .scroll-triggered .scrolling-content,
+    .scroll-triggered .scrolling-content-reverse {
+        /* Help prevent GSAP transform issues on mobile */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+}
+
+/* Debug helpers - uncomment to see trigger points during development */
+/*
+.gsap-marker-start, .gsap-marker-end, .gsap-marker-scroller-start, .gsap-marker-scroller-end {
+    padding: 2px;
+    font-weight: bold;
+    color: white;
+    position: fixed;
+    font-size: 10px;
+    background-color: transparent;
+    z-index: 999;
+    margin-left: -5px;
+}
+.gsap-marker-start {
+    background-color: red;
+}
+.gsap-marker-end {
+    background-color: green;
+}
+*/ 
