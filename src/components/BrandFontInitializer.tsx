@@ -31,7 +31,7 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
         console.log('BrandFontInitializer: Attempting to fetch fonts...');
         
         // Helper function to fetch with fallback
-        async function fetchWithFallback(url, description) {
+        async function fetchWithFallback(url: string, description: string) {
           try {
             // First attempt - direct fetch with CORS settings
             console.log(`BrandFontInitializer: Fetching ${description} from:`, url);
@@ -153,9 +153,9 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
       } catch (error) {
         console.error('Error loading fonts:', error)
         console.error('BrandFontInitializer: Font loading failed with detailed error', { 
-          errorName: error.name,
-          errorMessage: error.message,
-          errorStack: error.stack,
+          errorName: error instanceof Error ? error.name : 'Unknown error',
+          errorMessage: error instanceof Error ? error.message : String(error),
+          errorStack: error instanceof Error ? error.stack : 'No stack trace',
           bodyFontUrl: bodyFont?.url,
           headingFontUrl: headingFont?.url
         });
