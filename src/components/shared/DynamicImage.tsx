@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getImageWithFallback } from '@/utils/imageUtils'
 
 interface DynamicImageProps {
@@ -24,18 +24,30 @@ export function DynamicImage({
   priority = false,
 }: DynamicImageProps) {
   const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   // Check if the URL is a Supabase URL
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in')
   const srcSet = isSupabaseUrl ? [src] : getImageWithFallback(src)
   const [currentSrcIndex, setCurrentSrcIndex] = useState(0)
 
+  useEffect(() => {
+    console.log(`DynamicImage: Loading image from ${srcSet[currentSrcIndex]}`)
+  }, [srcSet, currentSrcIndex])
+
   const handleError = () => {
+    console.error(`DynamicImage: Error loading image from ${srcSet[currentSrcIndex]}`)
     if (currentSrcIndex < srcSet.length - 1) {
       setCurrentSrcIndex(prev => prev + 1)
     } else {
+      console.error(`DynamicImage: All fallbacks failed for ${alt}`)
       setError(true)
     }
+  }
+
+  const handleLoad = () => {
+    console.log(`DynamicImage: Successfully loaded image from ${srcSet[currentSrcIndex]}`)
+    setLoaded(true)
   }
 
   if (error) {
@@ -56,9 +68,10 @@ export function DynamicImage({
       width={fill ? undefined : width}
       height={fill ? undefined : height}
       fill={fill}
-      className={className}
+      className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
       priority={priority}
       onError={handleError}
+      onLoad={handleLoad}
     />
   )
 } 

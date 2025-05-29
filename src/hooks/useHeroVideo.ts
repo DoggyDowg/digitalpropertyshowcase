@@ -10,40 +10,58 @@ export function useHeroVideo(propertyId?: string) {
   const supabase = createClientComponentClient()
 
   useEffect(() => {
+    console.log('useHeroVideo: Hook called with propertyId:', propertyId)
+    
     async function loadVideo() {
       setLoading(true)
       setError(null)
       if (!propertyId) {
-        console.log('No propertyId provided')
+        console.log('useHeroVideo: No propertyId provided')
         setLoading(false)
         return
       }
 
       try {
-        setLoading(true)
-        setError(null)
-        
         // If the propertyId includes 'demo/', it's a direct path to the demo asset
         if (propertyId.startsWith('demo/')) {
-          // console.log('Loading demo video from path:', propertyId); // Commented out
+          console.log('useHeroVideo: Loading demo video from path:', propertyId)
           const { data: publicUrlData } = supabase
             .storage
             .from('property-assets')
             .getPublicUrl(propertyId)
 
-          // console.log('Demo video response:', publicUrlData); // Commented out
+          console.log('useHeroVideo: Demo video response:', publicUrlData)
           if (!publicUrlData.publicUrl) {
-            console.error('No public URL returned for demo video')
+            console.error('useHeroVideo: No public URL returned for demo video')
             setVideoUrl(null)
+            setLoading(false)
             return
           }
+          
+          // Verify the video URL is accessible
+          try {
+            console.log('useHeroVideo: Verifying demo video URL:', publicUrlData.publicUrl)
+            const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+            if (!response.ok) {
+              console.error(`useHeroVideo: Demo video URL returned ${response.status}`)
+              setVideoUrl(null)
+              setError(new Error(`Video URL returned ${response.status}`))
+              setLoading(false)
+              return
+            }
+            console.log('useHeroVideo: Demo video URL is valid')
+          } catch (verifyErr) {
+            console.error('useHeroVideo: Error verifying demo video URL:', verifyErr)
+          }
+          
           setVideoUrl(publicUrlData.publicUrl)
-          // console.log('Successfully set demo video URL:', publicUrlData.publicUrl); // Commented out
+          console.log('useHeroVideo: Successfully set demo video URL:', publicUrlData.publicUrl)
+          setLoading(false)
           return
         }
 
         // Otherwise, query the assets table for a real property
-        // console.log(`Fetching hero video for property: ${propertyId}`)
+        console.log(`useHeroVideo: Fetching hero video for property: ${propertyId}`)
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path')
@@ -55,18 +73,19 @@ export function useHeroVideo(propertyId?: string) {
         if (error) {
           // If no video found, this is not an error condition
           if (error.code === 'PGRST116') {
-            // console.log('No hero video found for property'); // Commented out
+            console.log('useHeroVideo: No hero video found for property')
             setVideoUrl(null)
+            setLoading(false)
             return
           }
           throw error
         }
 
-        // console.log('Asset data:', data) // Commented out log
+        console.log('useHeroVideo: Asset data:', data)
 
         const storagePath = data?.storage_path;
         if (!storagePath) {
-          // console.log(`No active hero video found for property ${propertyId}`)
+          console.log(`useHeroVideo: No active hero video found for property ${propertyId}`)
           setError(new Error('No video found'))
           setLoading(false)
           return;
@@ -78,12 +97,29 @@ export function useHeroVideo(propertyId?: string) {
           .from('property-assets')
           .getPublicUrl(storagePath)
 
-        // console.log('Public URL:', publicUrlData) // Commented out log
+        console.log('useHeroVideo: Public URL:', publicUrlData)
+        
+        // Verify the video URL is accessible
+        try {
+          console.log('useHeroVideo: Verifying video URL:', publicUrlData.publicUrl)
+          const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+          if (!response.ok) {
+            console.error(`useHeroVideo: Video URL returned ${response.status}`)
+            setVideoUrl(null)
+            setError(new Error(`Video URL returned ${response.status}`))
+            setLoading(false)
+            return
+          }
+          console.log('useHeroVideo: Video URL is valid')
+        } catch (verifyErr) {
+          console.error('useHeroVideo: Error verifying video URL:', verifyErr)
+        }
+        
         setVideoUrl(publicUrlData.publicUrl)
+        setLoading(false)
       } catch (err) {
-        console.error('Error loading hero video:', err)
+        console.error('useHeroVideo: Error loading hero video:', err)
         setError(err instanceof Error ? err : new Error('Failed to load hero video'))
-      } finally {
         setLoading(false)
       }
     }

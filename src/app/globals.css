@@ -193,6 +193,23 @@
   animation: fadeOut 500ms ease-out forwards;
 }
 
+/* Explicit animation for gallery items */
+@keyframes galleryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gallery-item-fade-in {
+  opacity: 0;
+  animation: galleryFadeIn 0.5s ease-out forwards;
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -106,11 +106,13 @@ export function YourLifestyle({ property }: YourLifestyleProps) {
                 {galleryLoading ? (
                   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
                 ) : (
-                  <MasonryGallery
-                    images={images || []}
-                    columns={2}
-                    gap={4}
-                  />
+                  <div className="pb-4">
+                    <MasonryGallery
+                      images={images || []}
+                      columns={2}
+                      gap={4}
+                    />
+                  </div>
                 )}
 
                 {/* Bottom Fade */}
