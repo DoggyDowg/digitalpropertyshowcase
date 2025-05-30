@@ -29,8 +29,6 @@
         <link rel="stylesheet" href="/css/custom-page-styles.css"> <!-- Create this file and add your styles -->
         <link rel="stylesheet" href="/css/legal-popups.css"> <!-- Added CSS for legal popups -->
         <link rel="stylesheet" href="/css/animations.css"> <!-- Added CSS for animations -->
-        
-        <!-- TEMPORARILY DISABLED - TESTING FOR CONFLICTS -->
         <link rel="stylesheet" href="/css/landing-page.css">
         <link rel="stylesheet" href="/css/scroll-reels.css">
 
@@ -3016,6 +3014,92 @@
                     }, 100);
                 }
             }, 500);
+        });
+    </script>
+    
+    <!-- Mobile fallback for property reels -->
+    <script>
+        // This script ensures property reels are visible on mobile devices
+        // It acts as a fallback in case GSAP animations fail
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only run on mobile devices
+            if (window.innerWidth >= 768) return;
+            
+            console.log("Mobile fallback for property reels activated");
+            
+            // Function to ensure reels are visible
+            function ensureReelsVisible() {
+                // Target both reels
+                const reels = document.querySelectorAll('#property-reel-1, #property-reel-2');
+                
+                reels.forEach(function(reel) {
+                    // Make sure the reel container is visible
+                    reel.style.display = 'block';
+                    reel.style.visibility = 'visible';
+                    reel.style.opacity = '1';
+                    
+                    // Get the wrapper and content elements
+                    const wrapper = reel.querySelector('.scrolling-wrapper');
+                    const content = reel.id === 'property-reel-1' 
+                        ? reel.querySelector('.scrolling-content')
+                        : reel.querySelector('.scrolling-content-reverse');
+                    
+                    if (wrapper) {
+                        wrapper.style.display = 'block';
+                        wrapper.style.visibility = 'visible';
+                        wrapper.style.opacity = '1';
+                        wrapper.style.overflow = 'hidden';
+                        wrapper.style.width = '100%';
+                    }
+                    
+                    if (content) {
+                        content.style.display = 'flex';
+                        content.style.visibility = 'visible';
+                        content.style.opacity = '1';
+                        
+                        // Position content appropriately
+                        if (reel.id === 'property-reel-1') {
+                            // First reel starts at beginning
+                            content.style.transform = 'translateX(0)';
+                        } else if (reel.id === 'property-reel-2') {
+                            // Second reel positioned to show content
+                            const contentWidth = content.scrollWidth || 1000;
+                            const containerWidth = wrapper ? wrapper.offsetWidth : 300;
+                            const initialPosition = Math.max(0, (contentWidth - containerWidth) * 0.3);
+                            content.style.transform = `translateX(-${initialPosition}px)`;
+                        }
+                    }
+                    
+                    // Ensure all property cards are visible
+                    const cards = reel.querySelectorAll('.property-card');
+                    cards.forEach(function(card) {
+                        card.style.display = 'flex';
+                        card.style.visibility = 'visible';
+                        card.style.opacity = '1';
+                    });
+                });
+            }
+            
+            // Run immediately
+            ensureReelsVisible();
+            
+            // Also run after a short delay to catch any dynamically added elements
+            setTimeout(ensureReelsVisible, 500);
+            setTimeout(ensureReelsVisible, 1500);
+            
+            // Also run on scroll (throttled)
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (!scrollTimeout) {
+                    scrollTimeout = setTimeout(function() {
+                        ensureReelsVisible();
+                        scrollTimeout = null;
+                    }, 200);
+                }
+            });
+            
+            // Run on resize
+            window.addEventListener('resize', ensureReelsVisible);
         });
     </script>
 </body>

@@ -85,11 +85,12 @@ section {
     isolation: isolate !important;
 }
 
-/* Force property cards in first reel to exact dimensions */
+/* Make property cards in first reel to exact dimensions */
 #property-reel-1 .property-card {
     width: 180px !important;
     height: 150px !important;
     margin-right: 15px !important;
+    margin-bottom: 15px !important; /* Add bottom margin for shadow */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -118,6 +119,7 @@ section {
     width: 198px !important; /* 10% larger */
     height: 165px !important; /* 10% larger */
     margin-right: 15px !important;
+    margin-bottom: 25px !important; /* Add larger bottom margin for deeper shadow */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important; /* Much deeper shadow */
     display: flex !important;
     flex-direction: column !important;

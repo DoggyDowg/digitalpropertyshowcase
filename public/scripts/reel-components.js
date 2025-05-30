@@ -103,6 +103,9 @@ function applyCardStyles(card, isSecondReeel) {
     const shadowValue = isSecondReeel 
         ? '0 8px 20px rgba(0, 0, 0, 0.3)' 
         : '0 2px 5px rgba(0, 0, 0, 0.1)';
+        
+    // Bottom margin for shadow - more for second reel
+    const bottomMargin = isSecondReeel ? '25px' : '15px';
     
     // Apply styles directly to the card element
     card.style.width = `${cardWidth}px`;
@@ -111,6 +114,7 @@ function applyCardStyles(card, isSecondReeel) {
     card.style.border = '1px solid #e0e0e0';
     card.style.borderRadius = '8px';
     card.style.marginRight = '15px';
+    card.style.marginBottom = bottomMargin; // Add bottom margin for shadow
     card.style.boxShadow = shadowValue;
     card.style.display = 'flex';
     card.style.flexDirection = 'column';

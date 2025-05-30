@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // First, disable any existing auto-scroll behaviors and styles
     disableExistingAutoScroll();
     
+    // Check if we're on a mobile device
+    const isMobile = window.innerWidth < 768;
+    
     // First reel - scroll left-to-right
     const reel1Content = document.querySelector('#property-reel-1 .scrolling-content');
     if (reel1Content) {
@@ -55,27 +58,47 @@ document.addEventListener('DOMContentLoaded', function() {
         return (contentWidth - parentWidth) * safetyFactor;
       };
       
-      // IMPORTANT: Set initial position to middle of the scroll range
-      // This ensures content is already visible on screen
-      const midpoint = -getScrollWidth() / 2;
-      reel1Content.style.transform = `translateX(${midpoint}px)`;
+      // Mobile-specific handling for visibility
+      if (isMobile) {
+        // For mobile, start at the beginning to ensure visibility
+        reel1Content.style.transform = 'translateX(0)';
+        
+        // Mobile-specific animation settings
+        gsap.to(reel1Content, {
+          x: () => -getScrollWidth() / 1.5, // Use less extreme end position for mobile
+          ease: "none", // Linear movement
+          scrollTrigger: {
+            trigger: "#property-reel-1",
+            start: "top 80%", // Start sooner on mobile
+            end: "bottom 20%", // End when element is almost out of view
+            scrub: 1, // Smooth scrolling
+            invalidateOnRefresh: true, // Recalculate on window resize
+            onRefresh: () => console.log("Mobile Reel 1 ScrollTrigger refreshed")
+          }
+        });
+      } else {
+        // RESTORE ORIGINAL DESKTOP ANIMATION - UNCHANGED FROM ORIGINAL
+        // Set initial position to middle of the scroll range as in original code
+        const midpoint = -getScrollWidth() / 2;
+        reel1Content.style.transform = `translateX(${midpoint}px)`;
+        
+        // Original desktop animation with original parameters
+        gsap.to(reel1Content, {
+          x: () => -getScrollWidth(), // End position (fully scrolled)
+          ease: "none", // Linear movement
+          scrollTrigger: {
+            trigger: "#property-reel-1",
+            start: "top bottom", // Start when top of reel enters bottom of viewport
+            end: "+=3000%", // Make the scroll distance much longer for slower animation - ORIGINAL VALUE
+            scrub: 1, // Smooth scrolling with a 1-second delay
+            // markers: true, // Uncomment for debugging
+            invalidateOnRefresh: true, // Recalculate on window resize
+            onRefresh: () => console.log("Reel 1 ScrollTrigger refreshed, new end position:", -getScrollWidth())
+          }
+        });
+      }
       
-      // Set up the animation to scroll from this initial midpoint position
-      gsap.to(reel1Content, {
-        x: () => -getScrollWidth(), // End position (fully scrolled)
-        ease: "none", // Linear movement
-        scrollTrigger: {
-          trigger: "#property-reel-1",
-          start: "top bottom", // Start when top of reel enters bottom of viewport
-          end: "+=3000%", // Make the scroll distance much longer for slower animation
-          scrub: 1, // Smooth scrolling with a 1-second delay
-          // markers: true, // Uncomment for debugging
-          invalidateOnRefresh: true, // Recalculate on window resize
-          onRefresh: () => console.log("Reel 1 ScrollTrigger refreshed, new end position:", -getScrollWidth())
-        }
-      });
-      
-      console.log("Reel 1 scroll animation initialized - positioned at midpoint to ensure visibility");
+      console.log(`Reel 1 scroll animation initialized - positioned for ${isMobile ? 'mobile' : 'desktop'} view`);
     }
     
     // Second reel - scroll right-to-left (reverse direction)
@@ -96,33 +119,57 @@ document.addEventListener('DOMContentLoaded', function() {
         return (contentWidth - parentWidth) * safetyFactor;
       };
       
-      // IMPORTANT: Set initial position to middle of the scroll range
-      // This ensures content is already visible on screen
-      const midpoint = -getScrollWidth() / 2;
-      reel2Content.style.transform = `translateX(${midpoint}px)`;
+      // Mobile-specific handling for visibility
+      if (isMobile) {
+        // For mobile, position near the end to show more content initially
+        const nearEnd = -getScrollWidth() + (window.innerWidth * 0.5);
+        reel2Content.style.transform = `translateX(${nearEnd}px)`;
+        
+        // Mobile-specific animation
+        gsap.to(reel2Content, {
+          x: 0, // End at the start (right to left)
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#property-reel-2",
+            start: "top 80%", // Start sooner on mobile
+            end: "bottom 20%", // End when element is almost out of view
+            scrub: 1,
+            invalidateOnRefresh: true,
+            onRefresh: () => console.log("Mobile Reel 2 ScrollTrigger refreshed")
+          }
+        });
+      } else {
+        // RESTORE ORIGINAL DESKTOP ANIMATION - UNCHANGED FROM ORIGINAL
+        // Set initial position to middle of the scroll range as in original code
+        const midpoint = -getScrollWidth() / 2;
+        reel2Content.style.transform = `translateX(${midpoint}px)`;
+        
+        // Original desktop animation with original parameters
+        gsap.to(reel2Content, {
+          x: 0, // End position (fully scrolled in opposite direction)
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#property-reel-2",
+            start: "top bottom", // Original - Start when top of reel enters bottom of viewport
+            end: "+=3000%", // Original - Make the scroll distance much longer for slower animation
+            scrub: 1, // Original value
+            // markers: true, // Uncomment for debugging
+            invalidateOnRefresh: true,
+            onRefresh: () => console.log("Reel 2 ScrollTrigger refreshed, new start position:", -getScrollWidth())
+          }
+        });
+      }
       
-      // Set up the animation to scroll from this initial midpoint position
-      gsap.to(reel2Content, {
-        x: 0, // End position (fully scrolled in opposite direction)
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#property-reel-2",
-          start: "top bottom", // Match Reel 1 - Start when top of reel enters bottom of viewport
-          end: "+=3000%", // Match Reel 1 - Make the scroll distance much longer for slower animation
-          scrub: 1,
-          // markers: true, // Uncomment for debugging
-          invalidateOnRefresh: true,
-          onRefresh: () => console.log("Reel 2 ScrollTrigger refreshed, new start position:", -getScrollWidth())
-        }
-      });
-      
-      console.log("Reel 2 scroll animation initialized - positioned at midpoint to ensure visibility");
+      console.log(`Reel 2 scroll animation initialized - positioned for ${isMobile ? 'mobile' : 'desktop'} view`);
     }
   }
   
   // Function to disable any existing auto-scroll behaviors and reset conflicting styles
   function disableExistingAutoScroll() {
     console.log("Attempting to disable existing auto-scroll behaviors and reset styles...");
+    
+    // Check if we're on a mobile device
+    const isMobile = window.innerWidth < 768;
     
     // 1. Check for and disable CSS animations on the content elements
     const scrollingContentElements = document.querySelectorAll('.scrolling-content, .scrolling-content-reverse');
@@ -138,11 +185,22 @@ document.addEventListener('DOMContentLoaded', function() {
       element.style.marginRight = '0';
       // Don't reset transform here as we set it manually for initial positioning
       element.style.webkitTransform = 'none';
-      element.style.willChange = 'transform'; // Indicate that transform will be animated
-      element.style.display = 'flex'; // Ensure flex layout is maintained
-      element.style.flexDirection = 'row'; // Ensure horizontal layout
-      element.style.width = 'fit-content'; // Allow content to determine width
-      element.style.maxWidth = 'none'; // Remove max-width constraints
+      
+      // Special handling for mobile to ensure visibility
+      if (isMobile) {
+        element.style.willChange = 'transform'; // Optimize for transform changes
+        element.style.minWidth = 'fit-content'; // Ensure content determines minimum width
+        element.style.display = 'flex'; // Ensure flex layout
+        element.style.flexDirection = 'row'; // Horizontal layout
+        element.style.visibility = 'visible'; // Force visibility
+        element.style.opacity = '1'; // Force full opacity
+      } else {
+        element.style.willChange = 'transform'; // Indicate that transform will be animated
+        element.style.display = 'flex'; // Ensure flex layout is maintained
+        element.style.flexDirection = 'row'; // Ensure horizontal layout
+        element.style.width = 'fit-content'; // Allow content to determine width
+        element.style.maxWidth = 'none'; // Remove max-width constraints
+      }
     });
     
     // 2. Reset the scrolling wrappers - ensure overflow is hidden and no transforms
@@ -152,19 +210,44 @@ document.addEventListener('DOMContentLoaded', function() {
       wrapper.style.overflowY = 'hidden';
       wrapper.style.transform = 'none';
       wrapper.style.webkitTransform = 'none';
-      wrapper.style.width = '100%'; // Wrapper should take full width of its container
-      wrapper.style.maxWidth = '100%';
+      
+      // Mobile-specific handling
+      if (isMobile) {
+        wrapper.style.width = '100%'; // Full width
+        wrapper.style.maxWidth = '100%';
+        wrapper.style.visibility = 'visible'; // Force visibility
+        wrapper.style.display = 'block'; // Ensure it's displayed
+      } else {
+        wrapper.style.width = '100%'; // Wrapper should take full width of its container
+        wrapper.style.maxWidth = '100%';
+      }
     });
     
     // 3. Reset the reel containers - ensure proper width and no conflicting styles
     const reelContainers = document.querySelectorAll('.property-reel');
     reelContainers.forEach(container => {
-      container.style.width = '100vw';
-      container.style.maxWidth = '100vw';
-      container.style.overflow = 'hidden';
-      container.style.marginLeft = 'auto'; // Center the container if needed
-      container.style.marginRight = 'auto';
-      // Do NOT reset transform here for reel-2 as it has a rotation
+      // Mobile-specific styles
+      if (isMobile) {
+        container.style.width = '100%';
+        container.style.maxWidth = '100%';
+        container.style.overflow = 'hidden';
+        container.style.visibility = 'visible'; // Force visibility
+        container.style.display = 'block'; // Ensure it's displayed
+        // Don't change transform for reel-2 as it has rotation
+        
+        // Apply special fallback for mobile if GSAP fails
+        // We'll add a direct event listener that tracks scroll position
+        if (container.id === 'property-reel-1' || container.id === 'property-reel-2') {
+          ensureMobileReelVisibility(container);
+        }
+      } else {
+        container.style.width = '100vw';
+        container.style.maxWidth = '100vw';
+        container.style.overflow = 'hidden';
+        container.style.marginLeft = 'auto'; // Center the container if needed
+        container.style.marginRight = 'auto';
+        // Do NOT reset transform here for reel-2 as it has a rotation
+      }
     });
     
     // 4. Clear any intervals or timeouts that might be animating the reels
@@ -185,6 +268,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Special function to ensure mobile reel visibility regardless of GSAP
+  function ensureMobileReelVisibility(reelContainer) {
+    if (window.innerWidth >= 768) return; // Only apply to mobile
+    
+    // Identify the content element
+    const contentEl = reelContainer.id === 'property-reel-1' 
+      ? reelContainer.querySelector('.scrolling-content')
+      : reelContainer.querySelector('.scrolling-content-reverse');
+      
+    if (!contentEl) return;
+    
+    // Force display and visibility
+    reelContainer.style.display = 'block';
+    reelContainer.style.visibility = 'visible';
+    reelContainer.style.opacity = '1';
+    
+    contentEl.style.display = 'flex';
+    contentEl.style.visibility = 'visible';
+    contentEl.style.opacity = '1';
+    
+    // For first reel, ensure it starts at the beginning
+    if (reelContainer.id === 'property-reel-1') {
+      // Set a starting position that shows content on screen
+      contentEl.style.transform = 'translateX(0)';
+    } 
+    // For second reel, position it to show content on screen
+    else if (reelContainer.id === 'property-reel-2') {
+      // Calculate a position that shows content
+      const contentWidth = contentEl.scrollWidth;
+      const containerWidth = reelContainer.offsetWidth;
+      const visiblePosition = Math.max(0, (contentWidth - containerWidth) * 0.3);
+      contentEl.style.transform = `translateX(-${visiblePosition}px)`;
+    }
+    
+    console.log(`Applied mobile visibility fallback for ${reelContainer.id}`);
+  }
+  
   // Function to handle window resize and ScrollTrigger refresh
   function handleResize() {
     console.log("Window resized, refreshing ScrollTrigger...");
@@ -192,6 +312,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ScrollTrigger) {
       ScrollTrigger.refresh();
       console.log("ScrollTrigger refreshed due to resize");
+    }
+    
+    // Check if we need to re-apply mobile-specific fixes
+    if (window.innerWidth < 768) {
+      // Re-apply mobile fixes
+      const reels = document.querySelectorAll('.property-reel');
+      reels.forEach(reel => {
+        if (reel.id === 'property-reel-1' || reel.id === 'property-reel-2') {
+          ensureMobileReelVisibility(reel);
+        }
+      });
     }
   }
   

@@ -14,11 +14,16 @@ html {
     max-width: 100vw !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
-    /* Increase space around the reel for better trigger timing */
+    /* Increase space around the reel for better trigger timing and shadow display */
     padding-top: 20px !important;
-    padding-bottom: 40px !important;
+    padding-bottom: 60px !important; /* Increased from 40px to 60px to show full shadows */
     /* Ensure trigger points are clearly defined */
     min-height: 250px !important;
+}
+
+/* Special padding for the second reel with deeper shadows */
+#property-reel-2.scroll-triggered {
+    padding-bottom: 80px !important; /* Even more padding for the second reel's deeper shadows */
 }
 
 /* Wrapper styles for scroll-triggered reels */
@@ -30,6 +35,7 @@ html {
     overflow-x: hidden !important;
     overflow-y: hidden !important;
     will-change: transform !important; /* Optimize for animations */
+    padding-bottom: 30px !important; /* Add padding at bottom of wrapper to show shadows */
 }
 
 /* Content styles for scroll-triggered reels */
@@ -42,6 +48,7 @@ html {
     /* Prevent touch scrolling on mobile (controlled by GSAP) */
     touch-action: none !important;
     will-change: transform !important; /* Optimize for animations */
+    padding-bottom: 25px !important; /* Add padding to the content to ensure shadows are visible */
 }
 
 /* Second reel specific styles */
@@ -81,6 +88,20 @@ html {
         /* Smaller padding on mobile */
         padding-top: 10px !important;
         padding-bottom: 20px !important;
+        /* Ensure visibility on mobile */
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        transform: none !important;
+    }
+    
+    /* Special case for the second reel that has a rotation */
+    #property-reel-2.scroll-triggered {
+        transform: rotate(-4deg) !important;
+        transform-origin: center center !important;
     }
     
     .scroll-triggered.property-reel::before,
@@ -96,6 +117,29 @@ html {
         -webkit-backface-visibility: hidden;
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
+        /* Ensure visibility */
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        flex-direction: row !important;
+        min-width: fit-content !important;
+    }
+    
+    /* Ensure wrappers are properly displayed */
+    .scroll-triggered .scrolling-wrapper {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Ensure property cards are properly displayed */
+    .property-card {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 }
 
