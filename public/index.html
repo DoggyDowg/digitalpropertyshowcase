@@ -550,7 +550,7 @@
         <!-- Property Listings Scrolling Reel -->
         <section id="property-reel-1" class="property-reel scroll-triggered reveal-up tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
             <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-top: 120px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
-                <h2 class="reveal-up section-heading tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center" style="font-size: 36px; font-weight: bold; padding-top: 100px;">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
+                <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center" style="font-size: 36px; font-weight: bold;">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—<strong><span class="highlight-text" data-text="you're underselling yourself.">you're underselling yourself.</span></strong><br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to <strong><span class="highlight-text" data-text="win listings.">win listings.</span></strong></span></p>
             </div>
 
@@ -1609,6 +1609,9 @@
         <!-- Hidden fields for Formspree -->
         <input type="hidden" name="_subject" value="New Contact Form Submission">
         <input type="text" name="_gotcha" style="display:none">
+
+        <!-- reCAPTCHA placeholder -->
+        <div class="g-recaptcha tw-mt-4" data-sitekey="YOUR_SITE_KEY"></div>
 
         <div class="tw-pt-2">
           <button
@@ -3105,6 +3108,9 @@
             window.addEventListener('resize', ensureReelsVisible);
         });
     </script>
+
+    <!-- Google reCAPTCHA Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 
 </html>
