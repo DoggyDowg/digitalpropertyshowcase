@@ -16,14 +16,14 @@ html {
     box-sizing: border-box !important;
     /* Increase space around the reel for better trigger timing and shadow display */
     padding-top: 20px !important;
-    padding-bottom: 60px !important; /* Increased from 40px to 60px to show full shadows */
+    /* padding-bottom: 60px !important; */
     /* Ensure trigger points are clearly defined */
     min-height: 250px !important;
 }
 
 /* Special padding for the second reel with deeper shadows */
 #property-reel-2.scroll-triggered {
-    padding-bottom: 80px !important; /* Even more padding for the second reel's deeper shadows */
+    /* padding-bottom: 80px !important; */
 }
 
 /* Wrapper styles for scroll-triggered reels */

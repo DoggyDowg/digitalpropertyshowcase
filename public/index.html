@@ -550,7 +550,7 @@
         <!-- Property Listings Scrolling Reel -->
         <section id="property-reel-1" class="property-reel scroll-triggered reveal-up tw-relative tw-w-full tw-overflow-hidden" style="padding-top: 8rem; padding-bottom: 0; z-index: 1; background-color: transparent;">
             <div class="tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-top: 120px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
-                <h2 class="reveal-up tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
+                <h2 class="reveal-up section-heading tw-text-3xl tw-font-semibold tw-leading-tight tw-text-center" style="font-size: 36px; font-weight: bold; padding-top: 100px;">If It Looks Like Every Other Listing…<br><span class="highlight-text" data-text="Why Would They Choose You?">Why Would They Choose You?</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center">No matter how stunning the home, if it's wrapped in the same template as every two-bed apartment, you're not just underselling the property—you're underselling yourself.<br class="md:block hidden"><br><span class="tw-block tw-mt-4 tw-text-center">Portals are built for buyers. Digital Property Showcase is built to win listings.</span></p>
             </div>
 
@@ -566,7 +566,7 @@
         </section>
 
         <!-- Second reel of overlapping properties (part of the Problem illustration) -->
-        <section id="property-reel-2" class="property-reel scroll-triggered reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -150px; margin-bottom: 50px; z-index: 2; background-color: transparent; width: 100vw; max-width: 100vw; margin-left: 0; margin-right: 0;">
+        <section id="property-reel-2" class="property-reel scroll-triggered reveal-up tw-relative tw-overflow-hidden" data-rotation="-4deg" style="padding: 0; margin-top: -150px; margin-bottom: 0px; z-index: 2; background-color: transparent; width: 100vw; max-width: 100vw; margin-left: 0; margin-right: 0;">
             <!-- Scrolling Container (Reverse Direction) -->
             <div class="scrolling-wrapper" style="transform: none !important; width: 100vw !important; margin-left: 0 !important; margin-right: 0 !important;">
                 <div class="scrolling-content-reverse">
@@ -689,8 +689,8 @@
                 const secondReel = document.getElementById('property-reel-2');
                 if (secondReel) {
                     // Increase container height to show full card shadows
-                    secondReel.style.paddingBottom = '30px'; // Add padding below cards
-                    secondReel.style.marginBottom = '70px'; // Increase bottom margin
+                    secondReel.style.paddingBottom = '0px'; // Add padding below cards
+                    secondReel.style.marginBottom = '0px'; // Increase bottom margin
                     // Ensure full width
                     secondReel.style.width = '100vw';
                     secondReel.style.maxWidth = '100vw';
@@ -705,7 +705,7 @@
                         wrapper.style.maxWidth = '100vw';
                         wrapper.style.marginLeft = '0';
                         wrapper.style.marginRight = '0';
-                        wrapper.style.paddingBottom = '30px'; // Add padding for shadows
+                        wrapper.style.paddingBottom = '0px'; // Add padding for shadows
                     }
                 }
             }
@@ -721,9 +721,10 @@
 
         <!-- === SOLUTION SECTION === -->
         <!-- Showcase Preview Section - Your elegant property showcase solution -->
-        <section class="tw-relative tw-flex tw-w-full tw-py-8 tw-pb-0 tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-visible">
+        <section class="tw-relative tw-flex tw-w-full 0 tw-pb-0 tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-visible">
             <!-- Solution copy -->
             <div class="reveal-up tw-container tw-mx-auto tw-mb-4 tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
+                <h2 class="reveal-up tw-text-center tw-mb-8" style="font-size: 36px; font-weight: bold;">Elevate Your Property Marketing<br><span class="highlight-text" data-text="With Digital Excellence">With Digital Excellence</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-center">
                     With DPS, each listing becomes a <span class="highlight-text tw-font-bold" data-text="tailored, prestige experience">tailored, prestige experience</span>—proving you're committed to delivering elite marketing that stands apart from the crowd.
                 </p>
@@ -813,7 +814,7 @@
         <!-- === HOW IT WORKS SECTION === -->
         <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center" id="how-it-works" style="padding-top: 100px !important; padding-bottom: 64px;">
             <div class="tw-container tw-mx-auto tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
-                <h2 class="reveal-up tw-text-4xl tw-font-semibold tw-leading-tight tw-text-center tw-mb-8">How It Works:<br><span class="highlight-text" data-text="Your Showcase Journey"> Showcase Your Listing</span></h2>
+                <h2 class="reveal-up section-heading tw-leading-tight tw-text-center tw-mb-8" style="font-size: 36px; font-weight: bold; padding-top: 100px;">How It Works:<br><span class="highlight-text" data-text="Your Showcase Journey"> Showcase Your Listing</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center tw-mb-12">
                     From initial contact to impressing vendors, our streamlined process makes creating your showcase effortless.
                 </p>
@@ -919,7 +920,7 @@
 
                 <!-- Title and button for mobile/tablet, directly in the flow -->
                 <div class="lg:tw-hidden tw-w-full tw-flex tw-flex-col tw-items-center tw-mb-12">
-                    <h2 class="tw-text-5xl tw-text-center tw-font-medium max-md:tw-text-3xl">
+                    <h2 class="section-heading tw-text-center tw-font-medium max-md:tw-text-3xl" style="font-size: 36px; font-weight: bold; padding-top: 100px;">
                         Premium Marketing Features
                     </h2>
                     <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8" style="width: fit-content !important;">
@@ -936,7 +937,7 @@
                      style="position: relative !important; height: auto !important; min-height: auto !important;">
                     <div class="tw-flex tw-flex-col tw-items-start tw-max-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] sticky-element"
                          style="position: static !important; top: 120px !important; z-index: 20 !important;">
-                        <h2 class="tw-text-5xl tw-text-left tw-font-medium max-md:tw-text-3xl">
+                        <h2 class="section-heading tw-text-left tw-font-medium max-md:tw-text-3xl" style="font-size: 36px; font-weight: bold; padding-top: 100px;">
                             Premium Marketing Features
                         </h2>
                         <a href="/onboarding.html" class="lp-btn lp-btn-primary lp-btn-md !tw-mt-8" style="width: fit-content !important;">
@@ -1047,11 +1048,12 @@
             class="tw-mt-10 tw-flex tw-w-full tw-flex-col tw-gap-6 tw-place-items-center tw-p-[2%]"
             id="pricing"
         >
-            <h3
-                class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-2xl"
+            <h2
+                class="reveal-up section-heading tw-font-medium max-md:tw-text-2xl tw-text-center"
+                style="font-size: 36px; font-weight: bold; padding-top: 100px;"
             >
-                Pick Your Showcase Tier
-            </h3>
+                <span class="highlight-text" data-text="Pick Your Showcase Tier">Pick Your Showcase Tier</span>
+            </h2>
             
             <!-- pricing cards -->
             <div
@@ -1252,11 +1254,12 @@
             class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-6 tw-p-[5%] tw-px-[10%]"
             id="faq"
         >
-            <h3
-                class="tw-text-4xl tw-font-medium max-md:tw-text-xl tw-mb-6"
+            <h2
+                class="section-heading tw-font-medium max-md:tw-text-xl tw-mb-6 tw-text-center"
+                style="font-size: 36px; font-weight: bold; padding-top: 100px;"
             >
-                Frequently Asked Questions
-            </h3>
+                <span class="highlight-text" data-text="Frequently Asked Questions">Frequently Asked Questions</span>
+            </h2>
             <div
                 class="tw-mt-5 tw-flex tw-min-h-[300px] tw-w-full tw-max-w-[850px] tw-flex-col tw-gap-4"
             >
@@ -1471,9 +1474,9 @@
              <div class="reveal-up tw-w-full tw-h-full tw-min-h-[450px] max-lg:tw-max-w-full tw-rounded-md lg:tw-py-[5%] tw-place-content-center tw-items-center
                         tw-flex tw-flex-col tw-max-w-[80%] tw-gap-4 tw-p-4">
 
-                <h3 class="reveal-up tw-text-5xl tw-font-medium max-md:tw-text-3xl tw-text-center tw-leading-normal tw-text-black">
-                    Ready to Impress Your Next Vendor?
-                </h3>
+                <h2 class="reveal-up section-heading max-md:tw-text-3xl tw-text-center tw-leading-normal tw-text-black" style="font-size: 36px; font-weight: bold; padding-top: 100px;">
+                    <span class="highlight-text" data-text="Ready to Impress Your Next Vendor?">Ready to Impress Your Next Vendor?</span>
+                </h2>
 
                 <p class="reveal-up standard-paragraph tw-text-center tw-mt-4 tw-max-w-[800px] tw-text-black">
                     Secure more prestige listings with custom-branded websites that speak volumes about your service.
@@ -1525,7 +1528,7 @@
           
           <div class="tw-container tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-max-w-5xl tw-relative tw-flex tw-flex-col tw-items-center" style="z-index: 2; margin-top: 60px; margin-bottom: 20px;">
             <div class="tw-text-center tw-mb-10">
-              <h2 class="reveal-up tw-text-4xl tw-font-bold" style="color: white !important;">
+              <h2 class="reveal-up section-heading" style="font-size: 36px; font-weight: bold; padding-top: 100px; color: white !important;">
                 Get in Touch
               </h2>
               <p class="reveal-up tw-mt-4 tw-text-lg" style="color: white !important;">

@@ -345,4 +345,20 @@ html, body {
     min-width: 100%;
     white-space: nowrap;
     padding: 10px 0;
+}
+
+/* Section Headings */
+.section-heading {
+    font-size: 36px;
+    font-weight: bold;
+    padding-top: 100px;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 767px) {
+    .section-heading {
+        font-size: 28px; /* Slightly smaller on mobile */
+        padding-top: 80px; /* Less padding on mobile */
+    }
 } 
