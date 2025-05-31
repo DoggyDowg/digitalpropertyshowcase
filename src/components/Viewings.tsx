@@ -35,7 +35,7 @@ interface AgentData {
 }
 
 interface Viewing {
-  viewing_datetime: string;
+  viewing_datetime: string | { original_datetime: string };
 }
 
 export function Viewings({ property }: ViewingsProps) {
@@ -213,36 +213,56 @@ export function Viewings({ property }: ViewingsProps) {
   }
 
   // Format the viewing date for the calendar
-  const formatViewingForCalendar = useCallback((viewingDatetime: string) => {
+  const formatViewingForCalendar = useCallback((viewingDatetime: string | { original_datetime: string }) => {
     try {
-      const date = new Date(viewingDatetime)
-      if (isNaN(date.getTime())) {
-        throw new Error('Invalid date')
+      // Use the original_datetime if available (this is the ISO string in UTC)
+      const isoDatetime = (typeof viewingDatetime === 'object' && 'original_datetime' in viewingDatetime) 
+        ? viewingDatetime.original_datetime 
+        : viewingDatetime;
+        
+      // Parse the UTC date from the database
+      const utcDate = new Date(isoDatetime);
+      if (isNaN(utcDate.getTime())) {
+        throw new Error('Invalid date');
       }
 
-      // Format the date and time strings
-      const formattedDate = format(date, 'yyyy-MM-dd')
-      const formattedTime = format(date, 'HH:mm')
+      // Log the original date info for debugging
+      console.log('Viewing Calendar - Original date info:', {
+        input: isoDatetime,
+        parsedUtc: utcDate.toISOString(),
+        timezoneName: property.local_timezone
+      });
+
+      // Format the date and time strings for the calendar (in YYYY-MM-DD and HH:MM format)
+      // These formats are expected by the AddToCalendar component
+      const formattedDate = format(utcDate, 'yyyy-MM-dd');
+      const formattedTime = format(utcDate, 'HH:mm');
       
       // Calculate end time (30 minutes after start)
-      const endDate = new Date(date.getTime() + 30 * 60000)
-      const endTime = format(endDate, 'HH:mm')
+      const endDate = new Date(utcDate.getTime() + 30 * 60000);
+      const endTime = format(endDate, 'HH:mm');
 
       // Create location string
       const formattedAddress = property.street_address && property.suburb
         ? `${property.street_address}, ${property.suburb}`
-        : property.maps_address || ''
+        : property.maps_address || '';
 
       // Format event title with street address and suburb
-      const eventTitle = `Viewing - ${formattedAddress}`
+      const eventTitle = `Viewing - ${formattedAddress}`;
 
       // Format a detailed description
-      const formattedDateTime = format(date, 'EEEE, MMMM do, yyyy h:mm a')
-      let description = `Property viewing at ${formattedAddress}\n\n`
-      description += `📅 Date & Time: ${formattedDateTime}\n`
-      description += `📍 Location: ${formattedAddress}\n`
+      const formattedDateTime = format(utcDate, 'EEEE, MMMM d, yyyy h:mm a');
+      let description = `Property viewing at ${formattedAddress}\n\n`;
+      description += `📅 Date & Time: ${formattedDateTime}\n`;
+      description += `📍 Location: ${formattedAddress}\n`;
+      
+      // For the UI display - use the browser's timezone to format the date
+      // This ensures the date appears correctly in the user's local timezone
+      const displayFormattedDate = format(utcDate, 'EEEE, MMMM d, yyyy');
+      const displayFormattedTime = format(utcDate, 'h:mm a');
       
       return {
+        // Calendar data - uses the original UTC date with the property's timezone
         date: formattedDate,
         time: formattedTime,
         endTime,
@@ -250,14 +270,16 @@ export function Viewings({ property }: ViewingsProps) {
         description,
         title: eventTitle,
         location: formattedAddress,
-        formattedDate: format(date, 'EEEE, MMMM do, yyyy'),
-        formattedTime: format(date, 'h:mm a')
-      }
-    } catch {
-      // console.error('Error formatting viewing date:', error)
-      return null
+        
+        // UI display data - shown in the user's browser timezone
+        formattedDate: displayFormattedDate,
+        formattedTime: displayFormattedTime
+      };
+    } catch (error) {
+      console.error('Error formatting viewing date:', error);
+      return null;
     }
-  }, [property.street_address, property.suburb, property.maps_address, property.local_timezone])
+  }, [property.street_address, property.suburb, property.maps_address, property.local_timezone]);
 
   // If there are upcoming viewings, show them (up to 3)
   const renderUpcomingViewings = () => {
@@ -292,6 +314,7 @@ export function Viewings({ property }: ViewingsProps) {
                   startTime={calendarData.time}
                   endTime={calendarData.endTime}
                   timezone={calendarData.timezone}
+                  propertyId={property.id}
                 />
               </div>
             )

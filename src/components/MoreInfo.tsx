@@ -126,7 +126,8 @@ export function MoreInfo({ property }: MoreInfoProps) {
   } | null>(null)
 
   // Get hover effect from property styling for debugging
-  const hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
+  // Commented out since not currently used
+  // const hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
   
   // Debug log the hover effect
   /* useEffect(() => {
@@ -232,45 +233,54 @@ export function MoreInfo({ property }: MoreInfoProps) {
   // Format auction date for calendar
   const formatAuctionForCalendar = useCallback(async (auctionDatetime: string) => {
     try {
-      const date = new Date(auctionDatetime)
-      if (isNaN(date.getTime())) {
-        throw new Error('Invalid date')
+      // Parse the UTC date from the database
+      const utcDate = new Date(auctionDatetime);
+      if (isNaN(utcDate.getTime())) {
+        throw new Error('Invalid date');
       }
 
-      // Format the date and time strings
-      const formattedDate = format(date, 'yyyy-MM-dd')
-      const formattedTime = format(date, 'HH:mm')
+      // Log the auction date being processed for debugging
+      console.log('MoreInfo - Auction Calendar - Original date info:', {
+        input: auctionDatetime,
+        parsedUtc: utcDate.toISOString(),
+        timezoneName: property.local_timezone
+      });
+
+      // Format the date and time strings for the calendar (in YYYY-MM-DD and HH:MM format)
+      // These formats are expected by the AddToCalendar component
+      const formattedDate = format(utcDate, 'yyyy-MM-dd');
+      const formattedTime = format(utcDate, 'HH:mm');
       
       // Calculate end time (30 minutes after start)
-      const endDate = new Date(date.getTime() + 30 * 60000)
-      const endTime = format(endDate, 'HH:mm')
+      const endDate = new Date(utcDate.getTime() + 30 * 60000);
+      const endTime = format(endDate, 'HH:mm');
 
       // Format the address for title and description
       const formattedAddress = property.street_address && property.suburb
         ? `${property.street_address}, ${property.suburb}`
-        : property.maps_address || property.address || property.name || ''
+        : property.maps_address || property.name || '';
 
       // Format event title with street address and suburb
-      const eventTitle = `Auction - ${formattedAddress}`
+      const eventTitle = `Auction - ${formattedAddress}`;
 
-      // Format a detailed description
-      const formattedDateTime = format(date, 'EEEE, MMMM do, yyyy h:mm a')
-      let description = `Auction for ${formattedAddress}\n\n`
-      description += `📅 Date & Time: ${formattedDateTime}\n`
-      description += `📍 Location: ${formattedAddress}\n\n`
+      // Format a detailed description - use unambiguous date format
+      const formattedDateTime = format(utcDate, 'EEEE, MMMM d, yyyy h:mm a');
+      let description = `Auction for ${formattedAddress}\n\n`;
+      description += `📅 Date & Time: ${formattedDateTime}\n`;
+      description += `📍 Location: ${formattedAddress}\n\n`;
 
       // Add agent information if available
       if (agent) {
-        description += `Contact Information:\n`
-        description += `${agent.name} - ${agent.position}\n`
-        description += `📞 ${agent.phone}\n`
-        description += `📧 ${agent.email}\n`
+        description += `Contact Information:\n`;
+        description += `${agent.name} - ${agent.position}\n`;
+        description += `📞 ${agent.phone}\n`;
+        description += `📧 ${agent.email}\n`;
       }
 
       // Create location string with coordinates if available
-      let location = property.maps_address || formattedAddress
+      let location = property.maps_address || formattedAddress;
       if (property.metadata?.locations?.coordinates) {
-        location = `${location}@${property.metadata.locations.coordinates.lat},${property.metadata.locations.coordinates.lng}`
+        location = `${location}@${property.metadata.locations.coordinates.lat},${property.metadata.locations.coordinates.lng}`;
       }
       
       return {
@@ -281,12 +291,12 @@ export function MoreInfo({ property }: MoreInfoProps) {
         description,
         title: eventTitle,
         location
-      }
-    } catch (error) {
-      // console.error('Error formatting auction date:', error)
-      return null
+      };
+    } catch {
+      // console.error('Error formatting auction date');
+      return null;
     }
-  }, [property.name, property.address, property.maps_address, property.street_address, property.suburb, property.metadata?.locations?.coordinates, property.local_timezone, agent])
+  }, [property.name, property.maps_address, property.street_address, property.suburb, property.metadata?.locations?.coordinates, property.local_timezone, agent]);
 
   // Update calendar data when auction datetime changes
   useEffect(() => {
@@ -368,8 +378,8 @@ export function MoreInfo({ property }: MoreInfoProps) {
                     const formattedMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
                     
                     return `${day}, ${month} ${date} at ${formattedHours}${formattedMinutes}${ampm}`;
-                  } catch (error) {
-                    // console.error('Error formatting auction date:', error);
+                  } catch {
+                    // console.error('Error formatting auction date');
                     return 'Date to be announced';
                   }
                 })()}
@@ -385,6 +395,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
                       startTime={calendarData.time}
                       endTime={calendarData.endTime}
                       timezone={calendarData.timezone}
+                      propertyId={property.id}
                     />
                   )}
                 </div>

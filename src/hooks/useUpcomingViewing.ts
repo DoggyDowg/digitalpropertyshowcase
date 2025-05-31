@@ -19,7 +19,7 @@ export function useUpcomingViewing(propertyId?: string) {
       try {
         setLoading(true)
         setError(null)
-        // console.log('Fetching upcoming viewings for property:', propertyId)
+        console.log('Fetching upcoming viewings for property:', propertyId)
 
         const now = new Date().toISOString()
         
@@ -37,12 +37,14 @@ export function useUpcomingViewing(propertyId?: string) {
           throw error
         }
 
-        // console.log('Viewings data:', data) // Commented out log
+        console.log('Viewings data from database:', data)
         
         if (data) {
+          // Store the original ISO datetime string to ensure proper timezone handling
           const formattedViewings = data.map(viewing => ({
             ...viewing,
-            viewing_datetime: new Date(viewing.viewing_datetime).toLocaleString()
+            // Store the original ISO string for proper timezone handling
+            original_datetime: viewing.viewing_datetime
           }))
           setUpcomingViewing(formattedViewings)
         }

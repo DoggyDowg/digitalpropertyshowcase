@@ -165,6 +165,12 @@ export interface Property {
   metadata: {
     template_version: string
     more_info?: MoreInfoData
+    locations?: {
+      coordinates?: {
+        lat: number
+        lng: number
+      }
+    }
   }
   template_version: string
   content: PropertyContent
