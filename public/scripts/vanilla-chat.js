@@ -14,7 +14,15 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
       initialMessage: "👋 Welcome to Digital Property Showcase! Ready to stand out and win more listings? I'm here to answer any questions or show you how it works.",
       inputPlaceholder: "Type your message here...",
       maxInputLength: 1000,
-      titleText: 'Digital Property Showcase'
+    };
+
+    const UI_CONFIG = {
+      chatWindow: {
+        width: 400,
+        height: 600,
+        minHeight: 400,
+        maxHeight: '80vh',
+      }
     };
 
     const APP_INFO = {
@@ -48,6 +56,9 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
     // Class implementation
     class VanillaChat {
       constructor() {
+        this.isOpen = false;
+        this.isLoading = false;
+        this.conversationId = this.loadConversationId(); // Load from localStorage if available
         this.messages = [
           {
             role: 'assistant',
@@ -56,31 +67,50 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             quickReplies: INITIAL_QUICK_REPLIES
           }
         ];
-        this.isInitialized = false;
-        this.isOpen = false;
-        this.isLoading = false;
-        // Load conversation ID from localStorage if it exists
-        this.conversationId = localStorage.getItem('dify_conversation_id') || null;
-        console.log('Initial conversation ID:', this.conversationId);
+        
         this.init();
+      }
+      
+      // Helper method to load conversation ID from localStorage
+      loadConversationId() {
+        try {
+          const savedId = localStorage.getItem('dps_conversation_id');
+          console.log('Loaded conversation ID from storage:', savedId);
+          return savedId;
+        } catch (e) {
+          console.error('Error loading conversation ID from localStorage:', e);
+          return null;
+        }
+      }
+      
+      // Helper method to save conversation ID to localStorage
+      saveConversationId(id) {
+        if (!id) return;
+        
+        try {
+          localStorage.setItem('dps_conversation_id', id);
+          console.log('Saved conversation ID to storage:', id);
+        } catch (e) {
+          console.error('Error saving conversation ID to localStorage:', e);
+        }
       }
       
       init() {
         try {
-          // Fallback to less intrusive method if normal initialization fails
           this.createChatButton();
           this.createChatWindow();
           this.bindEvents();
-          this.renderMessages();
-          
-          // Set up conversation management
-          this.manageConversation();
-          
-          this.isInitialized = true;
-          console.log('VanillaChat initialized with conversationId:', this.conversationId);
+          this.renderMessages(); // Render initial messages
+          console.log('Chat widget initialized successfully');
         } catch (error) {
-          console.error('Error in VanillaChat init, trying fallback:', error);
-          this.fallbackInitialization();
+          console.error('Error initializing chat widget:', error);
+          // Try fallback initialization if regular initialization fails
+          try {
+            console.log('Attempting fallback initialization...');
+            this.fallbackInitialization();
+          } catch (fallbackError) {
+            console.error('Fallback initialization also failed:', fallbackError);
+          }
         }
       }
       
@@ -440,32 +470,82 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
       }
       
       createChatWindow() {
-        const existingChatWindow = document.getElementById('chat-window');
-        if (existingChatWindow) return existingChatWindow;
-        
         const chatWindow = document.createElement('div');
         chatWindow.id = 'chat-window';
-        chatWindow.classList.add('chat-window');
+        
+        // Apply direct styles instead of relying on Tailwind classes
+        Object.assign(chatWindow.style, {
+          position: 'fixed',
+          bottom: '100px',
+          right: '32px',
+          width: `${UI_CONFIG.chatWindow.width}px`,
+          height: `${UI_CONFIG.chatWindow.height}px`,
+          maxHeight: UI_CONFIG.chatWindow.maxHeight,
+          minHeight: `${UI_CONFIG.chatWindow.minHeight}px`,
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+          transition: 'transform 0.3s ease, opacity 0.3s ease',
+          transform: 'scale(0)',
+          opacity: '0',
+          zIndex: '9998',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          border: '1px solid rgba(229, 231, 235, 1)'
+        });
+        
+        // Ensure critical styles are applied with !important
+        chatWindow.style.setProperty('position', 'fixed', 'important');
+        chatWindow.style.setProperty('bottom', '100px', 'important');
+        chatWindow.style.setProperty('right', '32px', 'important');
+        chatWindow.style.setProperty('zIndex', '9998', 'important');
         
         chatWindow.innerHTML = `
-          <div class="chat-header">
-            <div id="chat-header-container" class="chat-header-container">
-              <h3>${CHAT_CONFIG.titleText}</h3>
+          <div id="chat-header" style="background: linear-gradient(90deg, #3A24C7 0%, #3A24C7 70%, #FF337A 120%); color: white; padding: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="height: 24px; width: 32px; padding-left: 8px;">
+                <img src="/logos/white_icon.png" alt="Logo" style="height: 100%; width: 100%;" />
+              </div>
+              <div>
+                <p style="font-size: 12px; margin: 0;">Welcome to</p>
+                <h2 style="font-size: 16px; font-weight: 600; margin: 0;">${APP_INFO.title}</h2>
+              </div>
             </div>
-            <button id="close-chat" class="close-chat">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div style="display: flex; align-items: center;">
+              <button id="chat-reset" title="Start a new conversation" style="background: none; border: none; color: white; cursor: pointer; padding: 4px; margin-right: 6px; opacity: 0.8;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              <button id="chat-close" style="background: none; border: none; color: white; cursor: pointer; padding: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div id="chat-messages" class="chat-messages"></div>
-          <div class="chat-input-container">
-            <textarea id="chat-input" maxlength="${CHAT_CONFIG.maxInputLength}" placeholder="${CHAT_CONFIG.inputPlaceholder}" rows="1"></textarea>
-            <button id="send-message" class="send-message" aria-label="Send message">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            </button>
+          
+          <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 16px;"></div>
+          
+          <div id="chat-input-container" style="padding: 12px; border-top: 1px solid rgba(229, 231, 235, 1);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input 
+                type="text" 
+                id="chat-input" 
+                placeholder="${CHAT_CONFIG.inputPlaceholder}" 
+                maxlength="${CHAT_CONFIG.maxInputLength}"
+                style="flex: 1; padding: 8px; font-size: 14px; border: 1px solid rgba(229, 231, 235, 1); border-radius: 12px; outline: none;"
+              />
+              <button id="chat-send-button" style="padding: 8px; background-color: #3A24C7; color: white; border-radius: 12px; border: none; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
+            <div style="margin-top: 6px; font-size: 10px; color: #9CA3AF; font-style: italic; text-align: left;">
+              ${APP_INFO.copyright}
+            </div>
           </div>
         `;
         
@@ -479,14 +559,22 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         toggleButton.addEventListener('click', () => this.toggleChat());
         
         // Close button
-        const closeButton = document.getElementById('close-chat');
+        const closeButton = document.getElementById('chat-close');
         closeButton.addEventListener('click', () => {
           // Close the chat window directly and ensure button reappears
           this.forceChatClose();
         });
         
+        // Reset conversation button
+        const resetButton = document.getElementById('chat-reset');
+        resetButton.addEventListener('click', () => {
+          if (confirm('Start a new conversation? This will clear the current chat history.')) {
+            this.clearConversation();
+          }
+        });
+        
         // Send button
-        const sendButton = document.getElementById('send-message');
+        const sendButton = document.getElementById('chat-send-button');
         sendButton.addEventListener('click', (e) => {
           e.preventDefault(); // Prevent default form submission or navigation
           this.sendMessage();
@@ -495,7 +583,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         // Input field - send on Enter
         const inputField = document.getElementById('chat-input');
         inputField.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
+          if (e.key === 'Enter') {
             e.preventDefault();
             this.sendMessage();
           }
@@ -874,11 +962,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     
                     if (!this.conversationId && data.conversation_id) {
                       this.conversationId = data.conversation_id;
-                      // Save to localStorage for persistence
-                      localStorage.setItem('dify_conversation_id', data.conversation_id);
-                      console.log('Saved conversation ID to localStorage:', data.conversation_id);
-                      // Update the conversation management UI
-                      this.manageConversation();
+                      this.saveConversationId(data.conversation_id);
                     }
                   } else if (data.event === 'error') {
                     throw new Error(data.data || 'Unknown error from Dify API');
@@ -1006,11 +1090,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     
                     if (!this.conversationId && data.conversation_id) {
                       this.conversationId = data.conversation_id;
-                      // Save to localStorage for persistence
-                      localStorage.setItem('dify_conversation_id', data.conversation_id);
-                      console.log('Saved conversation ID to localStorage:', data.conversation_id);
-                      // Update the conversation management UI
-                      this.manageConversation();
+                      this.saveConversationId(data.conversation_id);
                     }
                   } else if (data.event === 'error') {
                     throw new Error(data.data || 'Unknown error from Dify API');
@@ -1041,7 +1121,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
       }
       
       updateSendButtonState(isLoading = false) {
-        const sendButton = document.getElementById('send-message');
+        const sendButton = document.getElementById('chat-send-button');
         const inputField = document.getElementById('chat-input');
         
         if (!sendButton || !inputField) return;
@@ -1088,6 +1168,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
 
         console.log('Sending chat request to:', DIFY_CONFIG.API_URL);
         console.log('Request body:', body);
+        console.log('Using conversation_id:', this.conversationId || 'None (new conversation)');
 
         // Requests now go to our proxy, not directly to Dify
         const response = await fetch(DIFY_CONFIG.API_URL, {
@@ -1181,14 +1262,19 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           console.log('Ultimate button should now be visible', ultimateButton);
         }
       }
-      
-      // Method to reset the conversation (clear history and conversation ID)
-      resetConversation() {
-        console.log('Resetting conversation');
+
+      // Clear the conversation history and start fresh
+      clearConversation() {
         this.conversationId = null;
-        localStorage.removeItem('dify_conversation_id');
         
-        // Reset messages to initial state
+        try {
+          localStorage.removeItem('dps_conversation_id');
+          console.log('Cleared conversation ID from storage');
+        } catch (e) {
+          console.error('Error clearing conversation ID from localStorage:', e);
+        }
+        
+        // Reset messages to just the initial welcome
         this.messages = [
           {
             role: 'assistant',
@@ -1198,83 +1284,8 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           }
         ];
         
-        // Update UI
         this.renderMessages();
-        
-        // Update the conversation management UI
-        this.manageConversation();
-      }
-      
-      // Method to handle conversation management
-      manageConversation() {
-        // Get container for the header area
-        const chatHeaderContainer = document.getElementById('chat-header-container');
-        if (!chatHeaderContainer) return;
-        
-        // Create a reset button if it doesn't exist
-        if (!document.getElementById('reset-conversation-button')) {
-          const resetButton = document.createElement('button');
-          resetButton.id = 'reset-conversation-button';
-          resetButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span>New Chat</span>
-          `;
-          resetButton.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            color: #666;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-left: auto;
-            transition: background-color 0.3s;
-          `;
-          
-          resetButton.addEventListener('mouseover', () => {
-            resetButton.style.backgroundColor = 'rgba(0,0,0,0.05)';
-          });
-          
-          resetButton.addEventListener('mouseout', () => {
-            resetButton.style.backgroundColor = 'transparent';
-          });
-          
-          resetButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.resetConversation();
-          });
-          
-          chatHeaderContainer.appendChild(resetButton);
-        }
-        
-        // Add conversation ID indicator
-        if (this.conversationId && !document.getElementById('conversation-indicator')) {
-          const indicator = document.createElement('div');
-          indicator.id = 'conversation-indicator';
-          indicator.style.cssText = `
-            font-size: 10px;
-            color: #888;
-            margin-top: 2px;
-          `;
-          indicator.textContent = `Conversation active`;
-          
-          // Insert before the reset button
-          const resetButton = document.getElementById('reset-conversation-button');
-          if (resetButton) {
-            chatHeaderContainer.insertBefore(indicator, resetButton);
-          } else {
-            chatHeaderContainer.appendChild(indicator);
-          }
-        } else if (!this.conversationId && document.getElementById('conversation-indicator')) {
-          // Remove indicator if no conversation ID
-          document.getElementById('conversation-indicator').remove();
-        }
+        console.log('Conversation cleared, starting fresh');
       }
     }
 
