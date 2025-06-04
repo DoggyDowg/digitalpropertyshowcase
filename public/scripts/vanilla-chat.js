@@ -662,6 +662,9 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           // Bold - replace **text** with <strong>text</strong>
           html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
           
+          // Links - replace [text](url) with <a href="url">text</a>
+          html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #3B82F6; text-decoration: underline;">$1</a>');
+          
           // Handle lists
           // Unordered lists - replace "- item" with list items
           if (html.includes('- ')) {
@@ -919,65 +922,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             return;
           }
           
-          const response = await this.callChatAPI(messageText);
-          const reader = response.body?.getReader();
-          let assistantMessage = '';
-          let hasStartedMessage = false;
-          
-          while (reader) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            const chunk = new TextDecoder().decode(value);
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const jsonStr = line.slice(6).trim();
-                if (!jsonStr) continue;
-                
-                try {
-                  const data = JSON.parse(jsonStr);
-                  console.log('Received SSE data:', data);
-                  
-                  if (data.event === 'message' && data.answer) {
-                    // Accumulate the streamed response
-                    assistantMessage += data.answer;
-                    hasStartedMessage = true;
-                    
-                    // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
-                    if (lastMessageIndex !== -1) {
-                      this.messages[lastMessageIndex].content = assistantMessage;
-                    } else {
-                      // Add the new message to the end of the array
-                      this.messages.push({
-                        role: 'assistant',
-                        content: assistantMessage,
-                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
-                      });
-                    }
-                    
-                    this.renderMessages();
-                    
-                    if (!this.conversationId && data.conversation_id) {
-                      this.conversationId = data.conversation_id;
-                      this.saveConversationId(data.conversation_id);
-                    }
-                  } else if (data.event === 'error') {
-                    throw new Error(data.data || 'Unknown error from Dify API');
-                  }
-                } catch (parseErr) { 
-                  console.error("Could not parse error response from proxy as JSON:", parseErr); 
-                  // detail already contains errorText, so no need to set it again
-                }
-              }
-            }
-          }
-          
-          if (!hasStartedMessage) {
-            throw new Error('No response received from assistant');
-          }
+          await this.processApiResponse(messageText);
         } catch (error) {
           console.error('Error sending message:', error);
           this.messages.push({
@@ -1047,65 +992,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             return;
           }
           
-          const response = await this.callChatAPI(action);
-          const reader = response.body?.getReader();
-          let assistantMessage = '';
-          let hasStartedMessage = false;
-          
-          while (reader) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            const chunk = new TextDecoder().decode(value);
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const jsonStr = line.slice(6).trim();
-                if (!jsonStr) continue;
-                
-                try {
-                  const data = JSON.parse(jsonStr);
-                  console.log('Received SSE data:', data);
-                  
-                  if (data.event === 'message' && data.answer) {
-                    // Accumulate the streamed response
-                    assistantMessage += data.answer;
-                    hasStartedMessage = true;
-                    
-                    // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
-                    if (lastMessageIndex !== -1) {
-                      this.messages[lastMessageIndex].content = assistantMessage;
-                    } else {
-                      // Add the new message to the end of the array
-                      this.messages.push({
-                        role: 'assistant',
-                        content: assistantMessage,
-                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
-                      });
-                    }
-                    
-                    this.renderMessages();
-                    
-                    if (!this.conversationId && data.conversation_id) {
-                      this.conversationId = data.conversation_id;
-                      this.saveConversationId(data.conversation_id);
-                    }
-                  } else if (data.event === 'error') {
-                    throw new Error(data.data || 'Unknown error from Dify API');
-                  }
-                } catch (parseErr) { 
-                  console.error("Could not parse error response from proxy as JSON:", parseErr); 
-                  // detail already contains errorText, so no need to set it again
-                }
-              }
-            }
-          }
-          
-          if (!hasStartedMessage) {
-            throw new Error('No response received from assistant');
-          }
+          await this.processApiResponse(action);
         } catch (error) {
           console.error('Error sending message:', error);
           this.messages.push({
@@ -1118,6 +1005,80 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           this.isLoading = false;
           this.updateSendButtonState(false);
         }
+      }
+      
+      // Extract common API response handling logic
+      async processApiResponse(message) {
+        const response = await this.callChatAPI(message);
+        const reader = response.body?.getReader();
+        let assistantMessage = '';
+        let hasStartedMessage = false;
+        const streamingId = 'stream-' + Date.now().toString();
+        
+        // Add a new streaming message immediately
+        this.messages.push({
+          role: 'assistant',
+          content: '',
+          id: streamingId,
+          isComplete: false
+        });
+        
+        this.renderMessages();
+        
+        while (reader) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = new TextDecoder().decode(value);
+          const lines = chunk.split('\n').filter(line => line.trim() !== '');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6).trim();
+              if (!jsonStr) continue;
+              
+              try {
+                const data = JSON.parse(jsonStr);
+                console.log('Received SSE data:', data);
+                
+                if (data.event === 'message' && data.answer) {
+                  // Accumulate the streamed response
+                  assistantMessage += data.answer;
+                  hasStartedMessage = true;
+                  
+                  // Find our streaming message and update it
+                  const messageIndex = this.messages.findIndex(m => m.id === streamingId);
+                  if (messageIndex !== -1) {
+                    this.messages[messageIndex].content = assistantMessage;
+                    this.renderMessages();
+                  }
+                  
+                  if (!this.conversationId && data.conversation_id) {
+                    this.conversationId = data.conversation_id;
+                    this.saveConversationId(data.conversation_id);
+                  }
+                } else if (data.event === 'done') {
+                  // Mark the streaming message as complete
+                  const messageIndex = this.messages.findIndex(m => m.id === streamingId);
+                  if (messageIndex !== -1) {
+                    this.messages[messageIndex].isComplete = true;
+                    // Keep the streaming ID - we don't need to change it
+                  }
+                } else if (data.event === 'error') {
+                  throw new Error(data.data || 'Unknown error from Dify API');
+                }
+              } catch (parseErr) { 
+                console.error("Could not parse error response from proxy as JSON:", parseErr); 
+              }
+            }
+          }
+        }
+        
+        if (!hasStartedMessage) {
+          throw new Error('No response received from assistant');
+        }
+        
+        return assistantMessage;
       }
       
       updateSendButtonState(isLoading = false) {
