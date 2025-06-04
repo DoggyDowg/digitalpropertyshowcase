@@ -393,11 +393,11 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           right: '32px',
           width: '56px',
           height: '56px',
-          backgroundColor: '#3A24C7',
+          backgroundColor: '#3A24C7', // var(--primary-color)
           color: 'white',
           borderRadius: '16px',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          transition: 'all 0.3s ease-in-out',
+          transition: 'all 0.3s ease-in-out, background-position 4s ease',
           transform: 'none',
           zIndex: '9999',
           display: 'flex',
@@ -406,7 +406,12 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           border: 'none',
           cursor: 'pointer',
           padding: '0',
-          margin: '0'
+          margin: '0',
+          overflow: 'hidden', // Important for the gradient effect
+          backgroundSize: '200% auto', // For gradient animation
+          backgroundImage: 'linear-gradient(to right, #3A24C7 0%, rgba(255, 51, 122, 0.5) 50%, #3A24C7 100%)', // Gradient matching the primary button
+          backgroundPosition: '0% 50%',
+          animation: 'lp-primary-gradient-scroll 8s ease infinite'
         });
         
         // Ensure styles are applied with !important
@@ -418,22 +423,22 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         
         button.setAttribute('aria-label', 'Open chat');
         button.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px; position: relative; z-index: 2;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         `;
         
         // Add hover effects
         button.addEventListener('mouseover', function() {
-          this.style.setProperty('backgroundColor', '#594DC7', 'important');
-          this.style.setProperty('transform', 'translateY(-4px)', 'important');
-          this.style.setProperty('boxShadow', '0 6px 10px rgba(0, 0, 0, 0.2)', 'important');
+          this.style.setProperty('transform', 'scale(1.03)', 'important');
+          this.style.setProperty('boxShadow', '0 4px 15px rgba(58, 36, 199, 0.3)', 'important');
+          this.style.setProperty('animation', 'lp-primary-gradient-scroll 4s ease infinite', 'important');
         });
         
         button.addEventListener('mouseout', function() {
-          this.style.setProperty('backgroundColor', '#3A24C7', 'important');
           this.style.setProperty('transform', 'none', 'important');
           this.style.setProperty('boxShadow', '0 4px 6px rgba(0, 0, 0, 0.1)', 'important');
+          this.style.setProperty('animation', 'lp-primary-gradient-scroll 8s ease infinite', 'important');
         });
         
         document.body.appendChild(button);
@@ -473,10 +478,10 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         chatWindow.style.setProperty('zIndex', '9998', 'important');
         
         chatWindow.innerHTML = `
-          <div id="chat-header" style="background-color: #3A24C7; color: white; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div id="chat-header" style="background: linear-gradient(90deg, #3A24C7 0%, #3A24C7 70%, #FF337A 120%); color: white; padding: 8px; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="height: 24px; width: 24px;">
-                <img src="/assets/logo/favicon.png" alt="Logo" style="height: 100%; width: 100%;" />
+              <div style="height: 24px; width: 32px; padding-left: 8px;">
+                <img src="/logos/white_icon.png" alt="Logo" style="height: 100%; width: 100%;" />
               </div>
               <div>
                 <p style="font-size: 12px; margin: 0;">Welcome to</p>
@@ -524,7 +529,10 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         
         // Close button
         const closeButton = document.getElementById('chat-close');
-        closeButton.addEventListener('click', () => this.toggleChat(false));
+        closeButton.addEventListener('click', () => {
+          // Close the chat window directly and ensure button reappears
+          this.forceChatClose();
+        });
         
         // Send button
         const sendButton = document.getElementById('chat-send-button');
@@ -558,17 +566,19 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         const isCurrentlyOpen = chatWindow.style.transform === 'scale(1)';
         const shouldOpen = force !== null ? force : !isCurrentlyOpen;
         
+        console.log(`toggleChat called. shouldOpen: ${shouldOpen}, force: ${force}, isCurrentlyOpen: ${isCurrentlyOpen}`);
+        
         if (shouldOpen) {
           // Open the chat window
           chatWindow.style.transform = 'scale(1)';
           chatWindow.style.opacity = '1';
           
-          // Change button icon to X
-          toggleButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          `;
+          // Reposition the chat window to use the button's space
+          chatWindow.style.setProperty('bottom', '32px', 'important');
+          
+          // Hide the toggle button
+          toggleButton.style.setProperty('display', 'none', 'important');
+          console.log('Chat opened, toggle button hidden');
           
           // Focus the input field
           setTimeout(() => {
@@ -583,7 +593,12 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           chatWindow.style.transform = 'scale(0)';
           chatWindow.style.opacity = '0';
           
-          // Change button icon back to chat
+          // Reset the chat window position
+          chatWindow.style.setProperty('bottom', '100px', 'important');
+          
+          // Show the toggle button and set icon to chat
+          toggleButton.style.setProperty('display', 'flex', 'important');
+          console.log('Chat closed, toggle button should be visible now');
           toggleButton.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -629,7 +644,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             avatar.style.justifyContent = 'center';
             avatar.style.flexShrink = '0';
             
-            avatar.innerHTML = `<img src="/assets/logo/favicon.png" style="height: 16px; width: 16px;" alt="Assistant" />`;
+            avatar.innerHTML = `<img src="/logos/white_icon.png" style="height: 16px; width: 16px;" alt="Assistant" />`;
             bubbleContainer.appendChild(avatar);
           }
           
@@ -1071,6 +1086,66 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
 
         return response;
       }
+      
+      // New function to force close the chat and guarantee a button appears
+      forceChatClose() {
+        console.log('forceChatClose called - closing chat and ensuring button exists');
+        
+        // Get the chat window
+        const chatWindow = document.getElementById('chat-window');
+        if (chatWindow) {
+          // Close the chat window
+          chatWindow.style.transform = 'scale(0)';
+          chatWindow.style.opacity = '0';
+          chatWindow.style.setProperty('bottom', '100px', 'important');
+        }
+        
+        // Try to find the existing toggle button
+        let toggleButton = document.getElementById('chat-toggle-button');
+        
+        // If the button doesn't exist or is not in the DOM, create a new one
+        if (!toggleButton || !document.body.contains(toggleButton)) {
+          console.log('Toggle button not found, creating a new one');
+          toggleButton = this.createChatButton();
+        }
+        
+        // Make sure the button is visible with all required styles
+        if (toggleButton) {
+          toggleButton.style.setProperty('position', 'fixed', 'important');
+          toggleButton.style.setProperty('bottom', '32px', 'important');
+          toggleButton.style.setProperty('right', '32px', 'important');
+          toggleButton.style.setProperty('display', 'flex', 'important');
+          toggleButton.style.setProperty('opacity', '1', 'important');
+          toggleButton.style.setProperty('visibility', 'visible', 'important');
+          toggleButton.style.setProperty('z-index', '9999', 'important');
+          
+          // Set the chat icon
+          toggleButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          `;
+          
+          console.log('Toggle button should now be visible', toggleButton);
+        }
+        
+        // Also check for the ultimate button as a fallback
+        const ultimateButton = document.getElementById('ultimate-chat-button');
+        if (ultimateButton) {
+          ultimateButton.style.setProperty('display', 'flex', 'important');
+          ultimateButton.style.setProperty('opacity', '1', 'important');
+          ultimateButton.style.setProperty('visibility', 'visible', 'important');
+          
+          // Update its icon too
+          ultimateButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          `;
+          
+          console.log('Ultimate button should now be visible', ultimateButton);
+        }
+      }
     }
 
     // Initialize the chat widget in a try/catch block to prevent page errors
@@ -1138,7 +1213,9 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           background-color: #3A24C7 !important;
           color: white !important;
           border-radius: 16px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+          transition: all 0.3s ease-in-out, background-position 4s ease !important;
+          transform: none !important;
           z-index: 2147483647 !important; /* Max z-index */
           border: none !important;
           outline: none !important;
@@ -1148,16 +1225,33 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           justify-content: center !important;
           padding: 0 !important;
           margin: 0 !important;
-          overflow: hidden !important; /* Prevent content spill */
-          -webkit-transform-style: preserve-3d; /* Hint for stacking context */
-          transform: translateZ(0); /* Force hardware acceleration / new stacking context */
+          overflow: hidden !important; /* Prevent content spill and for gradient */
+          -webkit-transform-style: preserve-3d !important; /* Hint for stacking context */
+          transform: translateZ(0) !important; /* Force hardware acceleration / new stacking context */
+          background-size: 200% auto !important; /* For gradient animation */
+          background-image: linear-gradient(to right, #3A24C7 0%, rgba(255, 51, 122, 0.5) 50%, #3A24C7 100%) !important; /* Gradient matching the primary button */
+          background-position: 0% 50% !important;
+          animation: lp-primary-gradient-scroll 8s ease infinite !important;
         `;
 
         button.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block; position:relative; z-index:2;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         `;
+        
+        // Add hover effects
+        button.addEventListener('mouseover', function() {
+          this.style.setProperty('transform', 'scale(1.03)', 'important');
+          this.style.setProperty('boxShadow', '0 4px 15px rgba(58, 36, 199, 0.3)', 'important');
+          this.style.setProperty('animation', 'lp-primary-gradient-scroll 4s ease infinite', 'important');
+        });
+        
+        button.addEventListener('mouseout', function() {
+          this.style.setProperty('transform', 'none', 'important');
+          this.style.setProperty('boxShadow', '0 4px 6px rgba(0, 0, 0, 0.1)', 'important');
+          this.style.setProperty('animation', 'lp-primary-gradient-scroll 8s ease infinite', 'important');
+        });
 
         button.addEventListener('click', (e) => {
           e.preventDefault();
@@ -1173,21 +1267,43 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           if (chatWindow) {
             const isCurrentlyOpen = chatWindow.style.opacity === '1';
             if (isCurrentlyOpen) {
+              // Close the chat window
               chatWindow.style.transform = 'scale(0)';
               chatWindow.style.opacity = '0';
+              
+              // Reset the chat window position
+              chatWindow.style.setProperty('bottom', '100px', 'important');
+              
+              // Show this button again
+              button.style.setProperty('display', 'flex', 'important');
               button.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block;">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               `;
+              
+              // Also check if the main button exists and show it too (as a fallback)
+              const mainToggleButton = document.getElementById('chat-toggle-button');
+              if (mainToggleButton) {
+                mainToggleButton.style.setProperty('display', 'flex', 'important');
+              }
             } else {
+              // Open the chat window
               chatWindow.style.transform = 'scale(1)';
               chatWindow.style.opacity = '1';
-              button.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block;">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              `;
+              
+              // Position the chat window to use the button's space
+              chatWindow.style.setProperty('bottom', '32px', 'important');
+              
+              // Hide this button
+              button.style.setProperty('display', 'none', 'important');
+              
+              // Also hide the main button if it exists
+              const mainToggleButton = document.getElementById('chat-toggle-button');
+              if (mainToggleButton) {
+                mainToggleButton.style.setProperty('display', 'none', 'important');
+              }
+              
               // Try to focus the input field
               const inputField = chatWindow.querySelector('#dps-chat-input') || chatWindow.querySelector('#chat-input');
               if (inputField) {
