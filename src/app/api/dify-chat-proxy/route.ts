@@ -26,13 +26,18 @@ export async function POST(request: NextRequest) {
     console.log('API route received request:', requestData);
     console.log('chat_type from request:', requestData.chat_type);
 
+    // Create proper inputs object with chat_type inside it
+    const inputs = {
+      ...requestData.inputs || {},
+      chat_type: requestData.chat_type || 'landingpage'
+    };
+    
     const difyRequestBody = {
-      inputs: requestData.inputs || {},
+      inputs: inputs,
       query: requestData.query,
       response_mode: 'streaming',
       conversation_id: requestData.conversation_id || undefined,
       user: requestData.user || 'vercel-nextjs-user',
-      chat_type: requestData.chat_type || 'landingpage',
     };
 
     console.log('Sending to Dify:', JSON.stringify(difyRequestBody));
