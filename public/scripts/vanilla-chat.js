@@ -1060,11 +1060,11 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           chat_type: 'landingpage',
         };
 
-        console.log('Sending chat request to:', `${DIFY_CONFIG.API_URL}/chat-messages`);
+        console.log('Sending chat request to:', DIFY_CONFIG.API_URL);
         console.log('Request body:', body);
 
         // Requests now go to our proxy, not directly to Dify
-        const response = await fetch(`${DIFY_CONFIG.API_URL}/chat-messages`, {
+        const response = await fetch(DIFY_CONFIG.API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
