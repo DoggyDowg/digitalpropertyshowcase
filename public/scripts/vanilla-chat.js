@@ -33,8 +33,8 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
 
     // Replace with your landing page API key - Modified to work in browser context
     const DIFY_CONFIG = {
-      APP_KEY: '', // REMOVE THIS - No longer needed in client-side
-      API_URL: 'http://localhost:3001', // Point to the local proxy server
+      APP_KEY: 'dummy-key', // Adding a dummy value to bypass the fallback check
+      API_URL: '/api/dify-chat-proxy', // Use the relative path to your Vercel serverless function
     };
 
     // Initial quick replies
@@ -784,6 +784,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           // Use fallback responses if no API key is available
           if (!DIFY_CONFIG.APP_KEY) {
             console.log("No API key available, using fallback responses");
+            console.log("DIFY_CONFIG value:", JSON.stringify(DIFY_CONFIG));
             
             // Wait a moment to simulate processing
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -909,6 +910,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           // Use fallback responses if no API key is available
           if (!DIFY_CONFIG.APP_KEY) {
             console.log("No API key available, using fallback responses for quick reply");
+            console.log("DIFY_CONFIG value:", JSON.stringify(DIFY_CONFIG));
             
             // Wait a moment to simulate processing
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1058,6 +1060,9 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           chat_type: 'landingpage',
         };
 
+        console.log('Sending chat request to:', `${DIFY_CONFIG.API_URL}/chat-messages`);
+        console.log('Request body:', body);
+
         // Requests now go to our proxy, not directly to Dify
         const response = await fetch(`${DIFY_CONFIG.API_URL}/chat-messages`, {
           method: 'POST',
@@ -1070,8 +1075,11 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           mode: 'cors'
         });
 
+        console.log('Response status:', response.status, response.statusText);
+
         if (!response.ok) {
           const errorText = await response.text();
+          console.error('Error response body:', errorText);
           // Try to parse errorText if it's JSON, otherwise use it directly
           let detail = errorText;
           try {
@@ -1084,6 +1092,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           throw new Error(`Failed to send message via proxy: ${response.statusText} - ${detail}`);
         }
 
+        console.log('API call successful, streaming response...');
         return response;
       }
       
