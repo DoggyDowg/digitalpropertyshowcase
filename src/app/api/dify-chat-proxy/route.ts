@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
   try {
     const requestData = await request.json();
     console.log('API route received request:', requestData);
+    console.log('chat_type from request:', requestData.chat_type);
 
     const difyRequestBody = {
       inputs: requestData.inputs || {},
@@ -31,8 +32,11 @@ export async function POST(request: NextRequest) {
       response_mode: 'streaming',
       conversation_id: requestData.conversation_id || undefined,
       user: requestData.user || 'vercel-nextjs-user',
+      chat_type: requestData.chat_type || 'landingpage',
     };
 
+    console.log('Sending to Dify:', JSON.stringify(difyRequestBody));
+    
     const difyResponse = await fetch(`${DIFY_API_URL}/chat-messages`, {
       method: 'POST',
       headers: {
@@ -99,4 +103,4 @@ export async function OPTIONS() {
       'Access-Control-Max-Age': '86400',
     },
   });
-} 
+}
