@@ -613,7 +613,64 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         
         messagesContainer.innerHTML = '';
         
-        this.messages.forEach(message => {
+        // Helper function to parse basic markdown
+        const parseMarkdown = (text) => {
+          if (!text) return '';
+          
+          // Replace line breaks with <br> tags
+          let html = text.replace(/\n/g, '<br>');
+          
+          // Bold - replace **text** with <strong>text</strong>
+          html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          
+          // Handle lists
+          // Unordered lists - replace "- item" with list items
+          if (html.includes('- ')) {
+            const lines = html.split('<br>');
+            let inList = false;
+            let result = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              if (line.trim().startsWith('- ')) {
+                // List item
+                if (!inList) {
+                  result.push('<ul style="margin: 5px 0; padding-left: 20px;">');
+                  inList = true;
+                }
+                const itemContent = line.trim().substring(2);
+                result.push(`<li style="margin-bottom: 3px;">${itemContent}</li>`);
+              } else {
+                // Regular text
+                if (inList) {
+                  result.push('</ul>');
+                  inList = false;
+                }
+                result.push(line);
+              }
+            }
+            
+            if (inList) {
+              result.push('</ul>');
+            }
+            
+            html = result.join('');
+          }
+          
+          return html;
+        };
+        
+        // Sort messages by their timestamp ID to ensure correct order
+        const sortedMessages = [...this.messages].sort((a, b) => {
+          // Initial message always comes first
+          if (a.id === 'initial') return -1;
+          if (b.id === 'initial') return 1;
+          
+          // Otherwise sort by numeric ID (timestamp)
+          return parseInt(a.id) - parseInt(b.id);
+        });
+        
+        sortedMessages.forEach(message => {
           const messageElement = document.createElement('div');
           messageElement.style.display = 'flex';
           messageElement.style.flexDirection = 'column';
@@ -675,7 +732,13 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             contentBubble.style.borderBottomLeftRadius = '0';
           }
           
-          contentBubble.textContent = message.content;
+          // Apply markdown formatting for assistant messages
+          if (message.role === 'assistant') {
+            contentBubble.innerHTML = parseMarkdown(message.content);
+          } else {
+            contentBubble.textContent = message.content;
+          }
+          
           contentContainer.appendChild(contentBubble);
           bubbleContainer.appendChild(contentContainer);
           
@@ -844,14 +907,15 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     hasStartedMessage = true;
                     
                     // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant');
+                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
                     if (lastMessageIndex !== -1) {
                       this.messages[lastMessageIndex].content = assistantMessage;
                     } else {
+                      // Add the new message to the end of the array
                       this.messages.push({
                         role: 'assistant',
                         content: assistantMessage,
-                        id: Date.now().toString()
+                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
                       });
                     }
                     
@@ -970,14 +1034,15 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     hasStartedMessage = true;
                     
                     // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant');
+                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
                     if (lastMessageIndex !== -1) {
                       this.messages[lastMessageIndex].content = assistantMessage;
                     } else {
+                      // Add the new message to the end of the array
                       this.messages.push({
                         role: 'assistant',
                         content: assistantMessage,
-                        id: Date.now().toString()
+                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
                       });
                     }
                     
