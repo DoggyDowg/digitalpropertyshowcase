@@ -58,7 +58,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
       constructor() {
         this.isOpen = false;
         this.isLoading = false;
-        this.conversationId = this.loadConversationId(); // Load from localStorage if available
+        this.conversationId = null;
         this.messages = [
           {
             role: 'assistant',
@@ -69,30 +69,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         ];
         
         this.init();
-      }
-      
-      // Helper method to load conversation ID from localStorage
-      loadConversationId() {
-        try {
-          const savedId = localStorage.getItem('dps_conversation_id');
-          console.log('Loaded conversation ID from storage:', savedId);
-          return savedId;
-        } catch (e) {
-          console.error('Error loading conversation ID from localStorage:', e);
-          return null;
-        }
-      }
-      
-      // Helper method to save conversation ID to localStorage
-      saveConversationId(id) {
-        if (!id) return;
-        
-        try {
-          localStorage.setItem('dps_conversation_id', id);
-          console.log('Saved conversation ID to storage:', id);
-        } catch (e) {
-          console.error('Error saving conversation ID to localStorage:', e);
-        }
       }
       
       init() {
@@ -512,18 +488,11 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                 <h2 style="font-size: 16px; font-weight: 600; margin: 0;">${APP_INFO.title}</h2>
               </div>
             </div>
-            <div style="display: flex; align-items: center;">
-              <button id="chat-reset" title="Start a new conversation" style="background: none; border: none; color: white; cursor: pointer; padding: 4px; margin-right: 6px; opacity: 0.8;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
-              <button id="chat-close" style="background: none; border: none; color: white; cursor: pointer; padding: 4px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <button id="chat-close" style="background: none; border: none; color: white; cursor: pointer; padding: 4px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
           
           <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 16px;"></div>
@@ -563,14 +532,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         closeButton.addEventListener('click', () => {
           // Close the chat window directly and ensure button reappears
           this.forceChatClose();
-        });
-        
-        // Reset conversation button
-        const resetButton = document.getElementById('chat-reset');
-        resetButton.addEventListener('click', () => {
-          if (confirm('Start a new conversation? This will clear the current chat history.')) {
-            this.clearConversation();
-          }
         });
         
         // Send button
@@ -661,9 +622,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           
           // Bold - replace **text** with <strong>text</strong>
           html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          
-          // Links - replace [text](url) with <a href="url">text</a>
-          html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #3B82F6; text-decoration: underline;">$1</a>');
           
           // Handle lists
           // Unordered lists - replace "- item" with list items
@@ -922,7 +880,64 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             return;
           }
           
-          await this.processApiResponse(messageText);
+          const response = await this.callChatAPI(messageText);
+          const reader = response.body?.getReader();
+          let assistantMessage = '';
+          let hasStartedMessage = false;
+          
+          while (reader) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = new TextDecoder().decode(value);
+            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const jsonStr = line.slice(6).trim();
+                if (!jsonStr) continue;
+                
+                try {
+                  const data = JSON.parse(jsonStr);
+                  console.log('Received SSE data:', data);
+                  
+                  if (data.event === 'message' && data.answer) {
+                    // Accumulate the streamed response
+                    assistantMessage += data.answer;
+                    hasStartedMessage = true;
+                    
+                    // Update the displayed message
+                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
+                    if (lastMessageIndex !== -1) {
+                      this.messages[lastMessageIndex].content = assistantMessage;
+                    } else {
+                      // Add the new message to the end of the array
+                      this.messages.push({
+                        role: 'assistant',
+                        content: assistantMessage,
+                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
+                      });
+                    }
+                    
+                    this.renderMessages();
+                    
+                    if (!this.conversationId && data.conversation_id) {
+                      this.conversationId = data.conversation_id;
+                    }
+                  } else if (data.event === 'error') {
+                    throw new Error(data.data || 'Unknown error from Dify API');
+                  }
+                } catch (parseErr) { 
+                  console.error("Could not parse error response from proxy as JSON:", parseErr); 
+                  // detail already contains errorText, so no need to set it again
+                }
+              }
+            }
+          }
+          
+          if (!hasStartedMessage) {
+            throw new Error('No response received from assistant');
+          }
         } catch (error) {
           console.error('Error sending message:', error);
           this.messages.push({
@@ -992,7 +1007,64 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             return;
           }
           
-          await this.processApiResponse(action);
+          const response = await this.callChatAPI(action);
+          const reader = response.body?.getReader();
+          let assistantMessage = '';
+          let hasStartedMessage = false;
+          
+          while (reader) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = new TextDecoder().decode(value);
+            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const jsonStr = line.slice(6).trim();
+                if (!jsonStr) continue;
+                
+                try {
+                  const data = JSON.parse(jsonStr);
+                  console.log('Received SSE data:', data);
+                  
+                  if (data.event === 'message' && data.answer) {
+                    // Accumulate the streamed response
+                    assistantMessage += data.answer;
+                    hasStartedMessage = true;
+                    
+                    // Update the displayed message
+                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
+                    if (lastMessageIndex !== -1) {
+                      this.messages[lastMessageIndex].content = assistantMessage;
+                    } else {
+                      // Add the new message to the end of the array
+                      this.messages.push({
+                        role: 'assistant',
+                        content: assistantMessage,
+                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
+                      });
+                    }
+                    
+                    this.renderMessages();
+                    
+                    if (!this.conversationId && data.conversation_id) {
+                      this.conversationId = data.conversation_id;
+                    }
+                  } else if (data.event === 'error') {
+                    throw new Error(data.data || 'Unknown error from Dify API');
+                  }
+                } catch (parseErr) { 
+                  console.error("Could not parse error response from proxy as JSON:", parseErr); 
+                  // detail already contains errorText, so no need to set it again
+                }
+              }
+            }
+          }
+          
+          if (!hasStartedMessage) {
+            throw new Error('No response received from assistant');
+          }
         } catch (error) {
           console.error('Error sending message:', error);
           this.messages.push({
@@ -1005,80 +1077,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           this.isLoading = false;
           this.updateSendButtonState(false);
         }
-      }
-      
-      // Extract common API response handling logic
-      async processApiResponse(message) {
-        const response = await this.callChatAPI(message);
-        const reader = response.body?.getReader();
-        let assistantMessage = '';
-        let hasStartedMessage = false;
-        const streamingId = 'stream-' + Date.now().toString();
-        
-        // Add a new streaming message immediately
-        this.messages.push({
-          role: 'assistant',
-          content: '',
-          id: streamingId,
-          isComplete: false
-        });
-        
-        this.renderMessages();
-        
-        while (reader) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const chunk = new TextDecoder().decode(value);
-          const lines = chunk.split('\n').filter(line => line.trim() !== '');
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonStr = line.slice(6).trim();
-              if (!jsonStr) continue;
-              
-              try {
-                const data = JSON.parse(jsonStr);
-                console.log('Received SSE data:', data);
-                
-                if (data.event === 'message' && data.answer) {
-                  // Accumulate the streamed response
-                  assistantMessage += data.answer;
-                  hasStartedMessage = true;
-                  
-                  // Find our streaming message and update it
-                  const messageIndex = this.messages.findIndex(m => m.id === streamingId);
-                  if (messageIndex !== -1) {
-                    this.messages[messageIndex].content = assistantMessage;
-                    this.renderMessages();
-                  }
-                  
-                  if (!this.conversationId && data.conversation_id) {
-                    this.conversationId = data.conversation_id;
-                    this.saveConversationId(data.conversation_id);
-                  }
-                } else if (data.event === 'done') {
-                  // Mark the streaming message as complete
-                  const messageIndex = this.messages.findIndex(m => m.id === streamingId);
-                  if (messageIndex !== -1) {
-                    this.messages[messageIndex].isComplete = true;
-                    // Keep the streaming ID - we don't need to change it
-                  }
-                } else if (data.event === 'error') {
-                  throw new Error(data.data || 'Unknown error from Dify API');
-                }
-              } catch (parseErr) { 
-                console.error("Could not parse error response from proxy as JSON:", parseErr); 
-              }
-            }
-          }
-        }
-        
-        if (!hasStartedMessage) {
-          throw new Error('No response received from assistant');
-        }
-        
-        return assistantMessage;
       }
       
       updateSendButtonState(isLoading = false) {
@@ -1129,7 +1127,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
 
         console.log('Sending chat request to:', DIFY_CONFIG.API_URL);
         console.log('Request body:', body);
-        console.log('Using conversation_id:', this.conversationId || 'None (new conversation)');
 
         // Requests now go to our proxy, not directly to Dify
         const response = await fetch(DIFY_CONFIG.API_URL, {
@@ -1223,31 +1220,6 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           console.log('Ultimate button should now be visible', ultimateButton);
         }
       }
-
-      // Clear the conversation history and start fresh
-      clearConversation() {
-        this.conversationId = null;
-        
-        try {
-          localStorage.removeItem('dps_conversation_id');
-          console.log('Cleared conversation ID from storage');
-        } catch (e) {
-          console.error('Error clearing conversation ID from localStorage:', e);
-        }
-        
-        // Reset messages to just the initial welcome
-        this.messages = [
-          {
-            role: 'assistant',
-            content: CHAT_CONFIG.initialMessage,
-            id: 'initial',
-            quickReplies: INITIAL_QUICK_REPLIES
-          }
-        ];
-        
-        this.renderMessages();
-        console.log('Conversation cleared, starting fresh');
-      }
     }
 
     // Initialize the chat widget in a try/catch block to prevent page errors
@@ -1322,7 +1294,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           border: none !important;
           outline: none !important;
           cursor: pointer !important;
-          display: flex !important;
+          display: flex !important; /* Initially flex, will be conditionally appended */
           align-items: center !important;
           justify-content: center !important;
           padding: 0 !important;
@@ -1355,126 +1327,112 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           this.style.setProperty('animation', 'lp-primary-gradient-scroll 8s ease infinite', 'important');
         });
 
+        // RE-ADD THE CLICK LISTENER FOR THIS ULTIMATE BUTTON
         button.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          // alert("Chat with DPS! Email us at info@digitalpropertyshowcase.com.");
-
-          // Determine which chat window exists
-          let chatWindow = document.getElementById('dps-chat-window'); // From fallbackInitialization
-          if (!chatWindow) {
-            chatWindow = document.getElementById('chat-window'); // Original chat window
-          }
-
+          
+          let chatWindow = document.getElementById('dps-chat-window') || document.getElementById('chat-window');
           if (chatWindow) {
-            const isCurrentlyOpen = chatWindow.style.opacity === '1';
+            const isCurrentlyOpen = (chatWindow.style.transform === 'scale(1)' && chatWindow.style.opacity === '1');
             if (isCurrentlyOpen) {
-              // Close the chat window
+              // Close chat window
               chatWindow.style.transform = 'scale(0)';
               chatWindow.style.opacity = '0';
-              
-              // Reset the chat window position
               chatWindow.style.setProperty('bottom', '100px', 'important');
-              
-              // Show this button again
+              // Show this ultimate button
               button.style.setProperty('display', 'flex', 'important');
               button.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px; height:24px; display:block;">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               `;
-              
-              // Also check if the main button exists and show it too (as a fallback)
+              // Also ensure the main toggle button (if it exists somehow) is shown.
               const mainToggleButton = document.getElementById('chat-toggle-button');
               if (mainToggleButton) {
                 mainToggleButton.style.setProperty('display', 'flex', 'important');
               }
             } else {
-              // Open the chat window
+              // Open chat window
               chatWindow.style.transform = 'scale(1)';
               chatWindow.style.opacity = '1';
-              
-              // Position the chat window to use the button's space
               chatWindow.style.setProperty('bottom', '32px', 'important');
-              
-              // Hide this button
+              // Hide this ultimate button
               button.style.setProperty('display', 'none', 'important');
-              
-              // Also hide the main button if it exists
+              // Also hide the main toggle button if it exists
               const mainToggleButton = document.getElementById('chat-toggle-button');
               if (mainToggleButton) {
                 mainToggleButton.style.setProperty('display', 'none', 'important');
               }
-              
-              // Try to focus the input field
+              // Focus input
               const inputField = chatWindow.querySelector('#dps-chat-input') || chatWindow.querySelector('#chat-input');
               if (inputField) {
-                setTimeout(() => inputField.focus(), 300); // Delay to allow for transition
+                setTimeout(() => inputField.focus(), 300);
               }
             }
           } else {
             console.error("Chat window element not found for ultimate button to toggle.");
-            alert("Chat window is currently unavailable. Please try refreshing.");
+            // Potentially alert or provide some feedback if chat window itself is missing
+            // alert("Chat window is currently unavailable. Please try refreshing.");
           }
         });
 
-        // Append directly to body first
-        document.body.appendChild(button);
+        // Check if the chat window is already open before showing this ultimate button
+        const chatWindowForCheck = document.getElementById('chat-window') || document.getElementById('dps-chat-window');
+        let chatIsOpen = false;
+        if (chatWindowForCheck) {
+            chatIsOpen = (chatWindowForCheck.style.transform === 'scale(1)' && chatWindowForCheck.style.opacity === '1');
+        }
 
-        // After a short delay, check if it's correctly positioned. If not, try re-parenting.
-        setTimeout(() => {
-          const rect = button.getBoundingClientRect();
-          const viewportWidth = window.innerWidth;
-          const viewportHeight = window.innerHeight;
+        if (!chatIsOpen) {
+            console.log('Ultimate button will be shown as chat is not open.');
+            document.body.appendChild(button); // Append if chat is closed
 
-          // Check if button is roughly in the bottom right quadrant and visible
-          const isCorrectlyPositioned = 
-            rect.right > viewportWidth - 100 && rect.right <= viewportWidth &&
-            rect.bottom > viewportHeight - 100 && rect.bottom <= viewportHeight &&
-            rect.width > 0 && rect.height > 0;
+            // After a short delay, check if it's correctly positioned. If not, try re-parenting.
+            setTimeout(() => {
+              const rect = button.getBoundingClientRect();
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
 
-          if (!isCorrectlyPositioned) {
-            console.warn('Button not fixed, attempting re-parenting to a new clean root div.');
-            
-            // Remove from body if it was added
-            if (button.parentNode === document.body) {
-              document.body.removeChild(button);
-            }
+              const isCorrectlyPositioned = 
+                rect.right > viewportWidth - 100 && rect.right <= viewportWidth &&
+                rect.bottom > viewportHeight - 100 && rect.bottom <= viewportHeight &&
+                rect.width > 0 && rect.height > 0;
 
-            // Create a new clean root div
-            let cleanRoot = document.getElementById('chat-clean-root');
-            if (!cleanRoot) {
-              cleanRoot = document.createElement('div');
-              cleanRoot.id = 'chat-clean-root';
-              cleanRoot.style.cssText = `
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 0 !important; /* Does not take space */
-                height: 0 !important; /* Does not take space */
-                border: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                z-index: auto; /* Let button define its own z-index */
-                background: transparent !important;
-                transform: none !important;
-                filter: none !important;
-                perspective: none !important;
-              `;
-              // Append to html element instead of body
-              document.documentElement.appendChild(cleanRoot);
-            }
-            // Append button to the new clean root
-            cleanRoot.appendChild(button);
-          }
-          
-          // Final check for visibility
-           const finalRect = button.getBoundingClientRect();
-           if(finalRect.width === 0 || finalRect.height === 0) {
-             console.error("Ultimate button is still not visible after all attempts.");
-           }
-
-        }, 200); // Check after 200ms
+              if (!isCorrectlyPositioned) {
+                console.warn('Ultimate button not fixed, attempting re-parenting to a new clean root div.');
+                if (button.parentNode === document.body) {
+                  document.body.removeChild(button);
+                }
+                let cleanRoot = document.getElementById('chat-clean-root');
+                if (!cleanRoot) {
+                  cleanRoot = document.createElement('div');
+                  cleanRoot.id = 'chat-clean-root';
+                  cleanRoot.style.cssText = `
+                    position: absolute !important; top: 0 !important; left: 0 !important;
+                    width: 0 !important; height: 0 !important; border: none !important;
+                    padding: 0 !important; margin: 0 !important; z-index: auto;
+                    background: transparent !important; transform: none !important;
+                    filter: none !important; perspective: none !important;
+                  `;
+                  document.documentElement.appendChild(cleanRoot);
+                }
+                cleanRoot.appendChild(button);
+              }
+              
+               const finalRect = button.getBoundingClientRect();
+               if(finalRect.width === 0 || finalRect.height === 0) {
+                 console.error("Ultimate button is still not visible after all attempts.");
+               }
+            }, 200);
+        } else {
+            console.log('Ultimate last resort chat button created but not shown because chat window is already open.');
+            // We still want its event listener to be active in case it's needed later,
+            // so it should be in the DOM but hidden if the chat is open.
+            // However, the current logic only appends if !chatIsOpen.
+            // A more robust approach might be to always append it, then explicitly set display:none if chatIsOpen.
+            // For now, this matches the previous intent of not appending if chat is open.
+        }
 
         console.log('Ultimate last resort chat button attempt finished.');
 
