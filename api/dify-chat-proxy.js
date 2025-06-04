@@ -28,14 +28,23 @@ export default async function handler(req, res) {
         try {
             const requestData = req.body; // Vercel automatically parses JSON body for `application/json` content type
             console.log('Vercel function received request:', requestData);
+            
+            // Check if conversation ID exists in the request
+            if (requestData.conversation_id) {
+                console.log('Continuing conversation with ID:', requestData.conversation_id);
+            } else {
+                console.log('Starting new conversation (no conversation_id provided)');
+            }
 
             const difyRequestBody = {
                 inputs: requestData.inputs || {},
                 query: requestData.query,
                 response_mode: 'streaming',
-                conversation_id: requestData.conversation_id || undefined, // Use undefined for optional nulls if Dify prefers
+                conversation_id: requestData.conversation_id || undefined, // Pass undefined for new conversations
                 user: requestData.user || 'vercel-serverless-user',
             };
+
+            console.log('Sending request to Dify API with body:', JSON.stringify(difyRequestBody));
 
             const difyResponse = await fetch(`${DIFY_API_URL}/chat-messages`, {
                 method: 'POST',
