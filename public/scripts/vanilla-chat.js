@@ -843,6 +843,18 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         this.isLoading = true;
         this.updateSendButtonState(true); // Only update appearance, not disable functionality
         
+        let assistantMessage = ''; // Initialize for the new response stream
+        const currentAssistantMessageId = 'assistant-' + Date.now().toString();
+
+        // Add a placeholder for the assistant's message
+        this.messages.push({
+          role: 'assistant',
+          content: '', // Start with empty content, or '...' for typing indicator
+          id: currentAssistantMessageId
+        });
+        // Optionally render messages here if you want the placeholder to show immediately
+        // this.renderMessages();
+
         try {
           // Use fallback responses if no API key is available
           if (!DIFY_CONFIG.APP_KEY) {
@@ -882,7 +894,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           
           const response = await this.callChatAPI(messageText);
           const reader = response.body?.getReader();
-          let assistantMessage = '';
+          // let assistantMessage = ''; // Moved to the top of the function
           let hasStartedMessage = false;
           
           while (reader) {
@@ -906,17 +918,10 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     assistantMessage += data.answer;
                     hasStartedMessage = true;
                     
-                    // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
-                    if (lastMessageIndex !== -1) {
-                      this.messages[lastMessageIndex].content = assistantMessage;
-                    } else {
-                      // Add the new message to the end of the array
-                      this.messages.push({
-                        role: 'assistant',
-                        content: assistantMessage,
-                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
-                      });
+                    // Update the specific message we added for this response
+                    const messageToUpdate = this.messages.find(m => m.id === currentAssistantMessageId);
+                    if (messageToUpdate) {
+                      messageToUpdate.content = assistantMessage;
                     }
                     
                     this.renderMessages();
@@ -970,6 +975,18 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
         this.isLoading = true;
         this.updateSendButtonState(true); // Only update appearance, not disable functionality
         
+        let assistantMessage = ''; // Initialize for the new response stream
+        const currentAssistantMessageId = 'assistant-' + Date.now().toString();
+
+        // Add a placeholder for the assistant's message
+        this.messages.push({
+          role: 'assistant',
+          content: '', // Start with empty content, or '...' for typing indicator
+          id: currentAssistantMessageId
+        });
+        // Optionally render messages here if you want the placeholder to show immediately
+        // this.renderMessages();
+
         try {
           // Use fallback responses if no API key is available
           if (!DIFY_CONFIG.APP_KEY) {
@@ -1009,7 +1026,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
           
           const response = await this.callChatAPI(action);
           const reader = response.body?.getReader();
-          let assistantMessage = '';
+          // let assistantMessage = ''; // Moved to the top of the function
           let hasStartedMessage = false;
           
           while (reader) {
@@ -1033,17 +1050,10 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                     assistantMessage += data.answer;
                     hasStartedMessage = true;
                     
-                    // Update the displayed message
-                    const lastMessageIndex = this.messages.findIndex(m => m.role === 'assistant' && m.id.startsWith('stream-'));
-                    if (lastMessageIndex !== -1) {
-                      this.messages[lastMessageIndex].content = assistantMessage;
-                    } else {
-                      // Add the new message to the end of the array
-                      this.messages.push({
-                        role: 'assistant',
-                        content: assistantMessage,
-                        id: 'stream-' + Date.now().toString() // Use a prefix to identify streamed messages
-                      });
+                    // Update the specific message we added for this response
+                    const messageToUpdate = this.messages.find(m => m.id === currentAssistantMessageId);
+                    if (messageToUpdate) {
+                      messageToUpdate.content = assistantMessage;
                     }
                     
                     this.renderMessages();
