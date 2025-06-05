@@ -234,6 +234,7 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
           {/* Map Section */}
           <section className="bg-brand-light py-20">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+              <h2 className="font-heading text-3xl mb-8 text-center text-brand-dark">Explore the Neighbourhood</h2>
               <div className="h-[600px] rounded-lg overflow-hidden shadow-lg mb-8">
                 {isLoaded && mapProperty && (
                   <GoogleMap 

@@ -445,9 +445,6 @@ export function GoogleMap({
 
   return (
     <div className="w-full">
-      {mode === 'view' && (
-        <h2 className="font-heading text-3xl mb-8 text-center text-brand-dark">Explore the Neighbourhood</h2>
-      )}
       <div className="w-full overflow-x-hidden">
         <div className="flex w-full">
           {/* Map Container */}
