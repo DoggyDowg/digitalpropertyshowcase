@@ -35,6 +35,43 @@
             referrerpolicy="no-referrer"
         />
 
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-');
+        </script>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17143503738">
+        </script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'AW-17143503738');
+        </script>
+
+        <!-- Event snippet for Submit lead form (1) conversion page -->
+        <script>
+        function gtag_report_conversion(url) {
+          var callback = function () {
+            if (typeof(url) != 'undefined') {
+              window.location = url;
+            }
+          };
+          gtag('event', 'conversion', {
+              'send_to': 'AW-17143503738/ff9oCLTV1NMaEPq21O4_',
+              'event_callback': callback
+          });
+          return false;
+        }
+        </script>
+
         <!-- Custom styles for the onboarding form -->
         <style>
             body {
@@ -1177,10 +1214,8 @@
                         console.log('Submission successful:', result);
                         messageArea.textContent = 'Form submitted successfully! Your data has been saved.';
                         messageArea.style.color = '#10b981'; // Green color for success
-                        // Redirect to homepage or thank you page
-                        setTimeout(() => {
-                            window.location.href = '/';
-                        }, 2000); // Give user time to read success message
+                        // Track conversion first
+                        gtag_report_conversion('/');
                     } else {
                         console.error('Submission failed:', result.error);
                         messageArea.textContent = `Form submission failed: ${result.error || 'Unknown error'}`;
