@@ -211,11 +211,14 @@ export function GoogleMap({
     
     console.log('[GoogleMap] Searching for landmarks near:', mapPosition);
     
-    // Search for nearby places of this type with a wider radius
+    // Close the context menu immediately
+    setContextMenu(prev => ({ ...prev, isOpen: false }));
+    
+    // Search for nearby places of this type with a precise radius
     placesService.nearbySearch(
       {
         location: mapPosition,
-        radius: 1000, // Increased search radius to 1000 meters for better results
+        radius: 500, // Smaller radius for more precise results
         keyword: type, // Use the landmark type as a keyword for better results
         type: type === 'dining' ? 'restaurant' : 
               type === 'shopping' ? 'store' : 
@@ -227,18 +230,43 @@ export function GoogleMap({
         console.log('[GoogleMap] Nearby search results:', { 
           status, 
           count: results?.length,
-          results: results?.map(r => ({ name: r.name, types: r.types }))
+          results: results?.map(r => ({ name: r.name, types: r.types, distance: r.geometry?.location ? calculateDistance(mapPosition.lat, mapPosition.lng, r.geometry.location.lat(), r.geometry.location.lng()) : null }))
         });
         
         if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          // Get details for the first result
-          const placeId = results[0].place_id;
+          // Sort results by distance to the clicked location to get the closest one
+          const sortedResults = [...results].sort((a, b) => {
+            if (!a.geometry?.location || !b.geometry?.location) return 0;
+            
+            const distanceA = calculateDistance(
+              mapPosition.lat, mapPosition.lng, 
+              a.geometry.location.lat(), a.geometry.location.lng()
+            );
+            const distanceB = calculateDistance(
+              mapPosition.lat, mapPosition.lng, 
+              b.geometry.location.lat(), b.geometry.location.lng()
+            );
+            
+            return distanceA - distanceB;
+          });
+          
+          // Get details for the closest result
+          const closestPlace = sortedResults[0];
+          const placeId = closestPlace.place_id;
+          
           if (!placeId) {
             console.error('[GoogleMap] No place ID found in search results');
             return;
           }
           
-          console.log('[GoogleMap] Getting details for place ID:', placeId);
+          const distance = closestPlace.geometry?.location ? 
+            calculateDistance(mapPosition.lat, mapPosition.lng, closestPlace.geometry.location.lat(), closestPlace.geometry.location.lng()) : 0;
+          
+          console.log('[GoogleMap] Getting details for closest place:', { 
+            name: closestPlace.name, 
+            placeId, 
+            distance: Math.round(distance) + 'm' 
+          });
           
           placesService.getDetails(
             {
@@ -294,11 +322,11 @@ export function GoogleMap({
         } else {
           console.error('[GoogleMap] No places found near this location for type:', type, 'Status:', status);
           
-          // Try one more time with just a keyword search and larger radius
+          // Try one more time with a larger radius but still prioritize closest results
           placesService.nearbySearch(
             {
               location: mapPosition,
-              radius: 2000, // Even larger radius
+              radius: 1000, // Larger radius for fallback
               keyword: type === 'dining' ? 'restaurant' : 
                       type === 'shopping' ? 'store' : 
                       type === 'leisure' ? 'park' : 
@@ -314,8 +342,29 @@ export function GoogleMap({
               if (secondStatus === google.maps.places.PlacesServiceStatus.OK && 
                   secondResults && secondResults.length > 0) {
                 
-                const secondPlaceId = secondResults[0].place_id;
+                // Sort by distance and get the closest one
+                const sortedSecondResults = [...secondResults].sort((a, b) => {
+                  if (!a.geometry?.location || !b.geometry?.location) return 0;
+                  
+                  const distanceA = calculateDistance(
+                    mapPosition.lat, mapPosition.lng, 
+                    a.geometry.location.lat(), a.geometry.location.lng()
+                  );
+                  const distanceB = calculateDistance(
+                    mapPosition.lat, mapPosition.lng, 
+                    b.geometry.location.lat(), b.geometry.location.lng()
+                  );
+                  
+                  return distanceA - distanceB;
+                });
+                
+                const secondPlaceId = sortedSecondResults[0].place_id;
                 if (!secondPlaceId) return;
+                
+                console.log('[GoogleMap] Getting details for closest fallback place:', { 
+                  name: sortedSecondResults[0].name,
+                  placeId: secondPlaceId
+                });
                 
                 placesService.getDetails(
                   {
@@ -451,7 +500,10 @@ export function GoogleMap({
           <div className="w-full">
             {mode === 'admin' && isAddingLandmark && (
               <div className="absolute top-4 left-4 right-4 z-10 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow">
-                Click on a place to add it as a landmark
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  Right-click on the map to add a landmark, or left-click on a place icon
+                </div>
               </div>
             )}
             

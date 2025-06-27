@@ -11,6 +11,9 @@ interface LocationState {
   landmarks: Landmark[];
   isAddingLandmark: boolean;
   selectedType: LandmarkType | null;
+  searchQuery: string;
+  searchResults: google.maps.places.PlaceResult[];
+  isSearching: boolean;
 }
 
 export default function LocationsAdmin() {
@@ -18,7 +21,10 @@ export default function LocationsAdmin() {
     property: null,
     landmarks: [],
     isAddingLandmark: false,
-    selectedType: null
+    selectedType: null,
+    searchQuery: '',
+    searchResults: [],
+    isSearching: false
   });
 
   const [error, setError] = useState<string>('');
@@ -26,6 +32,8 @@ export default function LocationsAdmin() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const autocompleteInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const landmarkSearchInputRef = useRef<HTMLInputElement>(null);
+  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
   const { isLoaded: isReady } = useGoogleMaps();
 
   // Load existing data when component mounts
@@ -58,7 +66,7 @@ export default function LocationsAdmin() {
     loadExistingData();
   }, []);
 
-  // Initialize Places Autocomplete
+  // Initialize Places Autocomplete and Places Service
   useEffect(() => {
     if (!isReady || !autocompleteInputRef.current || autocompleteRef.current) return;
 
@@ -94,6 +102,11 @@ export default function LocationsAdmin() {
       });
 
       autocompleteRef.current = autocomplete;
+
+      // Initialize Places Service for landmark search
+      if (!placesServiceRef.current) {
+        placesServiceRef.current = new google.maps.places.PlacesService(document.createElement('div'));
+      }
     } catch (err) {
       console.error('Error initializing Places Autocomplete:', err);
       setError('Failed to initialize address search');
@@ -135,6 +148,67 @@ export default function LocationsAdmin() {
     }
   };
 
+  // Landmark search functionality
+  const searchLandmarks = useCallback(async (query: string) => {
+    if (!placesServiceRef.current || !query.trim() || !state.selectedType || !state.property) {
+      setState(prev => ({ ...prev, searchResults: [] }));
+      return;
+    }
+
+    setState(prev => ({ ...prev, isSearching: true }));
+
+    try {
+      // Use textSearch for more precise results
+      placesServiceRef.current.textSearch(
+        {
+          query: query,
+          location: state.property.position,
+          radius: 10000, // 10km radius around the property
+          type: state.selectedType === 'dining' ? 'restaurant' : 
+                state.selectedType === 'shopping' ? 'store' : 
+                state.selectedType === 'leisure' ? 'park' : 
+                state.selectedType === 'schools' ? 'school' : 
+                state.selectedType === 'transport' ? 'transit_station' : undefined
+        },
+        (results, status) => {
+          console.log('Search results:', { status, count: results?.length, results });
+          
+          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            setState(prev => ({ 
+              ...prev, 
+              searchResults: results.slice(0, 5), // Limit to 5 results
+              isSearching: false 
+            }));
+          } else {
+            setState(prev => ({ 
+              ...prev, 
+              searchResults: [], 
+              isSearching: false 
+            }));
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Search error:', error);
+      setState(prev => ({ 
+        ...prev, 
+        searchResults: [], 
+        isSearching: false 
+      }));
+    }
+  }, [state.selectedType, state.property]);
+
+  // Handle search input changes with debouncing
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (state.searchQuery && state.isAddingLandmark) {
+        searchLandmarks(state.searchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [state.searchQuery, state.isAddingLandmark, searchLandmarks]);
+
   // Landmark addition handlers
   const startAddingLandmark = (type: LandmarkType) => {
     console.log('Starting to add landmark of type:', type);
@@ -143,9 +217,18 @@ export default function LocationsAdmin() {
       return {
         ...prev,
         isAddingLandmark: true,
-        selectedType: type
+        selectedType: type,
+        searchQuery: '',
+        searchResults: []
       };
     });
+    
+    // Focus on search input after a brief delay
+    setTimeout(() => {
+      if (landmarkSearchInputRef.current) {
+        landmarkSearchInputRef.current.focus();
+      }
+    }, 100);
   };
 
   // Debug logging for state changes
@@ -157,6 +240,88 @@ export default function LocationsAdmin() {
       landmarkCount: state.landmarks.length
     });
   }, [state]);
+
+  // Handle selecting a landmark from search results
+  const selectLandmarkFromSearch = useCallback(async (place: google.maps.places.PlaceResult) => {
+    if (!state.selectedType || !placesServiceRef.current || !place.place_id) {
+      showToast('Error selecting landmark', 'error');
+      return;
+    }
+
+    try {
+      // Get detailed place information
+      placesServiceRef.current.getDetails(
+        {
+          placeId: place.place_id,
+          fields: [
+            'name',
+            'business_status',
+            'formatted_address',
+            'photos',
+            'rating',
+            'user_ratings_total',
+            'price_level',
+            'types',
+            'geometry'
+          ]
+        },
+        (detailedPlace, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && detailedPlace) {
+            console.log('Selected landmark details:', detailedPlace);
+
+            // Extract place details
+            const details: PlaceDetails = {
+              shortDescription: detailedPlace.types?.[0] ? formatTypeString(detailedPlace.types[0]) : undefined,
+            };
+
+            // Get the first photo if available
+            if (detailedPlace.photos && detailedPlace.photos.length > 0) {
+              try {
+                const photo = detailedPlace.photos[0];
+                details.photoUrl = photo.getUrl({
+                  maxWidth: 800,
+                  maxHeight: 600
+                });
+              } catch (err) {
+                console.error('Error getting place photo URL:', err);
+              }
+            }
+
+            // Create the new landmark
+            const newLandmark: Landmark = {
+              name: detailedPlace.name || `New ${state.selectedType!}`,
+              type: state.selectedType!,
+              position: {
+                lat: detailedPlace.geometry!.location!.lat(),
+                lng: detailedPlace.geometry!.location!.lng()
+              },
+              description: '',
+              details: details
+            };
+
+            // Add the landmark to state
+            setState(prev => ({
+              ...prev,
+              landmarks: [...prev.landmarks, newLandmark],
+              isAddingLandmark: false,
+              selectedType: null,
+              searchQuery: '',
+              searchResults: []
+            }));
+
+            // Show success toast with more detail
+            const typeConfig = getLandmarkTypeConfig(state.selectedType!);
+            showToast(`Added ${newLandmark.name} as ${typeConfig.label} landmark`);
+          } else {
+            showToast('Failed to get landmark details', 'error');
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error selecting landmark:', error);
+      showToast('Error selecting landmark', 'error');
+    }
+  }, [state.selectedType]);
 
   // Landmark deletion handler
   const handleDeleteLandmark = (index: number) => {
@@ -293,8 +458,9 @@ export default function LocationsAdmin() {
         selectedType: null
       }));
 
-      // Show success toast
-      showToast(`Added ${newLandmark.name} to landmarks`);
+      // Show success toast with more detail
+      const typeConfig = getLandmarkTypeConfig(state.selectedType!);
+      showToast(`Added ${newLandmark.name} as ${typeConfig.label} landmark`);
     } catch (error) {
       console.error('Error getting place details:', error);
       showToast('Failed to get place details', 'error');
@@ -376,7 +542,7 @@ export default function LocationsAdmin() {
               zoom={15}
               property={state.property}
               landmarks={state.landmarks}
-              onPlaceClick={handlePlaceClick}
+              onAddLandmark={handlePlaceClick}
               isAddingLandmark={state.isAddingLandmark}
               mode="admin"
             />
@@ -392,35 +558,103 @@ export default function LocationsAdmin() {
           {/* Add Landmark Controls */}
           <div className="bg-white rounded-lg shadow-lg p-4">
             <h3 className="font-semibold mb-3">Add Landmarks</h3>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-sm text-gray-600 mb-3">
+              Select a landmark type, then search for the specific landmark you want to add
+            </p>
+            <div className="flex flex-wrap gap-2 mb-4">
               {LANDMARK_TYPES.map((typeConfig) => {
                 const Icon = typeConfig.icon;
+                const isSelected = state.isAddingLandmark && state.selectedType === typeConfig.type;
                 return (
                   <button
                     key={typeConfig.type}
                     onClick={() => {
-                      if (state.isAddingLandmark && state.selectedType === typeConfig.type) {
+                      if (isSelected) {
                         setState(prev => ({
                           ...prev,
                           isAddingLandmark: false,
-                          selectedType: null
+                          selectedType: null,
+                          searchQuery: '',
+                          searchResults: []
                         }));
                       } else {
                         startAddingLandmark(typeConfig.type);
                       }
                     }}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
-                      state.isAddingLandmark && state.selectedType === typeConfig.type
-                        ? `bg-${typeConfig.color}-500 text-white`
-                        : `bg-${typeConfig.color}-100 text-${typeConfig.color}-700 hover:bg-opacity-75`
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      isSelected
+                        ? `bg-${typeConfig.color}-500 text-white shadow-lg ring-2 ring-${typeConfig.color}-200`
+                        : `bg-${typeConfig.color}-100 text-${typeConfig.color}-700 hover:bg-${typeConfig.color}-200 hover:shadow-md`
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     {typeConfig.label}
+                    {isSelected && (
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse ml-1" />
+                    )}
                   </button>
                 );
               })}
             </div>
+            
+            {/* Search Interface */}
+            {state.isAddingLandmark && state.selectedType && (
+              <div className="border-t pt-4">
+                <div className="mb-3">
+                                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     Search for {state.selectedType ? getLandmarkTypeConfig(state.selectedType).label.toLowerCase() : 'landmark'}:
+                   </label>
+                   <input
+                     ref={landmarkSearchInputRef}
+                     type="text"
+                     value={state.searchQuery}
+                     onChange={(e) => setState(prev => ({ ...prev, searchQuery: e.target.value }))}
+                     placeholder={`Search for ${state.selectedType ? getLandmarkTypeConfig(state.selectedType).label.toLowerCase() : 'landmark'}... (e.g., "Elwood Beach")`}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={!isReady}
+                  />
+                </div>
+                
+                {/* Search Results */}
+                {state.isSearching && (
+                  <div className="text-center py-4">
+                    <div className="inline-flex items-center gap-2 text-gray-600">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      Searching...
+                    </div>
+                  </div>
+                )}
+                
+                {state.searchResults.length > 0 && !state.isSearching && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600">Select a landmark:</p>
+                    {state.searchResults.map((result, index) => (
+                      <button
+                        key={index}
+                        onClick={() => selectLandmarkFromSearch(result)}
+                        className="w-full p-3 text-left border border-gray-200 rounded-md hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                      >
+                        <div className="font-medium text-gray-900">{result.name}</div>
+                        {result.formatted_address && (
+                          <div className="text-sm text-gray-600">{result.formatted_address}</div>
+                        )}
+                        {result.rating && (
+                          <div className="text-sm text-yellow-600">
+                            ⭐ {result.rating} ({result.user_ratings_total} reviews)
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {state.searchQuery && state.searchResults.length === 0 && !state.isSearching && (
+                  <div className="text-center py-4 text-gray-500">
+                    No landmarks found. Try a different search term.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Landmarks List */}
