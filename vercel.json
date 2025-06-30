@@ -25,16 +25,6 @@
       "maxDuration": 300
     }
   },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "zeroConfig": true,
-        "installCommand": "npm install --legacy-peer-deps"
-      }
-    }
-  ],
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
