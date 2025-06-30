@@ -14,6 +14,18 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessa
   return Promise.race([promise, timeoutPromise]);
 }
 
+// Type for the property data we expect from Supabase
+interface PropertyQueryResult {
+  id: string;
+  name: string;
+  street_address: string;
+  maps_address: string | null;
+  landmarks: any[] | null;
+  updated_at: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -29,24 +41,26 @@ export async function GET(request: Request) {
     const supabase = createRouteHandlerClient({ cookies });
 
     // First check if the property exists and is accessible - with timeout
+    const propertyQuery = supabase
+      .from('properties')
+      .select('id, name, street_address, maps_address, landmarks, updated_at, latitude, longitude')
+      .eq('id', propertyId)
+      .single()
+      .throwOnError();
+
     const { data: propertyData, error: propertyError } = await withTimeout(
-      supabase
-        .from('properties')
-        .select('id, name, street_address, maps_address, landmarks, updated_at, latitude, longitude')
-        .eq('id', propertyId)
-        .single()
-        .throwOnError(),
+      propertyQuery,
       15000, // 15 second timeout for database query
       'Database query timeout'
-    );
+    ) as { data: PropertyQueryResult | null; error: PostgrestError | null };
 
     if (propertyError) {
       console.error('Database error:', propertyError);
       return NextResponse.json(
         { 
           error: 'Failed to load property data',
-          details: (propertyError as PostgrestError).message,
-          code: (propertyError as PostgrestError).code
+          details: propertyError.message,
+          code: propertyError.code
         },
         { status: 500 }
       );
