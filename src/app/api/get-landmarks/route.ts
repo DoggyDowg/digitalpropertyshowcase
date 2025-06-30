@@ -40,19 +40,12 @@ export async function GET(request: Request) {
 
     const supabase = createRouteHandlerClient({ cookies });
 
-    // First check if the property exists and is accessible - with timeout
-    const propertyQuery = supabase
+    // First check if the property exists and is accessible
+    const { data: propertyData, error: propertyError } = await supabase
       .from('properties')
       .select('id, name, street_address, maps_address, landmarks, updated_at, latitude, longitude')
       .eq('id', propertyId)
-      .single()
-      .throwOnError();
-
-    const { data: propertyData, error: propertyError } = await withTimeout(
-      propertyQuery,
-      15000, // 15 second timeout for database query
-      'Database query timeout'
-    ) as { data: PropertyQueryResult | null; error: PostgrestError | null };
+      .single();
 
     if (propertyError) {
       console.error('Database error:', propertyError);
