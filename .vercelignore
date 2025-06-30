@@ -1,0 +1,16 @@
+# Exclude standalone server files that shouldn't be deployed as Vercel functions
+dify-chat-proxy.js
+
+# Exclude development/documentation files
+*.md
+img_ref/
+performancelogs/
+plans/
+vt-files/
+debug-screenshot.png
+
+# Exclude local environment files
+emailjs.env
+
+# Exclude legacy API directory (using Next.js API routes instead)
+api/ 
