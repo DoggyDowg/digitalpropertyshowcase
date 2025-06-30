@@ -311,9 +311,9 @@ export function MoreInfo({ property }: MoreInfoProps) {
   if (!moreInfo) return null
 
   // Add proper null checks for agency settings and branding
-  const branding = property.agency_settings?.branding
-  const colors = branding?.colors
-  const accentColor = colors?.accent || '#f5f5f5'
+  // const branding = property.agency_settings?.branding
+  // const colors = branding?.colors
+  // const accentColor = colors?.accent || '#f5f5f5' // No longer used since we switched to brand-dark
 
   // Determine if video is from YouTube
   const isYouTubeVideo = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')
@@ -337,7 +337,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
       id="info"
       className="py-20"
       style={{ 
-        backgroundColor: accentColor
+        backgroundColor: 'rgba(var(--brand-dark-rgb), 1)'
       }}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -416,7 +416,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
             {/* Price Guide */}
             <div 
               className="p-6 rounded-lg shadow-sm text-center backdrop-blur-sm"
-              style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+              style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.8)' }}
             >
               <h3 className="text-xl font-light mb-2 text-brand-dark">{moreInfo.priceGuide.title}</h3>
               <p className="text-3xl text-brand-dark">{property.price}</p>
@@ -426,12 +426,12 @@ export function MoreInfo({ property }: MoreInfoProps) {
             {videoLoading ? (
               <div 
                 className="relative w-full aspect-[16/9] max-w-md mx-auto animate-pulse rounded-lg backdrop-blur-sm"
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.8)' }}
               />
             ) : videoUrl ? (
               <div 
                 className="relative w-full aspect-[16/9] max-w-md mx-auto cursor-pointer group rounded-lg overflow-hidden shadow-sm backdrop-blur-sm"
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 8)' }}
                 onClick={() => setShowVideo(true)}
               >
                 {/* Video Preview */}
@@ -465,7 +465,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
             ) : videoError ? (
               <div 
                 className="relative w-full aspect-[16/9] max-w-md mx-auto rounded-lg flex items-center justify-center text-gray-500 shadow-sm backdrop-blur-sm"
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 8)' }}
               >
                 <span className="text-brand-dark/70">Failed to load video</span>
               </div>
@@ -475,7 +475,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
             {displayAdditionalInfo?.some((item) => item.info && item.detail) && (
               <div 
                 className="p-6 rounded-lg shadow-sm text-center backdrop-blur-sm"
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.8)' }}
               >
                 <h3 className="text-xl font-light mb-4 text-brand-dark">More Info</h3>
                 <ul className="space-y-3 max-w-md mx-auto">
@@ -493,7 +493,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
             {displayDocuments?.some((doc) => doc.label && doc.url) && (
               <div 
                 className="p-6 rounded-lg shadow-sm text-center backdrop-blur-sm"
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.8)' }}
               >
                 <h3 className="text-xl font-light mb-4 text-brand-dark">Important Documents</h3>
                 <ul className="space-y-3 max-w-md mx-auto">
@@ -531,12 +531,12 @@ export function MoreInfo({ property }: MoreInfoProps) {
             {floorplans.length > 0 ? (
               <div
                 ref={imageRef}
-                className={`relative h-[600px] cursor-pointer group p-4 rounded-lg shadow-sm backdrop-blur-sm transition-all duration-1000 delay-300 ${
+                className={`relative h-[600px] cursor-pointer group p-4 rounded-lg shadow-sm backdrop-blur-sm transition-all duration-1000 delay-300 overflow-hidden ${
                   isVisible 
                     ? 'opacity-100 translate-y-0' 
                     : 'opacity-0 translate-y-8'
                 }`}
-                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.2)' }}
+                style={{ backgroundColor: 'rgba(var(--brand-light-rgb), 0.8)' }}
                 onClick={() => setShowFloorplan(true)}
               >
                 {/* Floorplan Navigation */}

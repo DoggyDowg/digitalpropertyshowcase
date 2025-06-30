@@ -53,7 +53,13 @@ export function Footer({ property }: FooterProps) {
     : undefined
 
   return (
-    <footer id="contact" className="bg-brand-dark text-brand-light">
+    <footer 
+      id="contact" 
+      className="text-brand-light"
+      style={{
+        backgroundColor: 'rgba(var(--brand-dark-rgb), 1)',
+      }}
+    >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
         <div className="mb-4">
           <p className="text-lg mt-1">IS THIS THE ONE?</p>

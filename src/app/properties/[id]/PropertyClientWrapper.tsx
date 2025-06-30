@@ -63,8 +63,10 @@ function StyleFixer({ property }: { property: Property }) {
 
     // Get the hover effect setting, with 'scale' as the default
     const hoverEffect = property.styling?.textLinks?.hoverEffect || 'scale';
+    // Get the header style setting, with 'light' as the default
+    const headerStyle = property.styling?.header?.style || 'light';
     
-    // console.log(`StyleFixer: Applying creative hover effect: ${hoverEffect} isHydrated: ${isHydrated}`);
+    // console.log(`StyleFixer: Applying creative hover effect: ${hoverEffect} and header style: ${headerStyle} isHydrated: ${isHydrated}`);
     
     // Create a style element to inject CSS
     const styleEl = document.createElement('style');
@@ -78,6 +80,72 @@ function StyleFixer({ property }: { property: Property }) {
 
     // Create stylish CSS for hover effects
     let css = '';
+    
+    // Header styling based on the selected header style
+    if (headerStyle === 'dark') {
+      css += `
+        /* Dark Header Styles */
+        header {
+          background-color: rgba(var(--brand-dark-rgb), 0.9) !important;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        header a {
+          color: var(--brand-light) !important;
+        }
+        
+        header a:hover {
+          color: var(--brand-light) !important;
+          opacity: 0.9;
+        }
+        
+        /* Mobile menu button for dark header */
+        header svg {
+          color: var(--brand-light) !important;
+        }
+      `;
+    } else {
+      css += `
+        /* Light Header Styles */
+        header {
+          background-color: rgba(var(--brand-light-rgb), 0.9) !important;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        header a {
+          color: var(--brand-dark) !important;
+        }
+        
+        header a:hover {
+          color: var(--brand-dark) !important;
+          opacity: 0.9;
+        }
+        
+        /* Mobile menu button for light header */
+        header svg {
+          color: var(--brand-dark) !important;
+        }
+      `;
+    }
+    
+    // Logo switching based on header style and available agency logos
+    const lightLogo = property.agency_settings?.branding?.logo?.light;
+    const darkLogo = property.agency_settings?.branding?.logo?.dark;
+    
+    if (lightLogo && darkLogo) {
+      // If both logos are available, switch based on header style
+      const logoToUse = headerStyle === 'dark' ? lightLogo : darkLogo;
+      css += `
+        /* Dynamic logo switching based on header style */
+        header img {
+          content: url('${logoToUse}') !important;
+        }
+      `;
+    }
     
     // Base styles for all links regardless of hover effect selection
     css += `
@@ -233,22 +301,68 @@ function StyleFixer({ property }: { property: Property }) {
         }
       `;
     } else if (hoverEffect === 'glow') {
+      // Extract brand accent color from agency settings
+      const accentColor = property.agency_settings?.branding?.colors?.accent || '#ed64a5';
+      
+      // Convert hex to RGB values for text-shadow and box-shadow
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 237, g: 100, b: 165 }; // fallback to pink
+      };
+      
+      const rgb = hexToRgb(accentColor);
+      
       css += `
-        /* Soft Glow effect - elegant glowing effect */
-        header a, section#hero a, #info a, a.dynamic-hover, a[data-hover="true"] {
+        /* Soft Glow effect - elegant glowing effect for links and buttons */
+        header a, section#hero a, #info a, a.dynamic-hover, a[data-hover="true"],
+        button, .btn, input[type="submit"], input[type="button"],
+        .lp-btn, .lp-btn-primary, .lp-btn-outline, .lp-btn-outline-dark {
           position: relative;
-          padding: 4px 2px;
+          padding: 6px 16px;
+          margin: -6px -16px;
           display: inline-block;
           transition: text-shadow 0.3s ease, color 0.3s ease;
+          /* Remove any background that might obscure the glow */
+          background: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+        }
+        
+        /* Remove any ::before or ::after pseudo-elements that add backgrounds */
+        header a::before, header a::after,
+        section#hero a::before, section#hero a::after,
+        #info a::before, #info a::after,
+        a.dynamic-hover::before, a.dynamic-hover::after,
+        a[data-hover="true"]::before, a[data-hover="true"]::after,
+        button::before, button::after,
+        .btn::before, .btn::after,
+        .lp-btn::before, .lp-btn::after,
+        .lp-btn-primary::before, .lp-btn-primary::after,
+        .lp-btn-outline::before, .lp-btn-outline::after,
+        .lp-btn-outline-dark::before, .lp-btn-outline-dark::after {
+          display: none !important;
         }
         
         header a:hover, 
         section#hero a:hover, 
         #info a:hover, 
         a.dynamic-hover:hover, 
-        a[data-hover="true"]:hover {
-          color: var(--brand-accent, currentColor);
-          text-shadow: 0 0 8px var(--brand-accent-rgb, rgba(59, 130, 246, 0.5));
+        a[data-hover="true"]:hover,
+        button:hover, .btn:hover, input[type="submit"]:hover, input[type="button"]:hover,
+        .lp-btn:hover, .lp-btn-primary:hover, .lp-btn-outline:hover, .lp-btn-outline-dark:hover {
+          color: ${accentColor} !important;
+          text-shadow: 
+            0 0 8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6),
+            0 0 16px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4),
+            0 0 24px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2) !important;
+          /* Ensure no background interferes */
+          background: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
         }
       `;
     }
@@ -274,7 +388,7 @@ function StyleFixer({ property }: { property: Property }) {
         styleEl.parentNode.removeChild(styleEl);
       }
     };
-  }, [property.styling?.textLinks?.hoverEffect, property.styling, isHydrated]);
+  }, [property.styling?.textLinks?.hoverEffect, property.styling?.header?.style, property.styling, isHydrated]);
   
   return null;
 }

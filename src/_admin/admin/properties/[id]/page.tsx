@@ -11,6 +11,7 @@ import {
   PropertyLocations,
   PropertyAssets,
   PropertyMoreInfo,
+  PropertyStyling,
   PropertyDeployment
 } from '@/components/admin'
 import { templateManager } from '@/lib/templateManager'
@@ -105,7 +106,7 @@ const initialProperty: Omit<Property, 'id'> = {
   }
 };
 
-type Tab = 'content' | 'visual_assets' | 'viewings' | 'locations' | 'more_info' | 'deployment'
+type Tab = 'content' | 'visual_assets' | 'viewings' | 'locations' | 'more_info' | 'styling' | 'deployment'
 
 function PropertyEditContent({ id }: { id: string }) {
   const router = useRouter()
@@ -408,6 +409,7 @@ function PropertyEditContent({ id }: { id: string }) {
         agent_id: property.agent_id,
         content: property.content,
         metadata: property.metadata,
+        styling: property.styling, // Add styling property
         is_demo: property.is_demo,
         template_name: property.template_name,
         updated_at: new Date().toISOString()
@@ -764,6 +766,7 @@ function PropertyEditContent({ id }: { id: string }) {
     { id: 'viewings', label: 'Viewings' },
     { id: 'locations', label: 'Locations' },
     { id: 'more_info', label: 'More Info' },
+    { id: 'styling', label: 'Styling' },
     { id: 'deployment', label: 'Deployment' }
   ]
 
@@ -1701,6 +1704,30 @@ function PropertyEditContent({ id }: { id: string }) {
               ref={moreInfoRef}
               propertyId={id}
               onSave={handleMoreInfoSave}
+            />
+          </div>
+        )}
+
+        {activeTab === 'styling' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <PropertyStyling 
+              property={property}
+              onSave={async (stylingUpdates) => {
+                try {
+                  setProperty(prev => ({
+                    ...prev,
+                    styling: {
+                      ...prev.styling,
+                      ...stylingUpdates.styling
+                    }
+                  }));
+                  await handleSave(true);
+                  toast.success('Styling settings saved successfully');
+                } catch (error) {
+                  console.error('Error saving styling settings:', error);
+                  toast.error('Failed to save styling settings');
+                }
+              }}
             />
           </div>
         )}

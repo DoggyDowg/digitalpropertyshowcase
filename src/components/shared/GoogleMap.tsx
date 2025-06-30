@@ -674,7 +674,7 @@ export function GoogleMap({
           </div>
 
           {/* List View */}
-          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && (
+          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && landmarks.length > 0 && (
             <div 
               ref={listViewRef}
               className={`
@@ -808,7 +808,7 @@ export function GoogleMap({
           )}
 
           {/* Mobile List View */}
-          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && isMobile && (
+          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && isMobile && landmarks.length > 0 && (
             <div 
               ref={listViewRef}
               className={`
@@ -944,7 +944,7 @@ export function GoogleMap({
           )}
 
           {/* Overlay for mobile when list is open */}
-          {isListOpen && mode === 'view' && (
+          {isListOpen && mode === 'view' && landmarks.length > 0 && (
             <div 
               className="fixed md:hidden inset-0 bg-black bg-opacity-50 z-20"
               onClick={() => setIsListOpen(false)}

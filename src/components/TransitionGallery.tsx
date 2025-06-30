@@ -151,7 +151,12 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
   // Show loading state
   if (loading) {
     return (
-      <section className="relative py-16 bg-brand-dark">
+      <section 
+        className="relative py-16"
+        style={{
+          backgroundColor: 'rgba(var(--brand-dark-rgb), 1)',
+        }}
+      >
         <div className="relative w-full overflow-hidden px-6 sm:px-8 lg:px-12">
           <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2 px-1 mx-auto max-w-[1400px]">
             {[1, 2, 3, 4].map((i) => (
@@ -184,7 +189,13 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
 
   return (
     <>
-      <section ref={sectionRef} className="relative py-16 bg-brand-dark overflow-hidden">
+      <section 
+        ref={sectionRef} 
+        className="relative py-16 overflow-hidden"
+        style={{
+          backgroundColor: 'rgba(var(--brand-dark-rgb), 1)',
+        }}
+      >
         <div className="relative w-full overflow-hidden px-6 sm:px-8 lg:px-12">
           {/* Left Chevron */}
           <button
@@ -320,4 +331,4 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
       )}
     </>
   )
-} 
+}
