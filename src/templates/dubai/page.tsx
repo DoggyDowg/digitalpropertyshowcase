@@ -12,6 +12,7 @@ import { Viewings } from './components/Viewings'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import CustomChat from '@/components/shared/CustomChat'
+import { LightweightErrorBoundary } from '@/components/shared/ErrorBoundary'
 import type { Property } from '@/types/property'
 
 interface DubaiTemplateProps {
@@ -39,7 +40,9 @@ export function DubaiTemplate({ property }: DubaiTemplateProps) {
           <GallerySection property={property} />
           <YourHome property={property} />
           <YourLifestyle property={property} />
-          <YourNeighbourhood property={property} />
+          <LightweightErrorBoundary componentName="Neighbourhood">
+            <YourNeighbourhood property={property} />
+          </LightweightErrorBoundary>
           <MoreInfo property={property} />
           <Viewings property={property} />
           <Contact property={property} />

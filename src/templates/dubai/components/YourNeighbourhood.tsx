@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ParallaxBanner } from '@/components/shared/ParallaxBanner'
 import { GoogleMap } from '@/components/shared/GoogleMap'
-import { getLandmarks } from '@/utils/landmarkUtils'
+import { getLandmarks, areLandmarksAvailable, preloadLandmarks } from '@/utils/landmarkUtils'
 import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader'
 import { useNeighbourhoodBanner } from '@/hooks/useNeighbourhoodBanner'
 import { useNeighbourhoodImages } from '@/hooks/useNeighbourhoodImages'
@@ -26,8 +26,10 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   
   // Map state
   const [landmarks, setLandmarks] = useState<Landmark[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [mapProperty, setMapProperty] = useState<MapProperty | null>(null)
+  const [landmarksLoading, setLandmarksLoading] = useState(false)
+  const [showMap, setShowMap] = useState(false)
+  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false)
 
   // Animation states
   const [isVisibleRow1, setIsVisibleRow1] = useState(false)
@@ -37,6 +39,7 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   const row1Ref = useRef<HTMLDivElement>(null)
   const row2Ref = useRef<HTMLDivElement>(null)
   const row3Ref = useRef<HTMLDivElement>(null)
+  const mapSectionRef = useRef<HTMLDivElement>(null)
 
   // Set up initialization effect
   useEffect(() => {
@@ -105,39 +108,99 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
       })
     }
 
+    // Map section animation and lazy loading
+    if (mapSectionRef.current) {
+      gsap.fromTo(mapSectionRef.current, 
+        { opacity: 0, y: 50 },
+        {
+          scrollTrigger: {
+            trigger: mapSectionRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+            onEnter: () => {
+              if (!hasAttemptedLoad) {
+                loadLandmarksLazy()
+              }
+            }
+          },
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out'
+        }
+      )
+    }
+
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
-  }, [isInitialized])
+  }, [isInitialized, hasAttemptedLoad])
 
-  // Load landmarks data
+  // Preload landmarks in background (non-blocking)
   useEffect(() => {
-    async function loadLandmarks() {
-      try {
-        const data = await getLandmarks(property.id)
+    if (property?.id) {
+      // Start preloading landmarks immediately but don't wait for it
+      preloadLandmarks(property.id)
+    }
+  }, [property?.id])
+
+  // Lazy load landmarks when map section is visible
+  const loadLandmarksLazy = async () => {
+    if (!property?.id || hasAttemptedLoad) return
+
+    setHasAttemptedLoad(true)
+    setLandmarksLoading(true)
+
+    try {
+      // This will never throw an error - always returns fallback data
+      const data = await getLandmarks(property.id)
+      
+      // Always set up the map property, even with fallback data
+      setMapProperty({
+        name: property.name,
+        position: {
+          lat: property.latitude ?? data.property.position.lat,
+          lng: property.longitude ?? data.property.position.lng
+        },
+        address: property.maps_address || data.property.address || '',
+        id: property.id,
+        is_demo: property.is_demo
+      })
+
+      // Only set landmarks if we have real data
+      if (areLandmarksAvailable(data)) {
         setLandmarks(data.landmarks)
+        setShowMap(true)
+      } else {
+        // Even with fallback data, show a basic map if we have property coordinates
+        if (property.latitude && property.longitude) {
+          setLandmarks([])
+          setShowMap(true)
+        }
+      }
+    } catch (error) {
+      // This should never happen due to the safeguards in getLandmarks,
+      // but just in case, handle it gracefully
+      console.error('Unexpected error loading landmarks:', error)
+      
+      // Still try to show map with basic property info
+      if (property.latitude && property.longitude) {
         setMapProperty({
           name: property.name,
-          position: data.property.position,
-          address: data.property.address,
+          position: {
+            lat: property.latitude,
+            lng: property.longitude
+          },
+          address: property.maps_address || '',
           id: property.id,
           is_demo: property.is_demo
         })
-      } catch (err) {
-        console.error('Error loading landmarks:', err)
-        setError('Failed to load neighbourhood data')
+        setLandmarks([])
+        setShowMap(true)
       }
+    } finally {
+      setLandmarksLoading(false)
     }
-
-    loadLandmarks()
-  }, [property])
-
-  if (error) {
-    return (
-      <div className="h-[600px] flex items-center justify-center bg-gray-50">
-        <p className="text-red-500">{error}</p>
-      </div>
-    )
   }
 
   return (
@@ -240,13 +303,31 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
             </div>
           </div>
 
-          {/* Map Section */}
-          <div className="h-[600px] rounded-lg overflow-hidden">
-            {isLoaded && mapProperty ? (
-              <GoogleMap property={mapProperty} landmarks={landmarks} center={mapProperty.position} />
-            ) : (
+          {/* Map Section - Only render when landmarks are ready or when we have basic property info */}
+          <div ref={mapSectionRef} className="h-[600px] rounded-lg overflow-hidden">
+            {landmarksLoading ? (
+              // Loading state
               <div className="h-full flex items-center justify-center bg-gray-50">
-                <p className="text-gray-500">Loading map...</p>
+                <div className="text-center">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                  <p className="text-gray-600">Loading map data...</p>
+                </div>
+              </div>
+            ) : showMap && isLoaded && mapProperty ? (
+              // Show map when ready
+              <GoogleMap property={mapProperty} landmarks={landmarks} center={mapProperty.position} />
+            ) : hasAttemptedLoad ? (
+              // Show fallback message if map can't be loaded
+              <div className="h-full flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">Map temporarily unavailable</p>
+                  <p className="text-sm text-gray-500">The neighbourhood content above provides information about this area</p>
+                </div>
+              </div>
+            ) : (
+              // Initial placeholder before loading attempt
+              <div className="h-full flex items-center justify-center bg-gray-50">
+                <p className="text-gray-500">Loading neighbourhood map...</p>
               </div>
             )}
           </div>

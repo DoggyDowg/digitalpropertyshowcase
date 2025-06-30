@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { ParallaxBanner } from './shared/ParallaxBanner'
 import { GoogleMap } from '@/components/shared/GoogleMap'
-import { getLandmarks } from '@/utils/landmarkUtils'
+import { getLandmarks, areLandmarksAvailable, preloadLandmarks } from '@/utils/landmarkUtils'
 import { useGoogleMaps } from '@/components/shared/GoogleMapsLoader'
 import { useNeighbourhoodBanner } from '@/hooks/useNeighbourhoodBanner'
 import { useNeighbourhoodImages } from '@/hooks/useNeighbourhoodImages'
@@ -27,8 +27,10 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   
   // Map state
   const [landmarks, setLandmarks] = useState<Landmark[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [mapProperty, setMapProperty] = useState<MapProperty | null>(null)
+  const [landmarksLoading, setLandmarksLoading] = useState(false)
+  const [showMap, setShowMap] = useState(false)
+  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false)
 
   // Animation states
   const [isVisibleRow1, setIsVisibleRow1] = useState(false)
@@ -38,6 +40,7 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   const row1Ref = useRef<HTMLDivElement>(null)
   const row2Ref = useRef<HTMLDivElement>(null)
   const row3Ref = useRef<HTMLDivElement>(null)
+  const mapSectionRef = useRef<HTMLDivElement>(null)
 
   // Set up initialization effect
   useEffect(() => {
@@ -63,6 +66,10 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
             if (entry.target === row3Ref.current) {
               setIsVisibleRow3(true)
             }
+            if (entry.target === mapSectionRef.current && !hasAttemptedLoad) {
+              // Load landmarks when map section becomes visible
+              loadLandmarksLazy()
+            }
           }
         })
       },
@@ -75,60 +82,76 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
     if (row1Ref.current) observer.observe(row1Ref.current)
     if (row2Ref.current) observer.observe(row2Ref.current)
     if (row3Ref.current) observer.observe(row3Ref.current)
+    if (mapSectionRef.current) observer.observe(mapSectionRef.current)
 
     return () => observer.disconnect()
-  }, [isInitialized])
+  }, [isInitialized, hasAttemptedLoad])
 
-  // Load landmarks data
+  // Preload landmarks in background (non-blocking)
   useEffect(() => {
-    async function loadLandmarks() {
-      if (!property?.id) {
-        // console.error('No property ID available');
-        setError('Property information not available');
-        return;
-      }
+    if (property?.id) {
+      // Start preloading landmarks immediately but don't wait for it
+      preloadLandmarks(property.id)
+    }
+  }, [property?.id])
 
-      try {
-        const data = await getLandmarks(property.id);
-        
-        if (!data.landmarks) {
-          // console.error('Invalid landmarks data received:', data);
-          setError('Invalid landmarks data received');
-          return;
+  // Lazy load landmarks when map section is visible
+  const loadLandmarksLazy = async () => {
+    if (!property?.id || hasAttemptedLoad) return
+
+    setHasAttemptedLoad(true)
+    setLandmarksLoading(true)
+
+    try {
+      // This will never throw an error - always returns fallback data
+      const data = await getLandmarks(property.id)
+      
+      // Always set up the map property, even with fallback data
+      setMapProperty({
+        name: property.name,
+        position: {
+          lat: property.latitude ?? data.property.position.lat,
+          lng: property.longitude ?? data.property.position.lng
+        },
+        address: property.maps_address || data.property.address || '',
+        id: property.id,
+        is_demo: property.is_demo
+      })
+
+      // Only set landmarks if we have real data
+      if (areLandmarksAvailable(data)) {
+        setLandmarks(data.landmarks)
+        setShowMap(true)
+      } else {
+        // Even with fallback data, show a basic map if we have property coordinates
+        if (property.latitude && property.longitude) {
+          setLandmarks([])
+          setShowMap(true)
         }
-
+      }
+    } catch (error) {
+      // This should never happen due to the safeguards in getLandmarks,
+      // but just in case, handle it gracefully
+      console.error('Unexpected error loading landmarks:', error)
+      
+      // Still try to show map with basic property info
+      if (property.latitude && property.longitude) {
         setMapProperty({
           name: property.name,
           position: {
-            lat: property.latitude ?? 0,
-            lng: property.longitude ?? 0
+            lat: property.latitude,
+            lng: property.longitude
           },
           address: property.maps_address || '',
           id: property.id,
           is_demo: property.is_demo
-        });
-
-        if (property.latitude && property.longitude) {
-          setLandmarks(data.landmarks);
-        } else {
-          // console.warn('Property coordinates are missing');
-          setLandmarks([]);
-        }
-      } catch (err) {
-        // console.error('Error loading landmarks:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load neighbourhood data');
+        })
+        setLandmarks([])
+        setShowMap(true)
       }
+    } finally {
+      setLandmarksLoading(false)
     }
-
-    loadLandmarks();
-  }, [property]);
-
-  if (error) {
-    return (
-      <div className="h-[600px] flex items-center justify-center bg-gray-50">
-        <p className="text-red-500">{error}</p>
-      </div>
-    )
   }
 
   return (
@@ -231,17 +254,40 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
             </div>
           </div>
 
-          {/* Map Section */}
-          <section className="bg-brand-light py-20">
+          {/* Map Section - Only render when landmarks are ready or when we have basic property info */}
+          <section ref={mapSectionRef} className="bg-brand-light py-20">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
               <h2 className="font-heading text-3xl mb-8 text-center text-brand-dark">Explore the Neighbourhood</h2>
+              
               <div className="h-[600px] rounded-lg overflow-hidden shadow-lg mb-8">
-                {isLoaded && mapProperty && (
+                {landmarksLoading ? (
+                  // Loading state
+                  <div className="h-full flex items-center justify-center bg-gray-50">
+                    <div className="text-center">
+                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                      <p className="text-gray-600">Loading map data...</p>
+                    </div>
+                  </div>
+                ) : showMap && isLoaded && mapProperty ? (
+                  // Show map when ready
                   <GoogleMap 
                     property={mapProperty} 
                     landmarks={landmarks}
                     center={mapProperty.position}
                   />
+                ) : hasAttemptedLoad ? (
+                  // Show fallback message if map can't be loaded
+                  <div className="h-full flex items-center justify-center bg-gray-50">
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-4">Map temporarily unavailable</p>
+                      <p className="text-sm text-gray-500">The neighbourhood content above provides information about this area</p>
+                    </div>
+                  </div>
+                ) : (
+                  // Initial placeholder before loading attempt
+                  <div className="h-full flex items-center justify-center bg-gray-50">
+                    <p className="text-gray-500">Loading neighbourhood map...</p>
+                  </div>
                 )}
               </div>
 

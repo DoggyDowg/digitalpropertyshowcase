@@ -13,6 +13,7 @@ import { MoreInfo } from '@/components/MoreInfo'
 import { ClientLayout } from '@/components/layouts/ClientLayout'
 import { Contact } from '@/components/Contact'
 import CustomChat from '@/components/shared/CustomChat'
+import { LightweightErrorBoundary } from '@/components/shared/ErrorBoundary'
 import type { Property } from '@/types/property'
 
 interface CuscoTemplateProps {
@@ -42,7 +43,9 @@ export function CuscoTemplate({ property, templateStyle = 'cusco' }: CuscoTempla
         <GallerySection property={property} />
         <YourHome property={property} />
         <YourLifestyle property={property} />
-        <YourNeighbourhood property={property} />
+        <LightweightErrorBoundary componentName="Neighbourhood">
+          <YourNeighbourhood property={property} />
+        </LightweightErrorBoundary>
         <MoreInfo property={property} />
         <Viewings property={property} />
         <Contact property={property} />
