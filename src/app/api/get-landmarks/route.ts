@@ -5,6 +5,15 @@ import { PostgrestError } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
+// Add timeout wrapper
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
+  });
+  
+  return Promise.race([promise, timeoutPromise]);
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -19,13 +28,17 @@ export async function GET(request: Request) {
 
     const supabase = createRouteHandlerClient({ cookies });
 
-    // First check if the property exists and is accessible
-    const { data: propertyData, error: propertyError } = await supabase
-      .from('properties')
-      .select('id, name, street_address, maps_address, landmarks, updated_at, latitude, longitude')
-      .eq('id', propertyId)
-      .single()
-      .throwOnError();
+    // First check if the property exists and is accessible - with timeout
+    const { data: propertyData, error: propertyError } = await withTimeout(
+      supabase
+        .from('properties')
+        .select('id, name, street_address, maps_address, landmarks, updated_at, latitude, longitude')
+        .eq('id', propertyId)
+        .single()
+        .throwOnError(),
+      15000, // 15 second timeout for database query
+      'Database query timeout'
+    );
 
     if (propertyError) {
       console.error('Database error:', propertyError);
@@ -71,20 +84,31 @@ export async function GET(request: Request) {
       };
       console.log('Using stored coordinates:', propertyPosition);
     } else {
-      // Geocode the address if no stored coordinates
-      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
-      const geocodeResponse = await fetch(geocodeUrl);
-      const geocodeData = await geocodeResponse.json();
-      
-      console.log('Geocoding response:', {
-        status: geocodeData.status,
-        results: geocodeData.results?.[0]?.formatted_address,
-        location: geocodeData.results?.[0]?.geometry?.location
-      });
+      // Geocode the address if no stored coordinates - with timeout and fallback
+      try {
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+        
+        const geocodeResponse = await withTimeout(
+          fetch(geocodeUrl),
+          8000, // 8 second timeout for geocoding
+          'Geocoding API timeout'
+        );
+        
+        const geocodeData = await geocodeResponse.json();
+        
+        console.log('Geocoding response:', {
+          status: geocodeData.status,
+          results: geocodeData.results?.[0]?.formatted_address,
+          location: geocodeData.results?.[0]?.geometry?.location
+        });
 
-      if (geocodeData.status === 'OK' && geocodeData.results[0]?.geometry?.location) {
-        propertyPosition = geocodeData.results[0].geometry.location;
-      } else {
+        if (geocodeData.status === 'OK' && geocodeData.results[0]?.geometry?.location) {
+          propertyPosition = geocodeData.results[0].geometry.location;
+        } else {
+          throw new Error(`Geocoding failed: ${geocodeData.status}`);
+        }
+      } catch (geocodeError) {
+        console.warn('Geocoding failed, using fallback coordinates:', geocodeError);
         // Fallback to first landmark's position or default Melbourne coordinates
         propertyPosition = landmarks[0]?.position || { lat: -37.8136, lng: 144.9631 };
         console.log('Using fallback coordinates:', propertyPosition);
@@ -111,13 +135,25 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Cache-Control': 'public, max-age=300, s-maxage=300', // 5 minute cache
         'Pragma': 'no-cache',
         'Expires': '0'
       }
     });
   } catch (error) {
     console.error('Error in get-landmarks:', error);
+    
+    // Return a more specific error based on the type
+    if (error instanceof Error && error.message.includes('timeout')) {
+      return NextResponse.json(
+        { 
+          error: 'Request timeout',
+          details: 'The request took too long to complete. Please try again.'
+        },
+        { status: 504 }
+      );
+    }
+    
     return NextResponse.json(
       { 
         error: 'Failed to load landmarks data',

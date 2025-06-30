@@ -4,6 +4,15 @@ import { NextRequest, NextResponse } from 'next/server';
 const DIFY_API_KEY = process.env.DIFY_APP_KEY;
 const DIFY_API_URL = 'https://api.dify.ai/v1';
 
+// Add timeout wrapper
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
+  });
+  
+  return Promise.race([promise, timeoutPromise]);
+}
+
 // Next.js App Router API route
 export async function POST(request: NextRequest) {
   // Set CORS headers for the preflight request
@@ -42,15 +51,20 @@ export async function POST(request: NextRequest) {
 
     console.log('Sending to Dify:', JSON.stringify(difyRequestBody));
     
-    const difyResponse = await fetch(`${DIFY_API_URL}/chat-messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${DIFY_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'text/event-stream',
-      },
-      body: JSON.stringify(difyRequestBody),
-    });
+    // Add timeout to Dify API call
+    const difyResponse = await withTimeout(
+      fetch(`${DIFY_API_URL}/chat-messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${DIFY_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream',
+        },
+        body: JSON.stringify(difyRequestBody),
+        signal: AbortSignal.timeout(25000) // 25 second timeout
+      }),
+      25000 // 25 second timeout wrapper
+    );
 
     if (!difyResponse.ok) {
       const errorText = await difyResponse.text();
@@ -61,35 +75,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For streaming responses in Next.js App Router
-    const stream = difyResponse.body;
-    if (!stream) {
-      return NextResponse.json(
-        { error: 'Proxy server error', details: 'Could not get response stream.' },
-        { status: 500, headers }
-      );
+    // For streaming responses, we need to handle them differently
+    if (difyResponse.body) {
+      // Create a new Response with the stream
+      return new Response(difyResponse.body, {
+        status: difyResponse.status,
+        headers: {
+          ...headers,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    } else {
+      throw new Error('No response body from Dify API');
     }
 
-    // Use the Response web API to create a streaming response
-    return new Response(stream, {
-      status: difyResponse.status,
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        ...headers,
-      },
-    });
   } catch (error) {
-    console.error('Error processing request in Next.js API route:', error);
+    console.error('Error processing request in API route:', error);
+    
+    // Handle timeout specifically
+    if (error instanceof Error && error.message.includes('timeout')) {
+      return NextResponse.json(
+        { error: 'Chat request timeout', details: 'The AI response took too long to generate' },
+        { status: 504, headers }
+      );
+    }
+    
     let errorMessage = 'Proxy server error';
-    let errorDetails = error instanceof Error ? error.message : String(error);
+    let errorDetails = error instanceof Error ? error.message : 'Unknown error';
 
-    if (error instanceof SyntaxError && errorDetails.includes('JSON')) {
+    if (error instanceof SyntaxError && error.message.includes('JSON')) {
       errorMessage = 'Invalid JSON in request body.';
       errorDetails = 'Please ensure the request body is valid JSON.';
     }
-
+    
     return NextResponse.json(
       { error: errorMessage, details: errorDetails },
       { status: 500, headers }
