@@ -10,7 +10,6 @@ import { useMoreInfoFloorplans } from '@/hooks/useMoreInfoFloorplans'
 import { PDFPreview } from '@/components/shared/PDFPreview'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { AddToCalendar } from './AddToCalendar'
-import type { Asset } from '@/types/assets'
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
 import { format } from 'date-fns'
 import { useAgent } from '@/hooks/useAgent'
@@ -101,12 +100,12 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const { moreInfo } = siteContent
   const [showFloorplan, setShowFloorplan] = useState(false)
   const [showVideo, setShowVideo] = useState(false)
-  const [selectedFloorplan, setSelectedFloorplan] = useState<Asset | null>(null)
+  const [selectedFloorplan, setSelectedFloorplan] = useState<string | null>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const { videoUrl, loading: videoLoading, error: videoError } = useMoreInfoVideo(property.id, property.is_demo ?? false)
-  const { floorplans } = useMoreInfoFloorplans(property.id, property.is_demo ?? false)
+  const { floorplans } = useMoreInfoFloorplans(property.id)
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [demoContent, setDemoContent] = useState<{
     documents: Array<{ label: string; url: string }>;
@@ -240,11 +239,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
       }
 
       // Log the auction date being processed for debugging
-      console.log('MoreInfo - Auction Calendar - Original date info:', {
-        input: auctionDatetime,
-        parsedUtc: utcDate.toISOString(),
-        timezoneName: property.local_timezone
-      });
+      // Removed logging to prevent console spam
 
       // Format the date and time strings for the calendar (in YYYY-MM-DD and HH:MM format)
       // These formats are expected by the AddToCalendar component
@@ -544,13 +539,13 @@ export function MoreInfo({ property }: MoreInfoProps) {
                   <div className="absolute top-6 left-6 z-10 flex gap-2">
                     {floorplans.map((plan, index) => (
                       <button
-                        key={plan.id}
+                        key={plan}
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedFloorplan(plan);
                         }}
                         className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                          selectedFloorplan?.id === plan.id
+                          selectedFloorplan === plan
                             ? 'bg-brand-dark text-brand-light'
                             : 'bg-brand-light/80 text-brand-dark hover:bg-brand-light'
                         }`}
@@ -560,14 +555,14 @@ export function MoreInfo({ property }: MoreInfoProps) {
                     ))}
                   </div>
                 )}
-                {selectedFloorplan?.type === 'pdf' ? (
+                {selectedFloorplan?.toLowerCase().endsWith('.pdf') ? (
                   <PDFPreview 
-                    url={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${selectedFloorplan.storage_path}`}
+                    url={selectedFloorplan}
                     className="transition-all duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${selectedFloorplan?.storage_path}`}
+                    src={selectedFloorplan || ''}
                     alt="Property Floorplan"
                     fill
                     className="object-contain transition-all duration-300 group-hover:scale-105"
@@ -634,13 +629,13 @@ export function MoreInfo({ property }: MoreInfoProps) {
               <div className="absolute top-6 left-6 z-10 flex gap-2">
                 {floorplans.map((plan, index) => (
                   <button
-                    key={plan.id}
+                    key={plan}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedFloorplan(plan);
                     }}
                     className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                      selectedFloorplan.id === plan.id
+                      selectedFloorplan === plan
                         ? 'bg-brand-light text-brand-dark'
                         : 'bg-brand-dark/80 text-brand-light hover:bg-brand-dark'
                     }`}
@@ -650,13 +645,13 @@ export function MoreInfo({ property }: MoreInfoProps) {
                 ))}
               </div>
             )}
-            {selectedFloorplan.type === 'pdf' ? (
+            {selectedFloorplan?.toLowerCase().endsWith('.pdf') ? (
               <div className="relative h-full">
                 <PDFPreview 
-                  url={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${selectedFloorplan.storage_path}`}
+                  url={selectedFloorplan}
                 />
                 <a
-                  href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${selectedFloorplan.storage_path}`}
+                  href={selectedFloorplan}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
@@ -667,7 +662,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
               </div>
             ) : (
               <Image
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-assets/${selectedFloorplan.storage_path}`}
+                src={selectedFloorplan || ''}
                 alt="Property Floorplan"
                 fill
                 className="object-contain"

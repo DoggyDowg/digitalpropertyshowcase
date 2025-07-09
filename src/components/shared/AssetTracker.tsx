@@ -18,7 +18,7 @@ export function TrackedImage({ onLoadingComplete, src, alt, ...props }: TrackedI
 
   useEffect(() => {
     if (!isRegistered.current) {
-      console.log(`[TrackedImage] Registering image: ${src}`)
+      // Silent registration - only log if there are issues
       registerAsset()
       isRegistered.current = true
     }
@@ -30,12 +30,12 @@ export function TrackedImage({ onLoadingComplete, src, alt, ...props }: TrackedI
       alt={alt}
       {...props}
       onLoadingComplete={(img) => {
-        console.log(`[TrackedImage] Image loaded: ${src}`)
+        // Silent success - only log errors
         markAssetAsLoaded()
         onLoadingComplete?.(img)
       }}
       onError={() => {
-        console.error(`[TrackedImage] Failed to load image: ${src}`)
+        console.error(`❌ [TrackedImage] Failed to load: ${src}`)
         markAssetAsLoaded() // Mark as loaded even on error to prevent hanging
       }}
     />
@@ -48,7 +48,7 @@ export function TrackedVideo({ onLoadingComplete, src, ...props }: TrackedVideoP
 
   useEffect(() => {
     if (!isRegistered.current) {
-      console.log(`[TrackedVideo] Registering video: ${src}`)
+      // Silent registration - only log if there are issues
       registerAsset()
       isRegistered.current = true
     }
@@ -59,12 +59,12 @@ export function TrackedVideo({ onLoadingComplete, src, ...props }: TrackedVideoP
       {...props}
       src={src}
       onLoadedData={() => {
-        console.log(`[TrackedVideo] Video loaded: ${src}`)
+        // Silent success - only log errors
         markAssetAsLoaded()
         onLoadingComplete?.()
       }}
       onError={() => {
-        console.error(`[TrackedVideo] Failed to load video: ${src}`)
+        console.error(`❌ [TrackedVideo] Failed to load: ${src}`)
         markAssetAsLoaded() // Mark as loaded even on error to prevent hanging
       }}
     />

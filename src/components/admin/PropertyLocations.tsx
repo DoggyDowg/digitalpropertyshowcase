@@ -37,7 +37,7 @@ interface EnhancedPlaceResult extends google.maps.places.PlaceResult {
   landmarkType?: LandmarkType;
 }
 
-export default function PropertyLocations({ propertyId, onSave }: PropertyLocationsProps) {
+export default function PropertyLocations({ propertyId, onSave }: PropertyLocationsProps): JSX.Element {
   const [state, setState] = useState<LocationState>({
     property: null,
     landmarks: [],
@@ -190,7 +190,7 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
 
   // Handle landmark addition
   const handleAddLandmark = useCallback((place: EnhancedPlaceResult) => {
-    console.log('[PropertyLocations] handleAddLandmark called with place:', place);
+
     
     // Get the landmark type from our custom property or from state
     const landmarkType = place.landmarkType || state.selectedType;
@@ -203,12 +203,6 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       showToast('Could not add landmark - missing required data', 'info');
       return;
     }
-    
-    console.log('[PropertyLocations] Adding landmark:', {
-      name: place.name,
-      type: landmarkType,
-      position: place.geometry.location.toJSON()
-    });
     
     // Create a temporary ID for new landmarks
     const tempId = `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -228,7 +222,7 @@ export default function PropertyLocations({ propertyId, onSave }: PropertyLocati
       }
     };
 
-    console.log('[PropertyLocations] Successfully processed landmark, adding to newLandmarks array');
+    
     
     // Add to newLandmarks array and keep the landmark type active for adding more
     setState(prev => ({

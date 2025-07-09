@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Phone, Mail, Facebook, Instagram } from 'lucide-react'
 import { useFooterImage } from '@/hooks/useFooterImage'
 import type { Property, FooterLink, OfficeAddress } from '@/types/property'
+import { useGalleryImages } from '@/hooks/useGalleryImages'
 
 interface FooterProps {
   property: Property;
@@ -13,6 +14,24 @@ interface FooterProps {
 export function Footer({ property }: FooterProps) {
   const { imageUrl, loading } = useFooterImage(property.id)
   
+  // Get agency branding logo - use light logo for dark background
+  const agencyLogo = property.agency_settings?.branding?.logo?.light
+  
+  // Find the current office if property has an office_id
+  const office = property.office_id && property.agency_settings?.office_addresses
+    ? property.agency_settings.office_addresses.find(addr => addr.id === property.office_id)
+    : null
+  
+  // Extract footer links
+  const footerLinks = property.footer_links || []
+  
+  // Filter out empty links
+  const customLinks = footerLinks.filter(link => link.url && link.title)
+  
+  // Get the first property image for the backdrop
+  const { images: galleryImages } = useGalleryImages(property.id)
+  const backdropImage = galleryImages?.[0]?.src || ''
+
   // Find all links
   const phoneLink = property.footer_links?.find((link: FooterLink) => link.id === 'phone')
   const emailLink = property.footer_links?.find((link: FooterLink) => link.id === 'email')
@@ -20,33 +39,7 @@ export function Footer({ property }: FooterProps) {
     link.id === 'facebook' || link.id === 'instagram'
   ) || []
   
-  // Find custom links (including home link)
-  const customLinks = property.footer_links?.filter((link: FooterLink) => 
-    !['phone', 'email', 'facebook', 'instagram'].includes(link.id)
-  ) || []
-
-  // Get agency logo and office details
-  const agencyLogo = property.agency_settings?.branding?.logo?.light
-  
-  console.log('Property:', property)
-  console.log('Agency Settings:', property.agency_settings)
-  console.log('Agency Logo:', agencyLogo)
-  console.log('Property office_id:', property.office_id)
-  console.log('Office Addresses:', property.agency_settings?.office_addresses)
-  
-  const office: OfficeAddress | undefined = property.office_id && property.agency_settings?.office_addresses ? 
-    property.agency_settings.office_addresses.find((office: OfficeAddress) => {
-      console.log('Checking office:', office)
-      console.log('Against office_id:', property.office_id)
-      return office.id === property.office_id
-    }) 
-    : undefined
-
-  console.log('Selected Office:', office)
-
-  console.log('Office:', office) // Debug log
-  console.log('Footer Links:', property.footer_links) // Debug log
-  console.log('Custom Links:', customLinks) // Debug log
+  // Footer component ready to render
 
   return (
     <footer id="contact" className="bg-brand-dark text-brand-light">

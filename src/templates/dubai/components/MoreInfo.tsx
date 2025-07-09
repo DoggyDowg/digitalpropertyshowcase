@@ -38,9 +38,7 @@ export function MoreInfo({ property }: MoreInfoProps) {
   const [iframeReady, setIframeReady] = useState(false)
 
   /*
-  console.log('MoreInfo render - videoUrl:', videoUrl)
-  console.log('MoreInfo render - videoLoading:', videoLoading)
-  console.log('MoreInfo render - videoError:', videoError)
+  // MoreInfo component ready to render
   */
 
   useEffect(() => {

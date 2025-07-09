@@ -38,7 +38,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
     try {
       setLoading(true)
       setError(null)
-      console.log('Loading viewings for property:', propertyId)
 
       const { data, error } = await supabase
         .from('viewings')
@@ -51,7 +50,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
         throw new Error(`Failed to load viewings: ${error.message}`)
       }
 
-      console.log('Loaded viewings:', data)
       setViewings(data || [])
     } catch (err) {
       console.error('Error loading viewings:', err)
@@ -77,17 +75,12 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
       const date = (document.getElementById('viewing-date') as HTMLInputElement).value
       const time = (document.getElementById('viewing-time') as HTMLInputElement).value
       
-      console.log('Input values:', { date, time, propertyTimezone })
-      
       // Parse the input date and time as being in the property's timezone
       const [year, month, day] = date.split('-').map(Number)
       const [hours, minutes] = time.split(':').map(Number)
       
-      console.log('Parsed values:', { year, month, day, hours, minutes })
-      
       // Create a UTC date by adjusting for the property's timezone offset
       const tempDate = new Date(Date.UTC(year, month - 1, day, hours, minutes))
-      console.log('Initial UTC date:', tempDate.toISOString())
       
       // Get the timezone offset for the property's timezone at this date
       const formatter = new Intl.DateTimeFormat('en-US', {
@@ -102,10 +95,8 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
       })
       
       const parts = formatter.formatToParts(tempDate)
-      console.log('Formatter parts:', parts)
       
       const timeZonePart = parts.find(part => part.type === 'timeZoneName')
-      console.log('Timezone part:', timeZonePart)
       
       if (!timeZonePart?.value) {
         throw new Error(`Invalid timezone: ${propertyTimezone}`)
@@ -113,7 +104,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
       
       // Handle both GMT+11 and GMT+1100 formats
       const offsetMatch = timeZonePart.value.match(/GMT([+-])(\d{1,2})(?:(\d{2})|)/)
-      console.log('Offset match:', offsetMatch)
       
       if (!offsetMatch) {
         throw new Error(`Could not parse timezone offset from: ${timeZonePart.value}`)
@@ -121,7 +111,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
       
       const [, offsetSign, offsetHours, offsetMinutes = '00'] = offsetMatch
       const offset = (parseInt(offsetHours) * 60 + parseInt(offsetMinutes)) * (offsetSign === '+' ? -1 : 1)
-      console.log('Calculated offset (minutes):', offset)
       
       // Adjust the UTC time by the offset to get the correct UTC time
       const utcDate = new Date(Date.UTC(
@@ -131,7 +120,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
         hours + Math.floor(offset / 60),
         minutes + (offset % 60)
       ))
-      console.log('Final UTC date to store:', utcDate.toISOString())
 
       const { data, error } = await supabase
         .from('viewings')
@@ -147,7 +135,6 @@ export default function ViewingsManager({ propertyId, propertyTimezone }: Viewin
         throw error
       }
 
-      console.log('Saved viewing:', data)
       setViewings([...viewings, data[0]])
       setIsAddingViewing(false)
       setNewViewing({

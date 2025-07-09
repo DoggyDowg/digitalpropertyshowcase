@@ -15,6 +15,7 @@ const AssetLoadingContext = createContext<AssetLoadingContextType | undefined>(u
 
 const MINIMUM_LOADING_TIME = 2000 // 2 seconds minimum loading time
 const INITIALIZATION_TIMEOUT = 2000 // 2 seconds to give more time for assets to register
+const MAXIMUM_LOADING_TIME = 15000 // 15 seconds maximum loading time - force complete after this
 
 export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -24,6 +25,7 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
   const mountedRef = useRef(true)
   const initializationTimer = useRef<NodeJS.Timeout | null>(null)
   const loadingCheckInterval = useRef<NodeJS.Timeout | null>(null)
+  const maxLoadingTimer = useRef<NodeJS.Timeout | null>(null)
   const hasCompletedInitialLoad = useRef(false)
   const assetsRegisteredAfterInit = useRef(false)
 
@@ -36,52 +38,48 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
       clearInterval(loadingCheckInterval.current)
       loadingCheckInterval.current = null
     }
+    if (maxLoadingTimer.current) {
+      clearTimeout(maxLoadingTimer.current)
+      maxLoadingTimer.current = null
+    }
   }, [])
 
   const completeLoading = useCallback(() => {
     if (!mountedRef.current) return
-
-    // console.log('[AssetLoading] Completing loading:', {
-    //   totalAssets,
-    //   loadedAssets,
-    //   hasCompletedInitialLoad: hasCompletedInitialLoad.current,
-    //   assetsRegisteredAfterInit: assetsRegisteredAfterInit.current
-    // })
     
     hasCompletedInitialLoad.current = true
     setIsLoading(false)
     clearAllTimers()
-  }, [totalAssets, loadedAssets, clearAllTimers])
+  }, [clearAllTimers])
 
   // Initialize loading state
   useEffect(() => {
-    // console.log('[AssetLoading] Provider mounted')
     mountedRef.current = true
     hasCompletedInitialLoad.current = false
     assetsRegisteredAfterInit.current = false
+
+    // Maximum loading time failsafe - force complete after MAXIMUM_LOADING_TIME
+    maxLoadingTimer.current = setTimeout(() => {
+      if (!mountedRef.current) return
+      
+      console.warn('⏰ Asset loading timeout - forcing completion')
+      completeLoading()
+    }, MAXIMUM_LOADING_TIME)
 
     // Initial timeout to check if any assets were registered
     initializationTimer.current = setTimeout(() => {
       if (!mountedRef.current) return
       
-      // console.log('[AssetLoading] Initialization timeout check:', {
-      //   totalAssets,
-      //   hasCompletedInitialLoad: hasCompletedInitialLoad.current,
-      //   assetsRegisteredAfterInit: assetsRegisteredAfterInit.current
-      // })
-
       if (totalAssets === 0 && !hasCompletedInitialLoad.current && !assetsRegisteredAfterInit.current) {
-        // console.log('[AssetLoading] No assets registered during initialization')
         completeLoading()
       }
     }, INITIALIZATION_TIMEOUT)
 
     return () => {
-      // console.log('[AssetLoading] Provider unmounting')
       mountedRef.current = false
       clearAllTimers()
     }
-  }, [clearAllTimers, completeLoading, totalAssets])
+  }, [clearAllTimers, completeLoading, totalAssets, loadedAssets, loadingStartTime])
 
   // Handle loading completion when all assets are loaded
   useEffect(() => {
@@ -90,15 +88,6 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     if (totalAssets > 0 && loadedAssets === totalAssets) {
       const timeElapsed = Date.now() - loadingStartTime
       const remainingTime = Math.max(0, MINIMUM_LOADING_TIME - timeElapsed)
-
-      // console.log(`[AssetLoading] All assets loaded:`, {
-      //   totalAssets,
-      //   loadedAssets,
-      //   timeElapsed,
-      //   remainingTime,
-      //   loadingStartTime,
-      //   currentTime: Date.now()
-      // })
 
       clearAllTimers()
 
@@ -111,53 +100,51 @@ export function AssetLoadingProvider({ children }: { children: ReactNode }) {
     }
   }, [totalAssets, loadedAssets, loadingStartTime, clearAllTimers, completeLoading])
 
+  // Only warn if stuck for too long
+  useEffect(() => {
+    if (isLoading && totalAssets > 0) {
+      loadingCheckInterval.current = setInterval(() => {
+        if (!mountedRef.current) return
+        
+        const timeElapsed = Date.now() - loadingStartTime
+        const progress = Math.round((loadedAssets / totalAssets) * 100)
+        
+        // Only warn if really stuck
+        if (timeElapsed > 10000 && loadedAssets < totalAssets) {
+          console.warn(`⚠️ Loading stuck at ${progress}% - check for failed assets`)
+        }
+      }, 5000) // Check every 5 seconds
+    }
+    
+    return () => {
+      if (loadingCheckInterval.current) {
+        clearInterval(loadingCheckInterval.current)
+        loadingCheckInterval.current = null
+      }
+    }
+  }, [isLoading, totalAssets, loadedAssets, loadingStartTime])
+
   const registerAsset = useCallback(() => {
     if (!mountedRef.current) return
     
-    // Mark that we've registered assets after initialization
     assetsRegisteredAfterInit.current = true
-    
-    setTotalAssets(prev => {
-      const newTotal = prev + 1
-      // console.log(`[AssetLoading] Registered new asset:`, {
-      //   previousTotal: prev,
-      //   newTotal,
-      //   currentLoaded: loadedAssets,
-      //   hasCompletedInitialLoad: hasCompletedInitialLoad.current
-      // })
-      return newTotal
-    })
-  }, [loadedAssets])
+    setTotalAssets(prev => prev + 1)
+  }, [])
 
   const markAssetAsLoaded = useCallback(() => {
     if (!mountedRef.current) return
-    setLoadedAssets(prev => {
-      const newLoaded = prev + 1
-      // console.log(`[AssetLoading] Asset loaded:`, {
-      //   previousLoaded: prev,
-      //   newLoaded,
-      //   totalAssets,
-      //   isComplete: newLoaded === totalAssets,
-      //   hasCompletedInitialLoad: hasCompletedInitialLoad.current
-      // })
-      return newLoaded
-    })
-  }, [totalAssets])
+    setLoadedAssets(prev => prev + 1)
+  }, [])
 
   const resetLoading = useCallback(() => {
     if (!mountedRef.current) return
-    // console.log('[AssetLoading] Reset loading state:', {
-    //   previousTotal: totalAssets,
-    //   previousLoaded: loadedAssets,
-    //   hasCompletedInitialLoad: hasCompletedInitialLoad.current
-    // })
     clearAllTimers()
     hasCompletedInitialLoad.current = false
     assetsRegisteredAfterInit.current = false
     setIsLoading(true)
     setTotalAssets(0)
     setLoadedAssets(0)
-  }, [totalAssets, loadedAssets, clearAllTimers])
+  }, [clearAllTimers])
 
   const value = {
     isLoading,

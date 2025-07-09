@@ -1,63 +1,68 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { Viewing } from '@/types/property'
 
-export function useUpcomingViewing(propertyId?: string) {
-  const [upcomingViewing, setUpcomingViewing] = useState<Viewing[]>([])
+type Viewing = {
+  id: string
+  property_id: string
+  date: string
+  start_time: string
+  end_time: string
+  timezone: string
+  title: string
+  description: string
+  location: string
+  created_at: string
+  updated_at: string
+}
+
+export function useUpcomingViewing(propertyId: string | undefined) {
+  const [viewing, setViewing] = useState<Viewing | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    async function loadUpcomingViewing() {
-      if (!propertyId) {
-        console.log('No propertyId provided')
-        setLoading(false)
-        return
-      }
+    if (!propertyId) {
+      setLoading(false)
+      return
+    }
 
+    async function fetchUpcomingViewing() {
       try {
         setLoading(true)
         setError(null)
-        console.log('Fetching upcoming viewings for property:', propertyId)
 
-        const now = new Date().toISOString()
-        
-        const { data, error } = await supabase
+        const { data, error: dbError } = await supabase
           .from('viewings')
           .select('*')
           .eq('property_id', propertyId)
-          .eq('status', 'scheduled')
-          .gt('viewing_datetime', now) // Only get future viewings
-          .order('viewing_datetime', { ascending: true }) // Get the next upcoming viewings
-          .limit(3) // Limit to 3 viewings
+          .gte('date', new Date().toISOString().split('T')[0])
+          .order('date', { ascending: true })
+          .order('start_time', { ascending: true })
+          .limit(1)
 
-        if (error) {
-          console.error('Supabase error:', error)
-          throw error
+        if (dbError) {
+          console.error('Supabase error:', dbError)
+          throw new Error(`Database query failed: ${dbError.message}`)
         }
 
-        console.log('Viewings data from database:', data)
-        
-        if (data) {
-          // Store the original ISO datetime string to ensure proper timezone handling
-          const formattedViewings = data.map(viewing => ({
-            ...viewing,
-            // Store the original ISO string for proper timezone handling
-            original_datetime: viewing.viewing_datetime
-          }))
-          setUpcomingViewing(formattedViewings)
+        if (data && data.length > 0) {
+          setViewing(data[0])
+        } else {
+          setViewing(null)
         }
+
       } catch (err) {
-        console.error('Detailed error:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load upcoming viewings'))
+        console.error('Error fetching upcoming viewing:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load upcoming viewing')
       } finally {
         setLoading(false)
       }
     }
 
-    loadUpcomingViewing()
-  }, [supabase, propertyId])
+    fetchUpcomingViewing()
+  }, [propertyId, supabase])
 
-  return { upcomingViewing, loading, error }
+  return { viewing, loading, error }
 } 

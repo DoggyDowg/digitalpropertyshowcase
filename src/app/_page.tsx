@@ -13,17 +13,13 @@ export default function Home() {
 
   useEffect(() => {
     async function loadProperty() {
-      console.log('Starting to load property...')
-      
       // Add a timeout to prevent infinite loading
       const timeout = setTimeout(() => {
-        console.log('Loading timeout reached')
         setLoading(false)
         setProperty(null)
       }, 5000) // 5 second timeout
 
       try {
-        console.log('Fetching from Supabase...')
         const { data, error } = await supabase
           .from('properties')
           .select(`
@@ -41,14 +37,12 @@ export default function Home() {
           throw error
         }
         
-        console.log('Property data received:', data ? 'success' : 'null')
         setProperty(data)
       } catch (err) {
         console.error('Error loading property:', err)
         setProperty(null)
       } finally {
         clearTimeout(timeout) // Clear timeout in case of error
-        console.log('Setting loading to false')
         setLoading(false)
       }
     }

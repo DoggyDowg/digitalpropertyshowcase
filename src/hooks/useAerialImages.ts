@@ -9,116 +9,105 @@ interface AerialImage {
   alt: string;
 }
 
-export function useAerialImages(propertyId?: string, isDemoProperty?: boolean) {
-  const [images, setImages] = useState<AerialImage[]>([])
+export function useAerialImages(propertyId: string | undefined) {
+  const [images, setImages] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    let isMounted = true
-    const abortController = new AbortController()
+    if (!propertyId) {
+      setLoading(false)
+      return
+    }
 
-    async function loadImages() {
-      if (!propertyId) {
-        console.log('No propertyId provided')
-        setLoading(false)
-        return
-      }
-
+    async function fetchAerialImages() {
       try {
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, use demo images
-        if (isDemoProperty) {
-          console.log('Loading demo aerial images')
-          const supportedFormats = ['webp', 'jpg']
-          const demoImages: AerialImage[] = []
+        // Check if it's a demo property
+        const isDemo = propertyId?.includes('/demo/') || false
 
-          for (let i = 1; i <= 3; i++) {
-            for (const format of supportedFormats) {
-              const { data: publicUrlData } = supabase
-                .storage
-                .from('property-assets')
-                .getPublicUrl(`demo/aerials/image${i}.${format}`)
-
+        if (isDemo) {
+          // Load demo aerial images
+          const imageUrls: string[] = []
+          const formats = ['webp', 'jpg', 'jpeg', 'png']
+          
+          for (let i = 1; i <= 6; i++) {
+            let foundImage = false
+            
+            for (const format of formats) {
+              if (foundImage) break
+              
               try {
-                const response = await fetch(publicUrlData.publicUrl, { 
-                  method: 'HEAD',
-                  signal: abortController.signal
-                })
-                if (response.ok) {
-                  console.log(`Found demo aerial image ${i} in ${format} format`)
-                  demoImages.push({
-                    id: `demo-aerial-${i}`,
-                    src: publicUrlData.publicUrl,
-                    alt: `Aerial View ${i}`
-                  })
-                  break
+                const { data: publicUrlData } = supabase.storage
+                  .from('property-assets')
+                  .getPublicUrl(`demo/aerial/${i}.${format}`)
+
+                if (publicUrlData?.publicUrl) {
+                  // Test if the image is accessible
+                  const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+                  if (response.ok) {
+                    imageUrls.push(publicUrlData.publicUrl)
+                    foundImage = true
+                  }
                 }
               } catch (err) {
-                console.log(`No ${format} format found for demo aerial image ${i}:`, err)
+                // Continue to next format
               }
             }
           }
 
-          if (isMounted) {
-            setImages(demoImages)
-            setLoading(false)
-          }
+          setImages(imageUrls)
           return
         }
 
-        // Query the assets table for aerial images
-        // console.log('Fetching aerial images for property:', propertyId)
-        const { data, error } = await supabase
+        // For regular properties, query the database
+        const { data, error: dbError } = await supabase
           .from('assets')
-          .select('*')
+          .select('storage_path')
           .eq('property_id', propertyId)
-          .eq('category', 'aerials')
+          .eq('category', 'aerial')
           .eq('status', 'active')
-          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: true })
 
-        if (error) throw error
-
-        if (data) {
-          const processedImages = data.map(asset => {
-            const { data: publicUrlData } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(asset.storage_path)
-
-            return {
-              id: asset.id,
-              src: publicUrlData.publicUrl,
-              alt: asset.alt_text || asset.title || 'Aerial View'
-            }
-          })
-
-          if (isMounted) {
-            setImages(processedImages)
-          }
+        if (dbError) {
+          throw new Error(`Database query failed: ${dbError.message}`)
         }
+
+        if (!data || data.length === 0) {
+          setImages([])
+          return
+        }
+
+        // Generate public URLs for all images
+        const imagePromises = data.map(async (asset) => {
+          if (!asset.storage_path) return null
+
+          const { data: publicUrlData } = supabase.storage
+            .from('property-assets')
+            .getPublicUrl(asset.storage_path)
+
+          return publicUrlData?.publicUrl || null
+        })
+
+        const imageUrls = await Promise.all(imagePromises)
+        const validUrls = imageUrls.filter((url): url is string => url !== null)
+        
+        setImages(validUrls)
+
       } catch (err) {
         console.error('Error loading aerial images:', err)
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Failed to load aerial images'))
-        }
+        setError(err instanceof Error ? err.message : 'Failed to load aerial images')
       } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     }
 
-    loadImages()
-
-    return () => {
-      isMounted = false
-      abortController.abort()
-    }
-  }, [supabase, propertyId, isDemoProperty])
+    fetchAerialImages()
+  }, [propertyId, supabase])
 
   return { images, loading, error }
 } 

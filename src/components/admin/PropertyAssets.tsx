@@ -337,15 +337,6 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
         // Create the storage path using the directory configuration
         const path = `${propertyId}/${config.directory}/${cleanFileName}`;
         
-        console.log('Uploading file:', {
-          name: file.name,
-          size: fileToUpload.size,
-          type: fileToUpload.type,
-          category,
-          path,
-          contentHash
-        });
-
         // Create a new Blob with the correct MIME type
         const blob = new Blob([fileToUpload], { type: fileToUpload.type });
         
@@ -370,8 +361,6 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
           throw new Error('No upload path returned from storage');
         }
 
-        console.log('File uploaded successfully:', uploadData);
-
         // Create asset record
         const asset: Omit<Asset, 'id' | 'created_at' | 'updated_at'> = {
           property_id: propertyId,
@@ -384,8 +373,6 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
           alt_text: `${config.label} - ${file.name.split('.')[0].replace(/_/g, ' ')}`,
           source_type: 'upload'
         };
-
-        console.log('Creating asset record:', asset);
 
         try {
           // Use direct Supabase query instead of API call
@@ -407,8 +394,6 @@ export default function PropertyAssets({ propertyId, onSave, isDemoProperty }: P
             }
             throw new Error(insertError.message || 'Failed to create asset record');
           }
-
-          console.log('Asset record created:', assetData);
 
           // Update state
           setAssets(prev => {

@@ -7,6 +7,8 @@ import * as React from 'react';
 import Image from 'next/image';
 import { useFooterImage } from '@/hooks/useFooterImage';
 import { MapContextMenu } from './MapContextMenu';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: false,
@@ -64,7 +66,7 @@ export function GoogleMap({
   const [allowTransitions, setAllowTransitions] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const listViewRef = useRef<HTMLDivElement>(null);
-  const { imageUrl, loading } = useFooterImage(property?.id, property?.is_demo);
+  const { imageUrl, loading } = useFooterImage(property?.id);
   
   // Add these new state variables for context menu
   const [contextMenu, setContextMenu] = useState<{
@@ -75,6 +77,8 @@ export function GoogleMap({
     isOpen: false,
     position: { x: 0, y: 0 },
   });
+
+  const router = useRouter();
 
   // Handle window width
   useEffect(() => {
@@ -172,7 +176,6 @@ export function GoogleMap({
 
   // Handle right-click on map for context menu
   const handleRightClick = useCallback((e: google.maps.MapMouseEvent) => {
-    console.log('[GoogleMap] Right-click detected!', e);
     if (mode !== 'admin') return;
     
     // Prevent the default context menu
@@ -188,9 +191,6 @@ export function GoogleMap({
       
       if (!mapPosition) return;
       
-      console.log('[GoogleMap] Opening context menu at', { clientX, clientY, mapPosition });
-      
-      // Open the context menu at this position
       setContextMenu({
         isOpen: true,
         position: { x: clientX, y: clientY },
@@ -200,209 +200,132 @@ export function GoogleMap({
   }, [mode]);
   
   // Handle landmark type selection from context menu
-  const handleLandmarkTypeSelect = useCallback((type: LandmarkType) => {
-    console.log(`[GoogleMap] User selected landmark type from context menu: ${type}`);
-    const mapPosition = contextMenu.mapPosition;
-    
-    if (!mapPosition || !placesService) {
+  const handleLandmarkTypeSelect = useCallback(async (type: LandmarkType) => {
+    if (!contextMenu.mapPosition || !placesService) {
       console.error('[GoogleMap] Missing map position or places service for landmark search');
       return;
     }
     
-    console.log('[GoogleMap] Searching for landmarks near:', mapPosition);
-    
-    // Close the context menu immediately
-    setContextMenu(prev => ({ ...prev, isOpen: false }));
-    
-    // Search for nearby places of this type with a precise radius
-    placesService.nearbySearch(
-      {
-        location: mapPosition,
-        radius: 500, // Smaller radius for more precise results
-        keyword: type, // Use the landmark type as a keyword for better results
-        type: type === 'dining' ? 'restaurant' : 
-              type === 'shopping' ? 'store' : 
-              type === 'leisure' ? 'park' : 
-              type === 'schools' ? 'school' : 
-              type === 'transport' ? 'transit_station' : undefined
-      },
-      (results, status) => {
-        console.log('[GoogleMap] Nearby search results:', { 
-          status, 
-          count: results?.length,
-          results: results?.map(r => ({ name: r.name, types: r.types, distance: r.geometry?.location ? calculateDistance(mapPosition.lat, mapPosition.lng, r.geometry.location.lat(), r.geometry.location.lng()) : null }))
-        });
-        
-        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          // Sort results by distance to the clicked location to get the closest one
-          const sortedResults = [...results].sort((a, b) => {
-            if (!a.geometry?.location || !b.geometry?.location) return 0;
-            
-            const distanceA = calculateDistance(
-              mapPosition.lat, mapPosition.lng, 
-              a.geometry.location.lat(), a.geometry.location.lng()
-            );
-            const distanceB = calculateDistance(
-              mapPosition.lat, mapPosition.lng, 
-              b.geometry.location.lat(), b.geometry.location.lng()
-            );
-            
-            return distanceA - distanceB;
-          });
-          
-          // Get details for the closest result
-          const closestPlace = sortedResults[0];
-          const placeId = closestPlace.place_id;
-          
-          if (!placeId) {
-            console.error('[GoogleMap] No place ID found in search results');
+    try {
+      // Search for places of the selected type near the clicked location
+      const service = new google.maps.places.PlacesService(map!);
+      
+      const request: google.maps.places.PlaceSearchRequest = {
+        location: new google.maps.LatLng(contextMenu.mapPosition.lat, contextMenu.mapPosition.lng),
+        radius: 1000, // 1km radius
+        type: type as any
+      };
+
+      service.nearbySearch(request, async (results, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
+          // If no results, try a different search
+          if (!contextMenu.mapPosition) {
+            console.error('No map position available for landmark search');
             return;
           }
           
-          const distance = closestPlace.geometry?.location ? 
-            calculateDistance(mapPosition.lat, mapPosition.lng, closestPlace.geometry.location.lat(), closestPlace.geometry.location.lng()) : 0;
-          
-          console.log('[GoogleMap] Getting details for closest place:', { 
-            name: closestPlace.name, 
-            placeId, 
-            distance: Math.round(distance) + 'm' 
-          });
-          
-          placesService.getDetails(
-            {
-              placeId: placeId,
-              fields: [
-                'name',
-                'geometry',
-                'formatted_address',
-                'types',
-                'place_id',
-                'photos',
-                'rating',
-                'user_ratings_total',
-                'price_level',
-                'vicinity'
-              ]
-            },
-            (place, detailStatus) => {
-              console.log('[GoogleMap] Place details result:', { 
-                status: detailStatus,
-                place: place ? {
-                  name: place.name,
-                  address: place.formatted_address || place.vicinity,
-                  types: place.types,
-                  hasGeometry: !!place.geometry
-                } : null
-              });
+          const textSearchRequest: google.maps.places.TextSearchRequest = {
+            query: `${type} near ${contextMenu.mapPosition.lat},${contextMenu.mapPosition.lng}`,
+            location: new google.maps.LatLng(contextMenu.mapPosition.lat, contextMenu.mapPosition.lng),
+            radius: 2000
+          };
+
+          service.textSearch(textSearchRequest, async (secondResults, secondStatus) => {
+            if (secondStatus === google.maps.places.PlacesServiceStatus.OK && secondResults && secondResults.length > 0) {
+              if (!contextMenu.mapPosition) return;
               
-              if (detailStatus === google.maps.places.PlacesServiceStatus.OK && place) {
-                console.log('[GoogleMap] Found place details, calling onAddLandmark');
+              const closestPlace = secondResults.reduce((closest, current) => {
+                if (!current.geometry?.location || !closest.geometry?.location) return closest;
                 
-                if (onAddLandmark) {
-                  // Create a custom object that includes our landmark type
-                  const placeWithType: EnhancedPlaceResult = {
-                    ...place,
-                    landmarkType: type
-                  };
-                  
-                  try {
-                    onAddLandmark(placeWithType);
-                    console.log('[GoogleMap] onAddLandmark called successfully');
-                  } catch (error) {
-                    console.error('[GoogleMap] Error in onAddLandmark:', error);
-                  }
-                } else {
-                  console.error('[GoogleMap] onAddLandmark callback is not defined');
-                }
-              } else {
-                console.error('[GoogleMap] Failed to get place details:', detailStatus);
-              }
-            }
-          );
-        } else {
-          console.error('[GoogleMap] No places found near this location for type:', type, 'Status:', status);
-          
-          // Try one more time with a larger radius but still prioritize closest results
-          placesService.nearbySearch(
-            {
-              location: mapPosition,
-              radius: 1000, // Larger radius for fallback
-              keyword: type === 'dining' ? 'restaurant' : 
-                      type === 'shopping' ? 'store' : 
-                      type === 'leisure' ? 'park' : 
-                      type === 'schools' ? 'school' : 
-                      type === 'transport' ? 'station' : type
-            },
-            (secondResults, secondStatus) => {
-              console.log('[GoogleMap] Second search results:', { 
-                status: secondStatus, 
-                count: secondResults?.length 
-              });
-              
-              if (secondStatus === google.maps.places.PlacesServiceStatus.OK && 
-                  secondResults && secondResults.length > 0) {
-                
-                // Sort by distance and get the closest one
-                const sortedSecondResults = [...secondResults].sort((a, b) => {
-                  if (!a.geometry?.location || !b.geometry?.location) return 0;
-                  
-                  const distanceA = calculateDistance(
-                    mapPosition.lat, mapPosition.lng, 
-                    a.geometry.location.lat(), a.geometry.location.lng()
-                  );
-                  const distanceB = calculateDistance(
-                    mapPosition.lat, mapPosition.lng, 
-                    b.geometry.location.lat(), b.geometry.location.lng()
-                  );
-                  
-                  return distanceA - distanceB;
-                });
-                
-                const secondPlaceId = sortedSecondResults[0].place_id;
-                if (!secondPlaceId) return;
-                
-                console.log('[GoogleMap] Getting details for closest fallback place:', { 
-                  name: sortedSecondResults[0].name,
-                  placeId: secondPlaceId
-                });
-                
-                placesService.getDetails(
-                  {
-                    placeId: secondPlaceId,
-                    fields: [
-                      'name',
-                      'geometry',
-                      'formatted_address',
-                      'types',
-                      'place_id',
-                      'photos',
-                      'rating',
-                      'user_ratings_total',
-                      'price_level',
-                      'vicinity'
-                    ]
-                  },
-                  (secondPlace, secondDetailStatus) => {
-                    if (secondDetailStatus === google.maps.places.PlacesServiceStatus.OK && secondPlace) {
-                      console.log('[GoogleMap] Found place details on second attempt:', secondPlace);
-                      
-                      if (onAddLandmark) {
-                        const enhancedPlace: EnhancedPlaceResult = {
-                          ...secondPlace,
-                          landmarkType: type
-                        };
-                        onAddLandmark(enhancedPlace);
-                      }
-                    }
-                  }
+                const currentDistance = google.maps.geometry.spherical.computeDistanceBetween(
+                  new google.maps.LatLng(contextMenu.mapPosition!.lat, contextMenu.mapPosition!.lng),
+                  current.geometry.location
                 );
+                const closestDistance = google.maps.geometry.spherical.computeDistanceBetween(
+                  new google.maps.LatLng(contextMenu.mapPosition!.lat, contextMenu.mapPosition!.lng),
+                  closest.geometry.location
+                );
+                
+                return currentDistance < closestDistance ? current : closest;
+              });
+
+              if (closestPlace?.place_id) {
+                const detailsRequest: google.maps.places.PlaceDetailsRequest = {
+                  placeId: closestPlace.place_id,
+                  fields: ['name', 'formatted_address', 'geometry', 'place_id', 'website']
+                };
+
+                service.getDetails(detailsRequest, (place, detailsStatus) => {
+                  if (detailsStatus === google.maps.places.PlacesServiceStatus.OK && place) {
+                    const landmark: Omit<Landmark, 'id' | 'property_id'> = {
+                      name: place.name || `${type.charAt(0).toUpperCase() + type.slice(1)} Location`,
+                      type: type,
+                      position: {
+                        lat: place.geometry?.location?.lat() || contextMenu.mapPosition!.lat,
+                        lng: place.geometry?.location?.lng() || contextMenu.mapPosition!.lng
+                      },
+                      address: place.formatted_address || ''
+                    };
+
+                    onAddLandmark?.(landmark);
+                  }
+                });
               }
             }
-          );
+          });
+          return;
         }
-      }
-    );
-  }, [contextMenu.mapPosition, onAddLandmark, placesService]);
+
+        // Find the closest place to the clicked location
+        if (!contextMenu.mapPosition) {
+          console.error('No map position available for landmark search');
+          return;
+        }
+        
+        const closestPlace = results.reduce((closest, current) => {
+          if (!current.geometry?.location || !closest.geometry?.location) return closest;
+          
+          const currentDistance = google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(contextMenu.mapPosition!.lat, contextMenu.mapPosition!.lng),
+            current.geometry.location
+          );
+          const closestDistance = google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(contextMenu.mapPosition!.lat, contextMenu.mapPosition!.lng),
+            closest.geometry.location
+          );
+          
+          return currentDistance < closestDistance ? current : closest;
+        });
+
+        if (closestPlace?.place_id) {
+          const detailsRequest: google.maps.places.PlaceDetailsRequest = {
+            placeId: closestPlace.place_id,
+            fields: ['name', 'formatted_address', 'geometry', 'place_id', 'website']
+          };
+
+          service.getDetails(detailsRequest, (place, detailsStatus) => {
+            if (detailsStatus === google.maps.places.PlacesServiceStatus.OK && place) {
+              const landmark: Omit<Landmark, 'id' | 'property_id'> = {
+                name: place.name || `${type.charAt(0).toUpperCase() + type.slice(1)} Location`,
+                type: type,
+                position: {
+                  lat: place.geometry?.location?.lat() || contextMenu.mapPosition!.lat,
+                  lng: place.geometry?.location?.lng() || contextMenu.mapPosition!.lng
+                },
+                address: place.formatted_address || ''
+              };
+
+              onAddLandmark?.(landmark);
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error searching for landmarks:', error);
+    } finally {
+      setContextMenu(prev => ({ ...prev, isOpen: false }));
+    }
+  }, [contextMenu, onAddLandmark, placesService, map]);
   
   // Close context menu
   const handleCloseContextMenu = useCallback(() => {
@@ -411,36 +334,20 @@ export function GoogleMap({
 
   // Modify the onLoad function to set up the places service
   const onLoad = useCallback((map: google.maps.Map) => {
-    console.log('Map loaded, checking initialization');
-    // Prevent double initialization
-    if (map === null) {
-      console.log('Map is null, skipping initialization');
-      return;
-    }
-    
     setMap(map);
     
     // Initialize Places Service
     const service = new google.maps.places.PlacesService(map);
     setPlacesService(service);
-    console.log('Places service initialized');
-    
+
     // Add right-click listener for context menu
     if (mode === 'admin') {
-      console.log('[GoogleMap] Setting up right-click handler for admin mode');
-      
-      // Add event listener to the map container instead of relying on the Google Maps event
       const mapContainer = map.getDiv();
       mapContainer.addEventListener('contextmenu', (e) => {
-        console.log('[GoogleMap] contextmenu event triggered on map container');
-        // Prevent default browser context menu
         e.preventDefault();
         
-        // Get exact mouse position for the context menu
         const { clientX, clientY } = e;
         
-        // Get the current center of the map - this is a simplification that will work for our needs
-        // since we're just using the position as a general area to search for landmarks
         const center = map.getCenter();
         if (!center) {
           console.error('[GoogleMap] Could not get map center');
@@ -452,17 +359,11 @@ export function GoogleMap({
           lng: center.lng()
         };
         
-        console.log('[GoogleMap] Opening context menu from container event', { clientX, clientY, mapPosition });
-        
-        // Open context menu exactly at the cursor position
         setContextMenu({
           isOpen: true,
           position: { x: clientX, y: clientY },
           mapPosition,
         });
-        
-        // Since we're handling this ourselves, we can be precise about the position
-        console.log('[GoogleMap] Menu position:', { x: clientX, y: clientY });
       });
       
       // Also keep the Google Maps rightclick handler as backup
@@ -522,9 +423,7 @@ export function GoogleMap({
                 streetViewControl: true
               }}
               onClick={(e: google.maps.MapMouseEvent & { placeId?: string }) => {
-                console.log('[GoogleMap] Direct map onClick event fired:', e);
                 if (isAddingLandmark && e.placeId && onAddLandmark) {
-                  console.log('[GoogleMap] Handling onClick directly with placeId:', e.placeId);
                   try {
                     placesService?.getDetails(
                       {

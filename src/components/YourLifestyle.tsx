@@ -14,9 +14,9 @@ interface YourLifestyleProps {
 }
 
 export function YourLifestyle({ property }: YourLifestyleProps) {
-  const { imageUrl, loading } = useLifestyleBanner(property.id, property.is_demo)
-  const { images, loading: galleryLoading } = useGalleryImages(property.id, property.is_demo)
-  const { imageUrl: footerImageUrl } = useFooterImage(property.id, property.is_demo)
+  const { imageUrl, loading } = useLifestyleBanner(property.id)
+  const { images, loading: galleryLoading } = useGalleryImages(property.id)
+  const { imageUrl: footerImageUrl } = useFooterImage(property.id)
   const bannerTitle = property.content?.lifestyle?.banner_title || 'YOUR LIFESTYLE'
   const headline = property.content?.lifestyle?.headline || 'Your Lifestyle'
   const description = property.content?.lifestyle?.description || ''

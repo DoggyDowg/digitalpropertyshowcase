@@ -1,108 +1,105 @@
-import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase';
+import { useState, useEffect } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-const supabaseUrl = 'https://urguvlckmcehdiibsiwf.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export function use3DTour(propertyId: string, isDemo: boolean) {
-  const [modelUrl, setModelUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export function use3DTour(propertyId: string | undefined) {
+  const [tourUrl, setTourUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      persistSession: false
-    }
-  });
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
+    if (!propertyId) {
+      setLoading(false)
+      return
+    }
+
     async function fetch3DTour() {
       try {
-        setLoading(true);
-        setError(null);
-        
+        setLoading(true)
+        setError(null)
+
+        // Check if it's a demo property
+        const isDemo = propertyId?.includes('/demo/') || false
+
         if (isDemo) {
-          // List contents of the 3d_tours folder
-          const { data: tourContents, error: tourError } = await supabase
-            .storage
+          // Try demo 3D tour
+          const { data: publicUrlData } = supabase.storage
             .from('property-assets')
-            .list('demo/3d_tours', { limit: 100 });
+            .getPublicUrl('demo/3d-tour/tour.html')
 
-          if (tourError) throw tourError;
-
-          // Find the first GLB file
-          const glbFile = tourContents?.find(item => item.name.toLowerCase().endsWith('.glb'));
-
-          if (glbFile) {
-            const filePath = `demo/3d_tours/${glbFile.name}`;
-            const { data } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(filePath);
-
-            console.log('Loading demo 3D tour:', {
-              glbFile,
-              filePath,
-              publicUrl: data.publicUrl
-            });
-
-            const response = await fetch(data.publicUrl, { method: 'HEAD' });
-            if (response.ok) {
-              setModelUrl(data.publicUrl);
-              return;
+          if (publicUrlData?.publicUrl) {
+            // Test if the tour is accessible
+            try {
+              const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+              if (response.ok) {
+                setTourUrl(publicUrlData.publicUrl)
+                return
+              }
+            } catch (err) {
+              // Continue to error handling
             }
           }
 
-          throw new Error('Could not find accessible 3D tour file');
-        } else {
-          // For regular properties, check the assets table
-          const { data: asset, error: assetError } = await supabase
-            .from('assets')
-            .select('*')
-            .eq('property_id', propertyId)
-            .eq('category', '3d_tour' as const)
-            .eq('type', 'glb')
-            .eq('status', 'active')
-            .single();
-
-          if (assetError) {
-            // For non-demo properties, a missing tour is not an error
-            if (assetError.code === 'PGRST116') { // No rows returned
-              setModelUrl(null);
-              return;
-            }
-            throw assetError;
-          }
-
-          if (asset) {
-            const { data: { publicUrl } } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(asset.storage_path);
-            
-            console.log('Loading 3D tour asset:', {
-              asset,
-              publicUrl,
-              storage_path: asset.storage_path
-            });
-            
-            setModelUrl(publicUrl);
-            return;
-          }
+          setError('Demo 3D tour not found')
+          return
         }
 
-        // If we get here and it's not a demo property, no tour is available
-        setModelUrl(null);
+        // For regular properties, query the database
+        const { data, error: dbError } = await supabase
+          .from('assets')
+          .select('storage_path')
+          .eq('property_id', propertyId)
+          .eq('category', '3d_tour')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (dbError) {
+          throw new Error(`Database query failed: ${dbError.message}`)
+        }
+
+        if (!data || data.length === 0) {
+          setTourUrl(null)
+          return
+        }
+
+        const asset = data[0]
+        if (!asset.storage_path) {
+          throw new Error('No storage path found')
+        }
+
+        // Generate the public URL for the 3D tour
+        const { data: publicUrlData } = supabase.storage
+          .from('property-assets')
+          .getPublicUrl(asset.storage_path)
+
+        if (publicUrlData?.publicUrl) {
+          // Verify the tour is accessible
+          try {
+            const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+            if (response.ok) {
+              setTourUrl(publicUrlData.publicUrl)
+            } else {
+              throw new Error('3D tour not accessible')
+            }
+          } catch (verifyErr) {
+            throw new Error('3D tour verification failed')
+          }
+        } else {
+          throw new Error('Failed to generate public URL')
+        }
+
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch 3D tour'));
+        console.error('Error loading 3D tour:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load 3D tour')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetch3DTour();
-  }, [propertyId, isDemo, supabase]);
+    fetch3DTour()
+  }, [propertyId, supabase])
 
-  return { modelUrl, loading, error };
+  return { tourUrl, loading, error }
 } 

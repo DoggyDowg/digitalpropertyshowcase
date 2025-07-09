@@ -1,170 +1,92 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@supabase/supabase-js'
 
-// Add cache for domain to property ID mapping to prevent race conditions
-const domainCache = new Map<string, { propertyId: string, timestamp: number }>()
-const CACHE_TTL = 60 * 1000 // 1 minute in milliseconds
+// Cache for domain-to-property mappings
+const domainCache = new Map<string, { propertyId: string; timestamp: number }>()
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 export async function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host')
-  const pathname = request.nextUrl.pathname
-  const searchParams = request.nextUrl.searchParams.toString()
-
-  // Debug logging
-  console.log(`[Middleware] Processing ${hostname}${pathname}`)
-
-  // Handle favicon.ico requests specially
-  if (pathname === '/favicon.ico') {
-    // Rewrite to our API route for dynamic favicons
-    const redirectUrl = new URL('/api/favicon', request.url)
-    return NextResponse.rewrite(redirectUrl)
-  }
-
-  // Skip middleware for Next.js internals and static files
+  const { pathname, hostname } = new URL(request.url)
+  
+  // Skip middleware for API routes, static files, and admin routes
   if (
-    pathname.startsWith('/_next') || 
-    pathname.includes('favicon.ico') ||
-    pathname.startsWith('/static') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.')  // Skip files with extensions
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/admin') ||
+    pathname.includes('.') ||
+    hostname === 'localhost' ||
+    hostname.includes('vercel.app') ||
+    hostname.includes('127.0.0.1')
   ) {
     return NextResponse.next()
   }
 
-  // Serve index.html for the root of the main marketing site
-  // In development mode, also handle localhost for testing
-  if (pathname === '/' && hostname && (
-      hostname === 'digitalpropertyshowcase.com' || 
-      hostname === 'www.digitalpropertyshowcase.com' || 
-      hostname.includes('localhost') || 
-      hostname.includes('127.0.0.1')
-    )) {
-    console.log(`[Middleware] Serving index.html for main site: ${hostname}`)
-    const newUrl = new URL('/index.html', request.url)
-    return NextResponse.rewrite(newUrl)
-  }
+  // Check if this is the main site (your primary domain)
+  const isMainSite = hostname === 'digitalpropertyshowcase.com' || 
+                    hostname === 'digipropshow.com' ||
+                    hostname === 'www.digitalpropertyshowcase.com' ||
+                    hostname === 'www.digipropshow.com'
 
-  // Skip if we're already on a property page (after main site check, so /properties/ on main site still works)
-  if (pathname.startsWith('/properties/')) {
+  if (isMainSite) {
+    // For main site, serve the public landing page
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/index.html', request.url))
+    }
     return NextResponse.next()
   }
 
-  // Create a response that we'll modify based on conditions
-  const res = NextResponse.next()
-
-  // Handle auth for admin routes
-  if (pathname.startsWith('/admin')) {
-    const supabase = createMiddlewareClient({ req: request, res })
-    const { data: { session } } = await supabase.auth.getSession()
-
-    // Protect all admin routes except login
-    if (pathname !== '/admin/login') {
-      if (!session) {
-        // Redirect to login if not authenticated
-        const redirectUrl = new URL('/admin/login', request.url)
-        return NextResponse.redirect(redirectUrl)
-      }
-    } else if (session) {
-      // If we're on the login page and already authenticated, redirect to admin dashboard
-      const redirectUrl = new URL('/admin', request.url)
-      return NextResponse.redirect(redirectUrl)
+  // This is a custom domain - check if it's mapped to a property
+  try {
+    // Check cache first
+    const cached = domainCache.get(hostname)
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      // Rewrite to the property page with the cached property ID
+      return NextResponse.rewrite(new URL(`/properties/${cached.propertyId}`, request.url))
     }
-  }
 
-  // Handle custom domains (that are not the main marketing site) 
-  // Exclude localhost in development since we've already handled it above for the root path
-  if (hostname && 
-      !hostname.includes('localhost') && 
-      !hostname.includes('127.0.0.1') && 
-      !hostname.includes('vercel.app') && 
-      hostname !== 'digitalpropertyshowcase.com' && 
-      hostname !== 'www.digitalpropertyshowcase.com'
-  ) {
-    try {
-      let propertyId: string | null = null
-      
-      // Check cache first to avoid unnecessary database lookups
-      if (hostname) {
-        const cachedData = domainCache.get(hostname)
-        const now = Date.now()
-        
-        if (cachedData && (now - cachedData.timestamp) < CACHE_TTL) {
-          console.log(`[Middleware] Using cached property ID for domain ${hostname}: ${cachedData.propertyId}`)
-          propertyId = cachedData.propertyId
-        }
-      }
-      
-      // If not in cache, query the database
-      if (!propertyId) {
-        console.log(`[Middleware] Domain ${hostname} not in cache, querying database`)
-        
-        // Create Supabase client - use middleware client instead of route handler client
-        const supabase = createMiddlewareClient({ req: request, res })
-        
-        // Query the properties table to find the property with this custom domain
-        const { data: property, error } = await supabase
-          .from('properties')
-          .select('id, status, is_demo')
-          .eq('custom_domain', hostname)
-          .eq('status', 'published')
-          .single()
+    // Not in cache or expired, query database
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
-        if (error) {
-          console.error('[Middleware] Custom domain query error:', { hostname, error: error.message })
-          // Show a proper error page for the domain lookup failure
-          const errorUrl = new URL('/404', request.url)
-          errorUrl.searchParams.set('error', 'domain_lookup_failed')
-          return NextResponse.rewrite(errorUrl)
-        }
+    const { data: property, error } = await supabase
+      .from('properties')
+      .select('id')
+      .eq('custom_domain', hostname)
+      .eq('status', 'published')
+      .single()
 
-        if (!property) {
-          console.error('[Middleware] Custom domain not found:', { hostname })
-          // Show a proper error page for domain not found
-          const errorUrl = new URL('/404', request.url)
-          errorUrl.searchParams.set('error', 'domain_not_found')
-          return NextResponse.rewrite(errorUrl)
-        }
-
-        // Store in cache
-        propertyId = property.id
-        domainCache.set(hostname, { 
-          propertyId: property.id, 
-          timestamp: Date.now() 
-        })
-        
-        console.log(`[Middleware] Added to cache: ${hostname} -> ${property.id}`)
-      }
-
-      // Rewrite to the property page while keeping the URL clean
-      const newUrl = request.nextUrl.clone()
-      newUrl.pathname = `/properties/${propertyId}`
-      
-      // Preserve any query parameters
-      if (searchParams) {
-        newUrl.search = searchParams
-      }
-      
-      const response = NextResponse.rewrite(newUrl)
-      response.headers.set('x-custom-domain', 'true')
-      response.headers.set('x-cached-domain-match', 'true')
-      
-      return response
-    } catch (err) {
-      console.error('[Middleware] Error in custom domain handling:', err)
-      // Handle unexpected errors properly by showing an error page
-      const errorUrl = new URL('/404', request.url)
-      errorUrl.searchParams.set('error', 'unexpected_error')
-      return NextResponse.rewrite(errorUrl)
+    if (error || !property) {
+      // Domain not found or property not published
+      // Redirect to main site
+      return NextResponse.redirect(new URL('https://digitalpropertyshowcase.com', request.url))
     }
-  }
 
-  return res
+    // Cache the result
+    domainCache.set(hostname, {
+      propertyId: property.id,
+      timestamp: Date.now()
+    })
+
+    // Rewrite to the property page
+    return NextResponse.rewrite(new URL(`/properties/${property.id}`, request.url))
+  } catch (error) {
+    // On error, redirect to main site
+    return NextResponse.redirect(new URL('https://digitalpropertyshowcase.com', request.url))
+  }
 }
 
-// Match all routes except static files and API routes
 export const config = {
-  matcher: ['/:path*']
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 } 

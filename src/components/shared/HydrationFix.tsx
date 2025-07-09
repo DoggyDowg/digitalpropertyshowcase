@@ -13,16 +13,16 @@ export default function HydrationFix({ children }: HydrationFixProps) {
 
   useEffect(() => {
     // Add some debugging to help us track hydration in production
-    console.log('🔄 HydrationFix: Component mounted, setting hydrated state to true')
+    // Component mounted, setting hydrated state
     setHydrated(true)
   }, [])
 
   // Add debugging for render phases
   if (!hydrated) {
-    console.log('⏳ HydrationFix: Not yet hydrated, returning null')
+    // Not yet hydrated, returning null
     return null
   }
 
-  console.log('✅ HydrationFix: Hydrated, rendering children')
+      // Hydrated, rendering children
   return <>{children}</>
 } 

@@ -48,13 +48,13 @@ export function Viewings({ property }: ViewingsProps) {
     preferredDate: undefined,
     preferredTime: ''
   })
-  const { upcomingViewing: fetchedViewing, loading } = useUpcomingViewing(property.id)
+  const { viewing: fetchedViewing, loading } = useUpcomingViewing(property.id)
   const [demoViewing, setDemoViewing] = useState<Viewing[]>([])
 
   // Set up demo viewings if needed
   useEffect(() => {
     if (property.is_demo) {
-      console.log('Setting up demo viewings');
+              // Setting up demo viewings
       const demoViewings = [
         {
           viewing_datetime: new Date('2026-03-08T09:30:00').toISOString()
@@ -66,7 +66,7 @@ export function Viewings({ property }: ViewingsProps) {
           viewing_datetime: new Date('2026-03-10T11:30:00').toISOString()
         }
       ];
-      console.log('Demo viewings:', demoViewings);
+              // Demo viewings configured
       setDemoViewing(demoViewings);
     }
   }, [property.is_demo])
@@ -226,12 +226,7 @@ export function Viewings({ property }: ViewingsProps) {
         throw new Error('Invalid date');
       }
 
-      // Log the original date info for debugging
-      console.log('Viewing Calendar - Original date info:', {
-        input: isoDatetime,
-        parsedUtc: utcDate.toISOString(),
-        timezoneName: property.local_timezone
-      });
+      // Processing calendar date for viewing
 
       // Format the date and time strings for the calendar (in YYYY-MM-DD and HH:MM format)
       // These formats are expected by the AddToCalendar component

@@ -121,7 +121,7 @@ function VideoThumbnail({ post }: { post: InstagramPost }) {
 
 const fetcher = async (url: string) => {
   try {
-    console.log('[IG_GALLERY] Fetching posts from:', url)
+    // Fetching Instagram posts
     const res = await fetch(url)
     if (!res.ok) {
       const error = await res.json()
@@ -129,7 +129,7 @@ const fetcher = async (url: string) => {
       throw new Error(error.error || 'Failed to fetch Instagram posts')
     }
     const data = await res.json()
-    console.log('[IG_GALLERY] API response:', data)
+    // API response received
     return data
   } catch (error) {
     console.error('[IG_GALLERY] Fetcher error:', error)
@@ -154,17 +154,16 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
       dedupingInterval: 60000,
       refreshInterval: 300000,
       onSuccess: (data: InstagramApiResponse) => {
-        // console.log('[IG_GALLERY] SWR success, received data:', data)
         if (data?.data && Array.isArray(data.data)) {
           const validPosts = data.data.filter(post => post.media_url || post.thumbnail_url)
-          // console.log('[IG_GALLERY] Valid posts count:', validPosts.length)
+          // Instagram posts loaded successfully
           validPosts.forEach(() => registerAsset())
         } else {
-          console.warn('[IG_GALLERY] Unexpected data structure:', data)
+          console.warn('⚠️ [Instagram] Unexpected data structure:', data)
         }
       },
       onError: (err) => {
-        console.error('[IG_GALLERY] SWR error:', err)
+        console.error('❌ [Instagram] API Error:', err)
       }
     }
   )
@@ -174,11 +173,14 @@ export function InstagramGallery({ property }: InstagramGalleryProps) {
     const validPosts = (response?.data || []).filter(post => {
       const isValid = Boolean(post.media_url || post.thumbnail_url)
       if (!isValid) {
-        // console.log('[IG_GALLERY] Filtered out post due to missing media:', post)
+        // Only log if there are many invalid posts (potential issue)
+        const invalidCount = (response?.data || []).filter(p => !Boolean(p.media_url || p.thumbnail_url)).length
+        if (invalidCount > 3) {
+          console.warn(`⚠️ [Instagram] ${invalidCount} posts missing media URLs`)
+        }
       }
       return isValid
     })
-    // console.log('[IG_GALLERY] Total valid posts:', validPosts.length)
     return validPosts
   }, [response?.data])
 

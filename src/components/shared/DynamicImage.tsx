@@ -31,22 +31,15 @@ export function DynamicImage({
   const srcSet = isSupabaseUrl ? [src] : getImageWithFallback(src)
   const [currentSrcIndex, setCurrentSrcIndex] = useState(0)
 
-  useEffect(() => {
-    console.log(`DynamicImage: Loading image from ${srcSet[currentSrcIndex]}`)
-  }, [srcSet, currentSrcIndex])
-
   const handleError = () => {
-    console.error(`DynamicImage: Error loading image from ${srcSet[currentSrcIndex]}`)
     if (currentSrcIndex < srcSet.length - 1) {
       setCurrentSrcIndex(prev => prev + 1)
     } else {
-      console.error(`DynamicImage: All fallbacks failed for ${alt}`)
       setError(true)
     }
   }
 
   const handleLoad = () => {
-    console.log(`DynamicImage: Successfully loaded image from ${srcSet[currentSrcIndex]}`)
     setLoaded(true)
   }
 

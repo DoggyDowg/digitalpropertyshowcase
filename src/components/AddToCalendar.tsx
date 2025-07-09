@@ -49,17 +49,7 @@ export function AddToCalendar({
   const [agencyDetails, setAgencyDetails] = useState<AgencyDetails | null>(null)
   const [enhancedDescription, setEnhancedDescription] = useState(description)
 
-  // Debug info
-  useEffect(() => {
-    console.log('AddToCalendar Props:', {
-      startDate,
-      startTime,
-      endTime: endTime || 'Not provided (will calculate 30 mins after start)',
-      timezone,
-      propertyId: propertyId || 'None',
-      agentId: agentId || 'None'
-    });
-  }, [startDate, startTime, endTime, timezone, propertyId, agentId]);
+  // Component initialized with calendar props
 
   // Fetch agent and agency details
   useEffect(() => {
@@ -184,11 +174,7 @@ export function AddToCalendar({
     const startDateTimeUTC = createGoogleCalendarDateString(startDate, startTime);
     const endDateTimeUTC = createGoogleCalendarDateString(startDate, getEndTime());
     
-    console.log('Google Calendar UTC dates:', {
-      startUTC: startDateTimeUTC,
-      endUTC: endDateTimeUTC,
-      timezone
-    });
+    // Google Calendar dates formatted
 
     const params = new URLSearchParams({
       action: 'TEMPLATE',
@@ -208,11 +194,7 @@ export function AddToCalendar({
     const startISO = createUTCISOString(startDate, startTime);
     const endISO = createUTCISOString(startDate, getEndTime());
     
-    console.log('Outlook Calendar dates:', {
-      startISO,
-      endISO,
-      timezone
-    });
+    // Outlook Calendar dates formatted
 
     return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(name)}&body=${encodeURIComponent(enhancedDescription)}&startdt=${startISO}&enddt=${endISO}&location=${encodeURIComponent(location)}`;
   };
@@ -231,11 +213,7 @@ export function AddToCalendar({
     const startDateTimeUTC = formatToICalDate(startUTC);
     const endDateTimeUTC = formatToICalDate(endUTC);
     
-    console.log('iCal dates:', {
-      startUTC: startDateTimeUTC,
-      endUTC: endDateTimeUTC,
-      timezone
-    });
+    // iCal dates formatted
 
     // Need to escape commas, semicolons, and newlines for iCal format
     const escapedDescription = enhancedDescription

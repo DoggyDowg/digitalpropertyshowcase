@@ -1,6 +1,6 @@
 import { useHeroVideo } from '@/hooks/useHeroVideo'
 import type { Property } from '@/types/property'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 interface BackgroundVideoProps {
   property: Property
@@ -13,27 +13,33 @@ export function BackgroundVideo({ property }: BackgroundVideoProps) {
   const heroVideoPath = property.is_demo 
     ? 'demo/hero_video/hero.mp4'
     : property.id
-  const { videoUrl, loading, error } = useHeroVideo(heroVideoPath)
+  const { videoUrl } = useHeroVideo(heroVideoPath)
 
-  useEffect(() => {
-    console.log('BackgroundVideo Component:')
-    console.log('  - Property ID:', property.id)
-    console.log('  - Is Demo:', property.is_demo)
-    console.log('  - Hero Video Path:', heroVideoPath)
-    console.log('  - Video URL:', videoUrl)
-    console.log('  - Loading:', loading)
-    console.log('  - Error:', error)
-    console.log('  - Video Errored:', videoErrored)
-  }, [property.id, property.is_demo, heroVideoPath, videoUrl, loading, error, videoErrored])
-
-  // If there's no video URL or there was an error loading the video, show an empty container
+  // If there's no video URL or there was an error loading the video, show a fallback background
   if (!videoUrl || videoErrored) {
-    console.log('BackgroundVideo: No video available, showing empty background')
+    // For demo properties, show a subtle gradient background instead of grey
+    const fallbackStyle = property.is_demo ? {
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    } : {
+      background: 'rgba(0, 0, 0, 0.1)',
+    }
+
     return (
       <div className="fixed inset-0 overflow-hidden -z-10">
+        {/* Fallback background */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            zIndex: -2,
+            ...fallbackStyle
+          }} 
+        />
         {/* Overlay for fade effect */}
         <div 
-          className="video-overlay absolute inset-0 bg-black/50" 
+          className="video-overlay absolute inset-0 bg-black/30" 
           style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }} 
         />
       </div>
@@ -55,7 +61,9 @@ export function BackgroundVideo({ property }: BackgroundVideoProps) {
           console.error('BackgroundVideo: Video error:', e)
           setVideoErrored(true)
         }}
-        onLoadedData={() => console.log('BackgroundVideo: Video loaded successfully')}
+        onLoadedData={() => {
+          // Video loaded successfully
+        }}
       >
         <source src={videoUrl} type="video/mp4" />
       </video>

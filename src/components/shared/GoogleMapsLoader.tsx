@@ -13,7 +13,12 @@ interface GoogleMapsLoaderState {
 declare global {
   interface Window {
     initMap?: () => void;
-    google?: any;
+    google?: {
+      maps?: {
+        importLibrary?: (library: string) => Promise<any>;
+        [key: string]: any;
+      };
+    };
   }
 }
 
@@ -69,8 +74,8 @@ export function useGoogleMaps(useBeta = false) {
     script.defer = true;
 
     // Handle errors
-    script.onerror = (event) => {
-      // console.error('[GoogleMapsLoader] Failed to load Google Maps API', event);
+    script.onerror = (_event) => {
+      // console.error('[GoogleMapsLoader] Failed to load Google Maps API', _event);
       setState({
         isLoaded: false,
         loadError: new Error('Failed to load Google Maps API'),

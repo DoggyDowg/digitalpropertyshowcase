@@ -56,10 +56,7 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
 
   // Add debugging logs
   useEffect(() => {
-    console.log('TransitionGallery - Loading:', loading)
-    console.log('TransitionGallery - Images:', images)
-    console.log('TransitionGallery - Error:', error)
-    console.log('TransitionGallery - InView:', inView)
+      // TransitionGallery component ready to render
   }, [loading, images, error, inView])
 
   // Scroll the gallery left or right
@@ -131,7 +128,7 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
 
   // Show empty state
   if (!loading && (!images || images.length === 0)) {
-    console.log('No images to display')
+          // No images to display
     return null
   }
 

@@ -156,9 +156,6 @@ function PropertyEditContent({ id }: { id: string }) {
         if (error) throw error
 
         if (data) {
-          console.log('Loaded property data:', data)
-          console.log('Agency settings:', data.agency_settings)
-          console.log('Office addresses:', data.agency_settings?.office_addresses)
 
           // Add cache busting to logo URLs
           if (data.agency_settings?.branding?.logo) {
@@ -402,11 +399,8 @@ function PropertyEditContent({ id }: { id: string }) {
         return; // Let the More Info save handle the property save
       }
 
-      console.log('Starting save with property:', property)
-
       // Fetch agency name if needed
       if (property.agency_id && !property.agency_name) {
-        console.log('Fetching agency name for id:', property.agency_id)
         const { data: agency } = await supabase
           .from('agency_settings')
           .select('name')
@@ -414,7 +408,6 @@ function PropertyEditContent({ id }: { id: string }) {
           .single()
 
         if (agency) {
-          console.log('Found agency:', agency)
           property.agency_name = agency.name
         }
       }
@@ -446,12 +439,7 @@ function PropertyEditContent({ id }: { id: string }) {
         updated_at: new Date().toISOString()
       }
 
-      // Debug logging
-      console.log('Property state before save:', property)
-      console.log('Property data being saved:', propertyData)
-
       if (id === 'new') {
-        console.log('Creating new property')
         const { data, error } = await supabase
           .from('properties')
           .insert([propertyData])
@@ -463,18 +451,14 @@ function PropertyEditContent({ id }: { id: string }) {
           throw error
         }
 
-        console.log('Successfully created property:', data)
         router.push(`/admin/properties/${data.id}`)
       } else {
-        console.log('Updating existing property:', id)
         const { error } = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', id)
 
         if (error) throw error
-
-        console.log('Successfully updated property')
       }
 
       toast.success('Changes saved successfully')
@@ -495,9 +479,6 @@ function PropertyEditContent({ id }: { id: string }) {
   }
 
   const handleMoreInfoSave = async (updatedMetadata: { more_info: MoreInfoData }) => {
-    console.groupCollapsed('🚨 More Info Save Process');
-    console.log('Metadata received:', updatedMetadata);
-    
     // Update state first
     setProperty(prev => {
       const newState = {
@@ -508,16 +489,13 @@ function PropertyEditContent({ id }: { id: string }) {
         }
       };
       
-      console.log('Updated property state:', newState);
       return newState;
     });
 
     // Wait for state to be updated
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    console.log('Triggering save...');
     await handleSave(true); // Pass true to skip More Info save
-    console.groupEnd();
   }
 
   // Add these functions inside the component
@@ -610,17 +588,11 @@ function PropertyEditContent({ id }: { id: string }) {
     file: File;
   }>) {
     try {
-      console.group('Processing media assets')
-      
       // Get unique categories being saved
       const categoriesToUpdate = [...new Set(assets.map(a => a.category))]
-      console.log('Categories to update:', categoriesToUpdate)
       
       // Delete existing assets for these categories
-      console.log('Cleaning up existing assets...')
       for (const category of categoriesToUpdate) {
-        console.group(`Cleaning up ${category}`)
-        
         // Get existing assets for this category
         const { data: existingAssets, error: fetchError } = await supabase
           .from('assets')
@@ -655,18 +627,11 @@ function PropertyEditContent({ id }: { id: string }) {
             console.error('Error deleting asset records:', dbError)
             throw dbError
           }
-          
-          console.log(`Deleted ${existingAssets.length} existing assets for ${category}`)
         }
-        console.groupEnd()
       }
-      
-      console.log('Cleanup complete, proceeding with new asset upload')
 
       // Upload each asset to Supabase storage and create asset records
       for (const asset of assets) {
-        console.group(`Processing asset: ${asset.name}`)
-        
         try {
           // Create a clean filename
           const cleanFileName = asset.name.toLowerCase()
@@ -676,21 +641,12 @@ function PropertyEditContent({ id }: { id: string }) {
           // Create the storage path based on category
           const path = `${id}/${asset.category}/${cleanFileName}`;
 
-          console.log('Prepared upload details:', {
-            name: asset.name,
-            category: asset.category,
-            path,
-            fileType: asset.file?.type,
-            fileSize: asset.file?.size
-          });
-
           // Validate file data
           if (!asset.file || asset.file.size === 0) {
             throw new Error(`Invalid file data for ${asset.name}`);
           }
 
           // Upload file to Supabase storage
-          console.log('Starting storage upload...');
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('property-assets')
             .upload(path, asset.file, {
@@ -708,8 +664,6 @@ function PropertyEditContent({ id }: { id: string }) {
             throw new Error('No upload path returned from storage');
           }
 
-          console.log('File uploaded successfully:', uploadData);
-
           // Create asset record in database
           const assetRecord = {
             property_id: id,
@@ -722,16 +676,7 @@ function PropertyEditContent({ id }: { id: string }) {
             alt_text: `${asset.category} - ${asset.name.split('.')[0].replace(/_/g, ' ')}`
           };
 
-          console.log('Creating database record:', {
-            ...assetRecord,
-            fileInfo: {
-              type: asset.file.type,
-              size: asset.file.size,
-              name: asset.name
-            }
-          });
-
-          const { data: insertData, error: dbError } = await supabase
+          const { error: dbError } = await supabase
             .from('assets')
             .insert([assetRecord])
             .select()
@@ -744,24 +689,17 @@ function PropertyEditContent({ id }: { id: string }) {
             });
             throw dbError;
           }
-
-          console.log('Asset record created successfully:', insertData);
         } catch (error) {
           console.error(`Failed to process asset ${asset.name}:`, error);
           toast.error(`Failed to save ${asset.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        } finally {
-          console.groupEnd();
         }
       }
 
-      console.log('All assets processed');
       toast.success('Media assets saved successfully');
       setIsScraperOpen(false);
     } catch (error) {
       console.error('Error in media save process:', error);
       toast.error('Failed to save media assets');
-    } finally {
-      console.groupEnd();
     }
   }
 
@@ -770,11 +708,6 @@ function PropertyEditContent({ id }: { id: string }) {
     if (!isLoaded || !autocompleteInputRef.current) return;
 
     try {
-      console.log('Initializing Places Autocomplete...', {
-        inputRef: autocompleteInputRef.current,
-        isLoaded
-      });
-      
       // MIGRATION NOTICE: This code uses the legacy Places Autocomplete API.
       // As of March 1st, 2025, google.maps.places.Autocomplete will not be available to new customers.
       // We have implemented a transition strategy in the GooglePlacesAutocomplete component.
@@ -849,7 +782,6 @@ function PropertyEditContent({ id }: { id: string }) {
         setProperty(prev => {
           // Always use the new timezone if provided
           const newTimezone = timezone || prev.local_timezone;
-          console.log('Setting timezone to:', newTimezone);
 
           const updatedProperty = {
             ...prev,
@@ -861,14 +793,11 @@ function PropertyEditContent({ id }: { id: string }) {
             updated_at: new Date().toISOString()
           };
 
-          console.log('Updated property data:', updatedProperty);
-
           return updatedProperty;
         });
 
         // Store coordinates in ref for saving later
         coordsRef.current = { latitude, longitude };
-        console.log('Stored coordinates:', coordsRef.current);
 
         // Clear validation errors
         setValidationErrors(prev => ({ 
@@ -880,7 +809,6 @@ function PropertyEditContent({ id }: { id: string }) {
       });
 
       autocompleteRef.current = autocomplete;
-      console.log('Places Autocomplete initialized successfully');
     } catch (err) {
       console.error('Error initializing Places Autocomplete:', err);
       toast.error('Failed to initialize address search');
@@ -889,7 +817,6 @@ function PropertyEditContent({ id }: { id: string }) {
     // Cleanup function
     return () => {
       if (autocompleteRef.current) {
-        console.log('Cleaning up Places Autocomplete...');
         google.maps.event.clearInstanceListeners(autocompleteRef.current);
         autocompleteRef.current = null;
       }
@@ -1009,21 +936,10 @@ function PropertyEditContent({ id }: { id: string }) {
                       <GooglePlacesAutocomplete
                         value={property.maps_address || ''}
                         onChange={({ formattedAddress, streetAddress, suburb, state, latitude, longitude, timezone }) => {
-                          console.log('Address changed with data:', {
-                            formattedAddress,
-                            streetAddress,
-                            suburb,
-                            state,
-                            latitude,
-                            longitude,
-                            timezone
-                          });
-
                           // Update property state with address details
                           setProperty(prev => {
                             // Always use the new timezone if provided
                             const newTimezone = timezone || prev.local_timezone;
-                            console.log('Setting timezone to:', newTimezone);
 
                             const updatedProperty = {
                               ...prev,
@@ -1035,14 +951,11 @@ function PropertyEditContent({ id }: { id: string }) {
                               updated_at: new Date().toISOString()
                             };
 
-                            console.log('Updated property data:', updatedProperty);
-
                             return updatedProperty;
                           });
 
                           // Store coordinates in ref for saving later
                           coordsRef.current = { latitude, longitude };
-                          console.log('Stored coordinates:', coordsRef.current);
 
                           // Clear validation errors
                           setValidationErrors(prev => ({ 
@@ -1338,12 +1251,8 @@ function PropertyEditContent({ id }: { id: string }) {
                                   localDate.setSeconds(0);
                                   localDate.setMilliseconds(0);
                                   
-                                  console.log('Local date before conversion:', localDate.toString(), 'with timezone:', property.local_timezone);
-                                  
                                   // Convert local date to UTC for storage
                                   const utcDate = convertLocalToUTC(localDate, property.local_timezone);
-                                  
-                                  console.log('Converted to UTC:', utcDate.toISOString());
                                   
                                   // Update the property with the UTC date
                                   setProperty(prev => ({
@@ -1435,14 +1344,8 @@ function PropertyEditContent({ id }: { id: string }) {
                                   localDate.setSeconds(0);
                                   localDate.setMilliseconds(0);
                                   
-                                  console.log('Local time input:', `${hours}:${minutes}`, 
-                                    'Local date before conversion:', localDate.toString(), 
-                                    'in timezone:', property.local_timezone);
-                                  
                                   // Convert local date to UTC for storage
                                   const utcDate = convertLocalToUTC(localDate, property.local_timezone);
-                                  
-                                  console.log('Converted to UTC:', utcDate.toISOString());
                                   
                                   // Update the property with the UTC date
                                   setProperty(prev => ({
@@ -2241,12 +2144,6 @@ function PropertyEditContent({ id }: { id: string }) {
         isOpen={isScraperOpen}
         onClose={() => setIsScraperOpen(false)}
         onSelect={async ({ content, assets }) => {
-          console.group('🚨 Property Update Process')
-          console.log('Starting update with:', {
-            assetsCount: assets?.length || 0,
-            hasContent: !!content
-          })
-
           // Handle content save first if present
           if (content && !assets?.length) {
             await handleContentUpdate(content)
@@ -2256,8 +2153,6 @@ function PropertyEditContent({ id }: { id: string }) {
           if (assets?.length && !content) {
             await handleMediaUpdate(assets)
           }
-
-          console.groupEnd()
         }}
       />
     </div>

@@ -59,11 +59,11 @@ export default function VirtualTourPage({ params }: PageProps) {
     };
   }, []);
 
-  const { modelUrl, loading, error } = use3DTour(id, isDemo);
+  const { tourUrl, loading, error } = use3DTour(id);
 
   if (loading) return null; // Dynamic import loading UI will show
 
-  if (error || !modelUrl) {
+  if (error || !tourUrl) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black text-white">
         <div className="text-center">
@@ -71,7 +71,7 @@ export default function VirtualTourPage({ params }: PageProps) {
           <p className="text-sm opacity-70 mt-2">Please try again later</p>
           {process.env.NODE_ENV === 'development' && error && (
             <pre className="mt-4 p-4 bg-white/10 rounded text-xs overflow-auto max-w-lg">
-              {error.message}
+              {error}
             </pre>
           )}
         </div>
@@ -79,5 +79,5 @@ export default function VirtualTourPage({ params }: PageProps) {
     );
   }
 
-  return <VirtualTourViewer modelPath={modelUrl} />;
+  return <VirtualTourViewer modelPath={tourUrl} />;
 } 

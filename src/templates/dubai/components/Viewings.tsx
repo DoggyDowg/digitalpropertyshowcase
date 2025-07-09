@@ -44,7 +44,7 @@ export function Viewings({ property }: ViewingsProps) {
     preferredDate: undefined,
     preferredTime: ''
   })
-  const { upcomingViewing, loading } = useUpcomingViewing(property.id)
+  const { viewing: upcomingViewing, loading } = useUpcomingViewing(property.id)
   const { videoUrl: backgroundVideoUrl } = useHeroVideo(property.id)
 
   // Get current date
@@ -180,9 +180,9 @@ export function Viewings({ property }: ViewingsProps) {
   }
 
   // Format the viewing date and time if available
-  const formattedViewing = upcomingViewing && upcomingViewing.length > 0 ? {
-    date: format(new Date(upcomingViewing[0].viewing_datetime), 'EEEE, MMMM do'),
-    time: format(new Date(upcomingViewing[0].viewing_datetime), 'h:mm a')
+  const formattedViewing = upcomingViewing ? {
+    date: format(new Date(`${upcomingViewing.date}T${upcomingViewing.start_time}`), 'EEEE, MMMM do'),
+    time: format(new Date(`${upcomingViewing.date}T${upcomingViewing.start_time}`), 'h:mm a')
   } : null
 
   return (
@@ -216,15 +216,13 @@ export function Viewings({ property }: ViewingsProps) {
               <div className="h-6 bg-gray-200/20 rounded w-64 mx-auto"></div>
             </div>
           </div>
-        ) : upcomingViewing && upcomingViewing.length > 0 ? (
+        ) : upcomingViewing ? (
           <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 text-center">
-            <h3 className="text-2xl font-semibold text-white mb-4">Next Available Viewings</h3>
+            <h3 className="text-2xl font-semibold text-white mb-4">Next Available Viewing</h3>
             <div className="space-y-4">
-              {upcomingViewing.map((viewing, index) => (
-                <p key={index} className="text-xl text-gray-200">
-                  {format(new Date(viewing.viewing_datetime), 'EEEE, MMMM do')} at {format(new Date(viewing.viewing_datetime), 'h:mm a')}
-                </p>
-              ))}
+              <p className="text-xl text-gray-200">
+                {formattedViewing ? `${formattedViewing.date} at ${formattedViewing.time}` : 'Date to be announced'}
+              </p>
             </div>
           </div>
         ) : null}

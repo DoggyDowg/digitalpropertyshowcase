@@ -12,7 +12,7 @@ interface FooterProps {
 }
 
 export function Footer({ property }: FooterProps) {
-  const { imageUrl, loading, error } = useFooterImage(property.id, property.is_demo)
+  const { imageUrl, loading, error } = useFooterImage(property.id)
   
   // Debug logging
   // console.log('Footer Component Debug:', {
@@ -88,7 +88,7 @@ export function Footer({ property }: FooterProps) {
             ) : (
               <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
                 <p className="text-brand-light/50">
-                  {error ? `Error: ${error.message}` : 'No footer image available'}
+                  {error ? `Error: ${error}` : 'No footer image available'}
                 </p>
               </div>
             )}

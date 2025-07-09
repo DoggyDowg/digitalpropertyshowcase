@@ -2,164 +2,137 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { Asset } from '@/types/assets'
 
-export function useFooterImage(propertyId?: string, isDemoProperty?: boolean) {
+export function useFooterImage(propertyId: string | undefined) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  
   const supabase = createClientComponentClient()
 
-  // console.log(`[useFooterImage] Starting to load image for property: ${propertyId}`);
-  // console.log(`[useFooterImage] Is demo property: ${isDemo}`);
-
   useEffect(() => {
-    let isMounted = true
+    if (!propertyId) {
+      setLoading(false)
+      return
+    }
+
     const controller = new AbortController()
 
-    async function loadImage() {
-      if (!propertyId) {
-        console.log('[useFooterImage] No propertyId provided')
-        setLoading(false)
-        return
-      }
-
+    async function fetchFooterImage() {
       try {
-        // console.log(`[useFooterImage] Starting to load image for property: ${propertyId}`);
-        // console.log(`[useFooterImage] Is demo property: ${isDemo}`);
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, use the demo image
-        if (isDemoProperty) {
-          console.log('[useFooterImage] Loading demo footer image')
-          
-          // Try different image formats in order of preference
-          const supportedFormats = ['webp', 'jpg', 'jpeg', 'png']
+        // Check if it's a demo property
+        const isDemo = propertyId?.includes('/demo/') || false
+
+        if (isDemo) {
+          // Try different image formats for demo
+          const formats = ['webp', 'jpg', 'jpeg', 'png']
           let foundImage = false
-          
-          for (const format of supportedFormats) {
-            const { data: publicUrlData } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(`demo/footer/image.${format}`)
 
-            console.log(`[useFooterImage] Trying format ${format}, URL:`, publicUrlData.publicUrl)
+          for (const format of formats) {
+            if (controller.signal.aborted) return
 
-            // Verify if the image exists
             try {
-              const response = await fetch(publicUrlData.publicUrl, { 
-                method: 'HEAD',
-                signal: controller.signal
-              })
-              if (response.ok) {
-                console.log(`[useFooterImage] Found demo footer image in ${format} format`)
-                if (isMounted) {
+              if (!propertyId) return
+              const imagePath = `${propertyId.replace(/\.(webp|jpg|jpeg|png)$/i, '')}.${format}`
+              const { data: publicUrlData } = supabase.storage
+                .from('property-assets')
+                .getPublicUrl(imagePath)
+
+              if (publicUrlData?.publicUrl) {
+                // Test if the image is accessible
+                const response = await fetch(publicUrlData.publicUrl, { 
+                  method: 'HEAD',
+                  signal: controller.signal
+                })
+                
+                if (response.ok) {
                   setImageUrl(publicUrlData.publicUrl)
                   foundImage = true
                   break
                 }
               }
-            } catch (err) {
-              console.log(`[useFooterImage] Error checking ${format} format:`, err)
+            } catch {
+              // Continue to next format
             }
           }
 
           if (!foundImage) {
-            console.error('[useFooterImage] No supported image format found for demo footer')
-            if (isMounted) {
-              setImageUrl(null)
-            }
-          }
-          if (isMounted) {
-            setLoading(false)
+            setError('No supported image format found for demo footer')
           }
           return
         }
 
-        // Otherwise, query the assets table for a real property
-        // console.log(`[useFooterImage] Fetching footer image for property: ${propertyId}`);
-        const { data, error } = await supabase
+        // For regular properties, query the database
+        const { data, error: dbError } = await supabase
           .from('assets')
-          .select('storage_path, id')
+          .select('storage_path')
           .eq('property_id', propertyId)
-          .eq('category', 'footer')
+          .eq('category', 'footer_image')
           .eq('status', 'active')
-          .single()
+          .order('created_at', { ascending: false })
+          .limit(1)
 
-        if (error) {
-          console.log('[useFooterImage] Database query error:', error)
-          if (error.code === 'PGRST116') {
-            console.log('[useFooterImage] No footer image found for property')
-            if (isMounted) {
-              setImageUrl(null)
-              setLoading(false)
-            }
-            return
-          }
-          throw error
+        if (dbError) {
+          setError(`Database query error: ${dbError.message}`)
+          return
         }
 
-        // console.log('[useFooterImage] Found asset data:', data); // Commented out log
-        const asset = data as Asset;
-        
-        const { data: publicUrlData } = supabase
-          .storage
+        if (!data || data.length === 0) {
+          setImageUrl(null)
+          return
+        }
+
+        const asset = data[0]
+        if (!asset.storage_path) {
+          setError('No storage path found in asset data')
+          return
+        }
+
+        // Generate the public URL for the image
+        const { data: publicUrlData } = supabase.storage
           .from('property-assets')
-          .getPublicUrl(asset.storage_path);
+          .getPublicUrl(asset.storage_path)
 
-        // console.log('[useFooterImage] Generated public URL:', publicUrlData.publicUrl); // Commented out log
-
-        if (publicUrlData.publicUrl) {
-          setImageUrl(publicUrlData.publicUrl);
-          
-          // Verify the image exists
+        if (publicUrlData?.publicUrl) {
+          // Verify the image is accessible
           try {
             const response = await fetch(publicUrlData.publicUrl, { 
               method: 'HEAD',
               signal: controller.signal
             })
             if (response.ok) {
-              if (isMounted) {
-                setImageUrl(publicUrlData.publicUrl)
-              }
+              setImageUrl(publicUrlData.publicUrl)
             } else {
-              throw new Error('Image not accessible')
+              setError('Image not accessible')
             }
           } catch (err) {
-            console.error('[useFooterImage] Error verifying image accessibility:', err)
-            throw err
-          }
-        } else {
-          console.log('[useFooterImage] No storage path found in asset data')
-          if (isMounted) {
-            setImageUrl(null)
+            if (err instanceof Error && err.name === 'AbortError') {
+              return
+            }
+            setError('Error verifying image accessibility')
           }
         }
+
       } catch (err) {
-        // Ignore AbortError as it's expected if the component unmounts/re-renders
         if (err instanceof Error && err.name === 'AbortError') {
-          console.log('[useFooterImage] Fetch aborted, likely due to component unmount or re-render.');
-        } else {
-          console.error('[useFooterImage] Error loading footer image:', err);
-          if (isMounted) {
-            setError(err instanceof Error ? err : new Error('Failed to load footer image'));
-          }
+          return
         }
+        console.error('Error loading footer image:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load footer image')
       } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     }
 
-    loadImage()
+    fetchFooterImage()
 
     return () => {
-      isMounted = false
       controller.abort()
     }
-  }, [supabase, propertyId, isDemoProperty])
+  }, [propertyId, supabase])
 
   return { imageUrl, loading, error }
 } 

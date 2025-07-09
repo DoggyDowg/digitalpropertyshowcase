@@ -25,7 +25,6 @@ export function useGalleryImages(propertyId?: string, isDemoProperty?: boolean) 
 
     async function loadImages() {
       if (!propertyId) {
-        console.log('No propertyId provided')
         setLoading(false)
         return
       }
@@ -36,8 +35,6 @@ export function useGalleryImages(propertyId?: string, isDemoProperty?: boolean) 
 
         // If it's a demo property, generate demo gallery images
         if (isDemoProperty) {
-          console.log('Loading demo gallery images')
-
           // Load images in batches
           for (let batch = 0; batch < Math.ceil(TOTAL_DEMO_IMAGES / BATCH_SIZE); batch++) {
             const batchPromises: Promise<GalleryImage | null>[] = []
@@ -59,7 +56,6 @@ export function useGalleryImages(propertyId?: string, isDemoProperty?: boolean) 
                       signal: abortController.signal
                     })
                     if (response.ok) {
-                      console.log(`Found demo gallery image ${i} in ${format} format`)
                       return {
                         id: `demo-gallery-${i}`,
                         src: data.publicUrl,
@@ -67,8 +63,7 @@ export function useGalleryImages(propertyId?: string, isDemoProperty?: boolean) 
                       }
                     }
                   } catch (err: unknown) {
-                    const errorMessage = err instanceof Error ? err.message : 'Unknown error checking image format'
-                    console.log(`No ${format} format found for demo gallery image ${i}:`, errorMessage)
+                    // Silently continue to next format
                   }
                 }
                 return null

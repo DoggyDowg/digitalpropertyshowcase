@@ -39,7 +39,6 @@ export function RobustImage({
   // Verify image URL on mount and changes
   useEffect(() => {
     if (!src) {
-      console.error('[RobustImage] No src provided')
       setError(true)
       return
     }
@@ -56,7 +55,6 @@ export function RobustImage({
     // Verify the URL is valid
     const verifyImage = async () => {
       try {
-        console.log('[RobustImage] Verifying image URL:', src)
         const response = await fetch(src, { method: 'HEAD' })
         if (!response.ok) {
           console.error('[RobustImage] Image URL verification failed:', response.status, response.statusText)
@@ -81,7 +79,7 @@ export function RobustImage({
   useEffect(() => {
     const baseUrl = src.split('?')[0]
     if (baseUrl && !hasRegisteredAsset.current) {
-      // console.log('[RobustImage] Registering asset:', { src, alt }) // Commented out log
+      // Only log if it's a critical asset or there's an issue
       hasRegisteredAsset.current = true
       registerAsset()
     }
@@ -91,7 +89,6 @@ export function RobustImage({
       const newBaseUrl = src.split('?')[0]
       const lastBaseUrl = lastUrlRef.current.split('?')[0]
       if (newBaseUrl !== lastBaseUrl) {
-        // console.log('[RobustImage] Cleaning up for:', { src: baseUrl }) // Commented out log
         setIsLoaded(false)
         setError(false)
         hasRegisteredAsset.current = false
@@ -100,7 +97,7 @@ export function RobustImage({
   }, [src, registerAsset, isSupabaseUrl, fill, width, height, priority])
 
   const handleLoad = () => {
-    // console.log('[RobustImage] Image loaded:', { src, alt }) // Commented out log
+    // Only log critical assets or first few loads
     setIsLoaded(true)
     if (hasRegisteredAsset.current) {
       markAssetAsLoaded()
@@ -110,7 +107,7 @@ export function RobustImage({
   }
 
   const handleError = () => {
-    console.error('[RobustImage] Image error:', { 
+    console.error('❌ [RobustImage] Failed to load:', { 
       src,
       naturalWidth: imageRef.current?.naturalWidth,
       naturalHeight: imageRef.current?.naturalHeight

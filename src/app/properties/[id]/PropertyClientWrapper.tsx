@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { CuscoTemplate } from '@/templates/cusco/page'
 import { DubaiTemplate } from '@/templates/dubai/page'
 import type { Property } from '@/types/property'
@@ -425,17 +425,17 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
   // Check if we're on a custom domain via the client-side flag set in layout.tsx
   const isCustomDomain = typeof window !== 'undefined' && (window as CustomWindow).__CUSTOM_DOMAIN__ === true;
   
-  // Ensure property is not demo if accessed from custom domain
-  useEffect(() => {
+  // Create a modified property object if accessed from custom domain
+  const effectiveProperty = useMemo(() => {
     if (isCustomDomain && property.is_demo) {
-      console.log('[Client] Property incorrectly marked as demo on custom domain, fixing...');
-      property.is_demo = false;
+      return { ...property, is_demo: false };
     }
-  }, [isCustomDomain, property]);
+    return property;
+  }, [isCustomDomain, property.is_demo, property]);
 
   // Process assets into the correct structure
   useEffect(() => {
-    if (!property?.assets?.length) {
+    if (!effectiveProperty?.assets?.length) {
       setProcessedAssets({
         gallery: [],
         neighbourhood: [],
@@ -447,7 +447,7 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
     }
 
     // Group assets by category
-    const groupedAssets = property.assets.reduce((acc: Partial<PropertyAssets>, asset: Asset) => {
+    const groupedAssets = effectiveProperty.assets.reduce((acc: Partial<PropertyAssets>, asset: Asset) => {
       const category = asset.category;
       
       // Handle array categories
@@ -470,20 +470,20 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
     } as Partial<PropertyAssets>) as PropertyAssets;
 
     setProcessedAssets(groupedAssets);
-  }, [property?.assets]);
+  }, [effectiveProperty?.assets]);
 
   // Create a new property object with processed assets
   const propertyWithProcessedAssets = {
-    ...property,
+    ...effectiveProperty,
     assets: processedAssets
   };
 
   // Get the favicon URL from the property's agency settings
-  const faviconUrl = property?.agency_settings?.branding?.favicon;
+  const faviconUrl = effectiveProperty?.agency_settings?.branding?.favicon;
   
   // Ensure favicon URL is absolute
-  const baseUrl = property?.custom_domain || 
-                 property?.deployment_url || 
+  const baseUrl = effectiveProperty?.custom_domain || 
+                 effectiveProperty?.deployment_url || 
                  process.env.NEXT_PUBLIC_BASE_URL || 
                  'https://digipropshow.com';
                  
@@ -512,7 +512,7 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
 
   return (
     <>
-      <StyleFixer property={property} />
+      <StyleFixer property={effectiveProperty} />
       <DynamicFavicon faviconUrl={absoluteFaviconUrl} />
       
       {/* Always render the template for proper hydration, but conditionally show the loading overlay */}

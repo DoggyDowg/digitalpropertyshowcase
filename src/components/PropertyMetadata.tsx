@@ -1,6 +1,6 @@
 'use client'
 
-import { useProperty } from '@/hooks/useProperty'
+import { useProperty } from '@/contexts/PropertyContext'
 import Head from 'next/head'
 
 export function PropertyMetadata() {

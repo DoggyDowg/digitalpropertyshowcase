@@ -9,8 +9,6 @@ interface BrandFontInitializerProps {
 
 export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
   useEffect(() => {
-    console.log('BrandFontInitializer: Starting font initialization...');
-    
     if (!property?.agency_settings?.branding?.typography) {
       console.warn('BrandFontInitializer: No typography data found in property', {
         hasAgencySettings: !!property?.agency_settings,
@@ -21,20 +19,13 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
     }
 
     const { bodyFont, headingFont } = property.agency_settings.branding.typography
-    console.log('BrandFontInitializer: Typography data found', { 
-      bodyFontUrl: bodyFont?.url, 
-      headingFontUrl: headingFont?.url 
-    });
     
     async function loadFonts() {
       try {
-        console.log('BrandFontInitializer: Attempting to fetch fonts...');
-        
         // Helper function to fetch with fallback
         async function fetchWithFallback(url: string, description: string) {
           try {
             // First attempt - direct fetch with CORS settings
-            console.log(`BrandFontInitializer: Fetching ${description} from:`, url);
             const response = await fetch(url, {
               mode: 'cors', 
               credentials: 'omit',
@@ -45,7 +36,6 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
             });
             
             if (response.ok) {
-              console.log(`BrandFontInitializer: ${description} fetched successfully!`);
               return response;
             }
             
@@ -53,7 +43,6 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
           } catch (error) {
             // Add a timestamp to bypass caching
             const timestampedUrl = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
-            console.log(`BrandFontInitializer: Retrying ${description} with timestamp:`, timestampedUrl);
             
             try {
               // Second attempt with timestamp
@@ -64,7 +53,6 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
               });
               
               if (response.ok) {
-                console.log(`BrandFontInitializer: ${description} fetched successfully on retry!`);
                 return response;
               }
               
@@ -132,16 +120,7 @@ export function BrandFontInitializer({ property }: BrandFontInitializerProps) {
           }
         `
 
-        console.log('BrandFontInitializer: Injecting font styles into document head...');
         document.head.appendChild(style)
-        console.log('BrandFontInitializer: Fonts loaded and applied successfully!');
-
-        // console.log('Fonts loaded successfully:', {
-        //   bodyFont: bodyFont.url,
-        //   headingFont: headingFont.url,
-        //   bodyFormat: getFontFormat(bodyFont.url),
-        //   headingFormat: getFontFormat(headingFont.url)
-        // })
 
         return () => {
           if (document.head.contains(style)) {

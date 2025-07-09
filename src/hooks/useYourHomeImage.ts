@@ -4,131 +4,134 @@ import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 const MAX_RETRIES = 3
-const RETRY_DELAY = 1000 // 1 second
+const RETRY_DELAY = 1000
 
-export function useYourHomeImage(propertyId?: string, isDemoProperty?: boolean) {
+export function useYourHomeImage(propertyId: string | undefined) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    let isMounted = true
-    let retryCount = 0
+    if (!propertyId) {
+      setLoading(false)
+      return
+    }
+
     const controller = new AbortController()
 
-    async function loadImage() {
-      if (!propertyId) {
-        console.log('No propertyId provided')
-        setLoading(false)
-        return
-      }
-
+    async function fetchYourHomeImage() {
       try {
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, use the demo banner
-        if (isDemoProperty) {
-          console.log('Loading demo your home banner, attempt:', retryCount + 1)
-          // Prioritize WebP for better performance
-          const { data: publicUrlData } = supabase
-            .storage
-            .from('property-assets')
-            .getPublicUrl('demo/your_home/banner.webp')
+        // Check if it's a demo property
+        const isDemo = propertyId?.includes('/demo/') || false
 
+        if (isDemo) {
+          // Try to load demo image
+          const { data: publicUrlData } = supabase.storage
+            .from('property-assets')
+            .getPublicUrl('demo/yourhome/banner.webp')
+
+          if (publicUrlData?.publicUrl) {
+            // Test if the image is accessible
+            try {
+              const response = await fetch(publicUrlData.publicUrl, { 
+                method: 'HEAD',
+                signal: controller.signal
+              })
+              
+              if (response.ok) {
+                setImageUrl(publicUrlData.publicUrl)
+                return
+              }
+            } catch {
+              // Continue to error handling
+            }
+          }
+
+          setError('Demo image not found')
+          return
+        }
+
+        // For regular properties, query the database
+        const { data, error: dbError } = await supabase
+          .from('assets')
+          .select('storage_path')
+          .eq('property_id', propertyId)
+          .eq('category', 'yourhome_banner')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (dbError) {
+          throw new Error(`Database query failed: ${dbError.message}`)
+        }
+
+        if (!data || data.length === 0) {
+          setImageUrl(null)
+          return
+        }
+
+        const asset = data[0]
+        if (!asset.storage_path) {
+          throw new Error('No storage path found')
+        }
+
+        // Generate the public URL for the image
+        const { data: publicUrlData } = supabase.storage
+          .from('property-assets')
+          .getPublicUrl(asset.storage_path)
+
+        if (publicUrlData?.publicUrl) {
+          // Verify the image is accessible
           try {
             const response = await fetch(publicUrlData.publicUrl, { 
               method: 'HEAD',
               signal: controller.signal
             })
-            
             if (response.ok) {
-              console.log('Successfully loaded demo your home banner')
-              if (isMounted) {
-                setImageUrl(publicUrlData.publicUrl)
-                setLoading(false)
-              }
-              return
+              setImageUrl(publicUrlData.publicUrl)
+            } else {
+              throw new Error('Image not accessible')
             }
-          } catch (err) {
-            console.log('Error checking WebP banner:', err)
-            // Fall back to JPG if WebP fails
-            const jpgData = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl('demo/your_home/banner.jpg')
-
-            if (isMounted) {
-              setImageUrl(jpgData.data.publicUrl)
-              setLoading(false)
-            }
-            return
-          }
-        }
-
-        // For real properties, query the assets table
-        // console.log(`Fetching your home banner for property: ${propertyId} attempt: ${retryCount + 1}`)
-        const { data, error } = await supabase
-          .from('assets')
-          .select('storage_path')
-          .eq('property_id', propertyId)
-          .eq('category', 'your_home')
-          .eq('status', 'active')
-          .single()
-
-        if (error) {
-          if (error.code === 'PGRST116') {
-            console.log('No your home banner found for property')
-            if (isMounted) {
-              setImageUrl(null)
-              setLoading(false)
-            }
-            return
-          }
-          throw error
-        }
-
-        if (data?.storage_path) {
-          const { data: publicUrlData } = supabase
-            .storage
-            .from('property-assets')
-            .getPublicUrl(data.storage_path)
-
-          if (isMounted) {
-            setImageUrl(publicUrlData.publicUrl)
-            setLoading(false)
+          } catch {
+            throw new Error('Image verification failed')
           }
         } else {
-          if (isMounted) {
-            setImageUrl(null)
-            setLoading(false)
-          }
+          throw new Error('Failed to generate public URL')
         }
+
       } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+
         console.error('Error loading your home banner:', err)
         
-        // Implement retry logic
+        // Retry logic
         if (retryCount < MAX_RETRIES) {
-          console.log(`Retrying in ${RETRY_DELAY}ms... (${retryCount + 1}/${MAX_RETRIES})`)
-          retryCount++
-          setTimeout(loadImage, RETRY_DELAY)
-        } else {
-          if (isMounted) {
-            setError(err instanceof Error ? err : new Error('Failed to load your home banner'))
-            setLoading(false)
-          }
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1)
+          }, RETRY_DELAY)
+          return
         }
+
+        setError(err instanceof Error ? err.message : 'Failed to load your home banner')
+      } finally {
+        setLoading(false)
       }
     }
 
-    loadImage()
+    fetchYourHomeImage()
 
     return () => {
-      isMounted = false
       controller.abort()
     }
-  }, [supabase, propertyId, isDemoProperty])
+  }, [propertyId, supabase, retryCount])
 
   return { imageUrl, loading, error }
 } 

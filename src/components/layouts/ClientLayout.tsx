@@ -16,7 +16,7 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ property, children }: ClientLayoutProps) {
   /* useEffect(() => {
-    console.log('ClientLayout mounted with property:', property);
+    // ClientLayout mounted
   }, [property]); */
 
   return (

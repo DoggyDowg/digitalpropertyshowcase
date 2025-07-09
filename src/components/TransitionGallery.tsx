@@ -71,7 +71,7 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
   // Register images with AssetLoadingContext
   useEffect(() => {
     if (!loading && images.length > 0) {
-      console.log('TransitionGallery - Registering images:', images.length)
+      // Registering gallery images
       // Only register images that haven't been loaded yet
       images.forEach(image => {
         if (!loadedImages.current.has(image.id)) {
@@ -84,19 +84,18 @@ export function TransitionGallery({ property }: TransitionGalleryProps) {
   // Handle image load events
   const handleImageLoad = (imageId: string) => {
     if (!loadedImages.current.has(imageId)) {
-      console.log('TransitionGallery - Image loaded:', imageId)
+      // Silent success - only log errors
       loadedImages.current.add(imageId)
       markAssetAsLoaded()
     }
   }
 
-  // Add debugging logs
+  // Only log errors and important state changes
   useEffect(() => {
-    console.log('TransitionGallery - Loading:', loading)
-    console.log('TransitionGallery - Images:', images)
-    console.log('TransitionGallery - Error:', error)
-    console.log('TransitionGallery - InView:', inView)
-  }, [loading, images, error, inView])
+    if (error) {
+      console.error('❌ [Gallery] Error loading gallery images:', error)
+    }
+  }, [error])
 
   // Scroll the gallery left or right
   const scroll = (direction: 'left' | 'right') => {

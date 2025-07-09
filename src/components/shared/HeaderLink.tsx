@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useGesture } from '@/hooks/useGesture'
 import { useProperty } from '@/contexts/PropertyContext'
@@ -23,23 +23,18 @@ export function HeaderLink({
 }: HeaderLinkProps) {
   const [isPressed, setIsPressed] = useState(false)
   
-  // Try to get property from context, but don't crash if it's not available
-  let hoverEffect = 'scale'; // Default fallback
-  try {
-    const { property } = useProperty();
-    // Get hover effect preference from property styling with fallback
-    hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
-    
-    // Debug for Vercel preview
-    /* console.log('HeaderLink received property from context:', {
-      propertyId: property?.id,
-      hoverEffect,
-      hasPropertyObject: !!property
-    }); */
-  } catch (error) {
-    console.error('Error accessing property context in HeaderLink:', error);
-    // Continue with default hoverEffect
-  }
+  // Get property from context - hooks must be called unconditionally
+  const { property } = useProperty();
+  
+  // Get hover effect preference from property styling with fallback
+  const hoverEffect = property?.styling?.textLinks?.hoverEffect || 'scale';
+  
+  // Debug for Vercel preview
+  /* console.log('HeaderLink received property from context:', {
+    propertyId: property?.id,
+    hoverEffect,
+    hasPropertyObject: !!property
+  }); */
   
   // Add debugging
   /* useEffect(() => {

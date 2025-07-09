@@ -172,32 +172,19 @@ export function Hero({ property }: HeroProps) {
   function scrollToSection(sectionId: string) {
     // Remove any leading # if present
     const targetId = sectionId.replace(/^#/, '');
-    console.log('Looking for section with ID:', targetId);
-    
-    // Log all available section IDs first
-    const allSections = document.querySelectorAll('section[id]');
-    console.log('Available sections:', Array.from(allSections).map(section => ({
-      id: section.id,
-      visible: section instanceof HTMLElement ? section.offsetParent !== null : false,
-      display: window.getComputedStyle(section).display
-    })));
     
     // Try both with and without virtual- prefix
     let element = document.getElementById(targetId);
     if (!element && !targetId.startsWith('virtual-')) {
       const alternativeId = `virtual-${targetId}`;
-      console.log('Element not found, trying alternative ID:', alternativeId);
       element = document.getElementById(alternativeId);
     }
     
-    console.log('Found element:', element);
     if (element) {
-      console.log('Scrolling to element...');
       element.scrollIntoView({ behavior: 'smooth' });
       return true;
     }
     
-    console.warn(`No element found with id "${targetId}" or "virtual-${targetId}"`);
     return false;
   }
 
@@ -316,9 +303,7 @@ export function Hero({ property }: HeroProps) {
                 pointerEvents: isReady ? 'auto' : 'none' // Disable clicks until ready
               }}
               onClick={() => {
-                console.log('Primary button clicked');
                 const primaryBtn = property.metadata?.more_info?.ctaButtons?.primary;
-                console.log('Primary button config:', primaryBtn);
                 
                 if (primaryBtn?.type === 'anchor' && primaryBtn.url) {
                   scrollToSection(primaryBtn.url);
@@ -342,9 +327,7 @@ export function Hero({ property }: HeroProps) {
                 pointerEvents: isReady ? 'auto' : 'none' // Disable clicks until ready
               }}
               onClick={() => {
-                console.log('Secondary button clicked');
                 const secondaryBtn = property.metadata?.more_info?.ctaButtons?.secondary;
-                console.log('Secondary button config:', secondaryBtn);
                 
                 if (secondaryBtn?.type === 'anchor' && secondaryBtn.url) {
                   scrollToSection(secondaryBtn.url);

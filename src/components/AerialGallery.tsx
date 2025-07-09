@@ -12,7 +12,7 @@ interface AerialGalleryProps {
 }
 
 export function AerialGallery({ property }: AerialGalleryProps) {
-  const { images, loading } = useAerialImages(property.id, property.is_demo)
+  const { images, loading } = useAerialImages(property.id)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   const { ref: sectionRef, inView } = useInView({
     threshold: 0.15,
@@ -40,9 +40,9 @@ export function AerialGallery({ property }: AerialGalleryProps) {
     <>
       <div className="flex justify-center" ref={sectionRef}>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 auto-rows-auto justify-items-center">
-          {images.map((image, index) => (
+          {images.map((imageUrl, index) => (
             <div
-              key={image.id}
+              key={index}
               className="relative h-[200px] w-[300px] cursor-pointer group"
               onClick={() => setSelectedImageIndex(index)}
               style={{ 
@@ -54,8 +54,8 @@ export function AerialGallery({ property }: AerialGalleryProps) {
               }}
             >
               <Image
-                src={image.src}
-                alt={image.alt}
+                src={imageUrl}
+                alt={`Aerial view ${index + 1}`}
                 fill
                 className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
               />
@@ -67,7 +67,10 @@ export function AerialGallery({ property }: AerialGalleryProps) {
 
       {selectedImageIndex !== null && (
         <FullscreenGallery
-          images={images}
+          images={images.map((url, index) => ({
+            src: url,
+            alt: `Aerial view ${index + 1}`
+          }))}
           initialIndex={selectedImageIndex}
           onClose={() => setSelectedImageIndex(null)}
         />
