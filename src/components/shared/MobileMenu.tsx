@@ -20,7 +20,7 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, setIsOpen, menuItems, property }: MobileMenuProps) {
-  const { logoUrl } = usePropertyLogo(property.id)
+  const { logoUrl } = usePropertyLogo(property.id, property.is_demo)
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>

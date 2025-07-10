@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
 export function useFeaturesBanner(propertyId: string, isDemo = false) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -20,36 +21,23 @@ export function useFeaturesBanner(propertyId: string, isDemo = false) {
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, use the demo banner
-        if (isDemo) {
-          const supportedFormats = ['webp', 'jpg', 'jpeg', 'png']
-          let foundImage = false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
+
+        if (isDemoProperty) {
+          // Try to load demo image using centralized path
+          const demoImageUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.features_banner)
           
-          for (const format of supportedFormats) {
-            const { data: publicUrlData } = supabase
-              .storage
-              .from('property-assets')
-              .getPublicUrl(`demo/features_banner/banner.${format}`)
-
-            // Verify if the image exists
-            try {
-              const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-              if (response.ok) {
-                setImageUrl(publicUrlData.publicUrl)
-                foundImage = true
-                break
-              }
-            } catch {
-            }
+          if (demoImageUrl) {
+            setImageUrl(demoImageUrl)
+            return
           }
 
-          if (!foundImage) {
             setImageUrl(null)
-          }
           return
         }
 
-        // Otherwise, query the assets table for a real property
+        // For regular properties, query the database
         const { data, error } = await supabase
           .from('assets')
           .select('storage_path')
@@ -66,17 +54,34 @@ export function useFeaturesBanner(propertyId: string, isDemo = false) {
           throw error
         }
 
-        if (data?.storage_path) {
-          const { data: publicUrlData } = supabase
-            .storage
+        if (!data?.storage_path) {
+          setImageUrl(null)
+          return
+        }
+
+        // Generate the public URL for the image
+        const { data: publicUrlData } = supabase.storage
             .from('property-assets')
             .getPublicUrl(data.storage_path)
 
+        if (publicUrlData?.publicUrl) {
+          // Verify the image is accessible
+          try {
+            const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+            if (response.ok) {
           setImageUrl(publicUrlData.publicUrl)
+            } else {
+              throw new Error('Image not accessible')
+            }
+          } catch {
+            throw new Error('Image verification failed')
+          }
         } else {
-          setImageUrl(null)
+          throw new Error('Failed to generate public URL')
         }
+
       } catch (err) {
+        console.error('Error loading features banner:', err)
         setError(err instanceof Error ? err : new Error('Failed to load features banner'))
       } finally {
         setLoading(false)
@@ -84,7 +89,7 @@ export function useFeaturesBanner(propertyId: string, isDemo = false) {
     }
 
     loadBanner()
-  }, [supabase, propertyId, isDemo])
+  }, [propertyId, isDemo, supabase])
 
   return { imageUrl, loading, error }
 } 

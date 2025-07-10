@@ -20,7 +20,7 @@ export function Header({ property }: HeaderProps) {
   const [mounted, setMounted] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { logoUrl } = usePropertyLogo(property.id)
+  const { logoUrl } = usePropertyLogo(property.id, property.is_demo)
 
   useEffect(() => {
     setMounted(true)

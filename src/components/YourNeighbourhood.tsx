@@ -20,9 +20,9 @@ interface YourNeighbourhoodProps {
 
 export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
   const { isLoaded } = useGoogleMaps()
-  const { imageUrl, loading } = useNeighbourhoodBanner(property.id)
-  const { images: neighbourhoodImages, loading: imagesLoading } = useNeighbourhoodImages(property.id)
-  const { images: aerialImages } = useAerialImages(property.id)
+  const { imageUrl, loading } = useNeighbourhoodBanner(property.id, property.is_demo)
+  const { images: neighbourhoodImages, loading: imagesLoading } = useNeighbourhoodImages(property.id, property.is_demo)
+  const { images: aerialImages } = useAerialImages(property.id, property.is_demo)
   const bannerTitle = property.content?.neighbourhood?.banner_title || 'YOUR NEIGHBOURHOOD'
   
   // Map state

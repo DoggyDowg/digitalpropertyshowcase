@@ -12,6 +12,7 @@ import { CalendarIcon } from '@heroicons/react/24/outline'
 import type { Property } from '@/types/property'
 import emailjs from '@emailjs/browser'
 import { AddToCalendar } from './AddToCalendar'
+import { DEMO_CONFIG } from '@/config/demo'
 
 // Initialize EmailJS
 emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_USER_ID!);
@@ -53,26 +54,14 @@ export function Viewings({ property }: ViewingsProps) {
 
   // Set up demo viewings if needed
   useEffect(() => {
-    if (property.is_demo) {
-              // Setting up demo viewings
-      const demoViewings = [
-        {
-          viewing_datetime: new Date('2026-03-08T09:30:00').toISOString()
-        },
-        {
-          viewing_datetime: new Date('2026-03-09T14:00:00').toISOString()
-        },
-        {
-          viewing_datetime: new Date('2026-03-10T11:30:00').toISOString()
-        }
-      ];
-              // Demo viewings configured
-      setDemoViewing(demoViewings);
+    if (DEMO_CONFIG.isDemoProperty(property.id, property.is_demo)) {
+      // Setting up demo viewings from centralized config
+      setDemoViewing(DEMO_CONFIG.content.viewings);
     }
-  }, [property.is_demo])
+  }, [property.id, property.is_demo])
 
   // Use demo viewings if it's a demo property, otherwise use fetched viewings
-  const upcomingViewings = property.is_demo 
+  const upcomingViewings = DEMO_CONFIG.isDemoProperty(property.id, property.is_demo)
     ? demoViewing 
     : Array.isArray(fetchedViewing) 
       ? fetchedViewing 

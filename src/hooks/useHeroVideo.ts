@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
-export function useHeroVideo(propertyId: string | undefined) {
+export function useHeroVideo(propertyId: string | undefined, isDemo?: boolean) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -21,37 +22,22 @@ export function useHeroVideo(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property (path-based)
-        if (propertyId?.includes('demo/')) {
-          const { data: publicUrlData } = supabase.storage
-            .from('property-assets')
-            .getPublicUrl(propertyId)
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-          if (!publicUrlData?.publicUrl) {
-            console.warn('Demo video not found at path:', propertyId)
-            setError('Demo video not found')
-            setVideoUrl(null) // Explicitly set to null instead of returning
+        if (isDemoProperty) {
+          // Try to load demo video using centralized path
+          const demoVideoUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.hero_video)
+          
+          if (demoVideoUrl) {
+            console.log('Demo video loaded successfully:', demoVideoUrl)
+            setVideoUrl(demoVideoUrl)
             return
           }
 
-          // Test if the video URL is accessible
-          try {
-            const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-            if (!response.ok) {
-              console.warn('Demo video not accessible:', publicUrlData.publicUrl, 'Status:', response.status)
-              setError(`Demo video not accessible (${response.status})`)
-              setVideoUrl(null) // Explicitly set to null instead of returning
-              return
-            }
-            console.log('Demo video loaded successfully:', publicUrlData.publicUrl)
-            setVideoUrl(publicUrlData.publicUrl)
-          } catch (_verifyErr) {
-            console.warn('Demo video URL verification failed:', _verifyErr)
-            setError('Demo video URL verification failed')
-            setVideoUrl(null) // Explicitly set to null instead of returning
-            return
-          }
-
+          console.warn('Demo video not found')
+          setError('Demo video not found')
+          setVideoUrl(null)
           return
         }
 
@@ -74,32 +60,30 @@ export function useHeroVideo(propertyId: string | undefined) {
           return
         }
 
-        if (!data[0].storage_path) {
-          setError('No storage path found')
-          return
+        const asset = data[0]
+        if (!asset.storage_path) {
+          throw new Error('No storage path found')
         }
 
         // Generate the public URL for the video
         const { data: publicUrlData } = supabase.storage
           .from('property-assets')
-          .getPublicUrl(data[0].storage_path)
+          .getPublicUrl(asset.storage_path)
 
-        if (!publicUrlData?.publicUrl) {
-          setError('Failed to generate public URL')
-          return
-        }
-
-        // Test if the video URL is accessible
+        if (publicUrlData?.publicUrl) {
+          // Verify the video is accessible
         try {
           const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-          if (!response.ok) {
-            setError(`Video not accessible`)
-            return
-          }
+            if (response.ok) {
           setVideoUrl(publicUrlData.publicUrl)
+            } else {
+              throw new Error('Video not accessible')
+            }
         } catch {
-          setError('Video URL verification failed')
-          return
+            throw new Error('Video verification failed')
+          }
+        } else {
+          throw new Error('Failed to generate public URL')
         }
 
       } catch (err) {
@@ -111,7 +95,7 @@ export function useHeroVideo(propertyId: string | undefined) {
     }
 
     fetchHeroVideo()
-  }, [propertyId, supabase])
+  }, [propertyId, isDemo, supabase])
 
   return { videoUrl, loading, error }
 }

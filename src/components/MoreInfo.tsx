@@ -13,6 +13,7 @@ import { AddToCalendar } from './AddToCalendar'
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
 import { format } from 'date-fns'
 import { useAgent } from '@/hooks/useAgent'
+import { DEMO_CONFIG } from '@/config/demo'
 
 interface MoreInfoProps {
   property: PropertyType;
@@ -139,26 +140,20 @@ export function MoreInfo({ property }: MoreInfoProps) {
 
   // Set up demo content if needed
   useEffect(() => {
-    if (property.is_demo) {
+    if (DEMO_CONFIG.isDemoProperty(property.id, property.is_demo)) {
       setDemoContent({
-        documents: [
-          { label: 'Statement of Information', url: '#' },
-          { label: 'Contract of Sale', url: '#' }
-        ],
-        additionalInfo: [
-          { info: 'Council Rates', detail: '$2,600 per annum' },
-          { info: 'Body Corp', detail: '$460 per qtr' }
-        ]
+        documents: DEMO_CONFIG.content.documents,
+        additionalInfo: DEMO_CONFIG.content.additionalInfo
       })
     }
-  }, [property.is_demo])
+  }, [property.id, property.is_demo])
 
   // Get the content to display based on whether it's a demo property or not
-  const displayDocuments = property.is_demo 
+  const displayDocuments = DEMO_CONFIG.isDemoProperty(property.id, property.is_demo)
     ? demoContent?.documents 
     : property.metadata?.more_info?.documents
 
-  const displayAdditionalInfo = property.is_demo 
+  const displayAdditionalInfo = DEMO_CONFIG.isDemoProperty(property.id, property.is_demo)
     ? demoContent?.additionalInfo 
     : property.metadata?.more_info?.additionalInfo
 

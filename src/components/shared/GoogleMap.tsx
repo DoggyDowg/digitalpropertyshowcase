@@ -66,7 +66,7 @@ export function GoogleMap({
   const [allowTransitions, setAllowTransitions] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const listViewRef = useRef<HTMLDivElement>(null);
-  const { imageUrl, loading } = useFooterImage(property?.id);
+  const { imageUrl, loading } = useFooterImage(property?.id, property?.is_demo);
   
   // Add these new state variables for context menu
   const [contextMenu, setContextMenu] = useState<{

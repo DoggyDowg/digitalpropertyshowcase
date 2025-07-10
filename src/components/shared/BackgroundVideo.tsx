@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { useHeroVideo } from '@/hooks/useHeroVideo'
 import type { Property } from '@/types/property'
-import { useState } from 'react'
 
 interface BackgroundVideoProps {
   property: Property
@@ -9,11 +9,8 @@ interface BackgroundVideoProps {
 export function BackgroundVideo({ property }: BackgroundVideoProps) {
   const [videoErrored, setVideoErrored] = useState(false)
   
-  // For demo properties, use the full path to the demo video
-  const heroVideoPath = property.is_demo 
-    ? 'demo/hero_video/hero.mp4'
-    : property.id
-  const { videoUrl } = useHeroVideo(heroVideoPath)
+  // Use the property's demo status directly
+  const { videoUrl } = useHeroVideo(property.id, property.is_demo)
 
   // If there's no video URL or there was an error loading the video, show a fallback background
   if (!videoUrl || videoErrored) {
@@ -49,27 +46,19 @@ export function BackgroundVideo({ property }: BackgroundVideoProps) {
   return (
     <div className="fixed inset-0 overflow-hidden -z-10">
       <video
-        className="absolute h-[100vh] w-full object-cover"
         autoPlay
-        muted
         loop
+        muted
         playsInline
-        webkit-playsinline="true"
-        preload="auto"
+        className="min-w-full min-h-full object-cover"
         style={{ position: 'fixed', top: 0, left: 0, zIndex: -2 }}
-        onError={(e) => {
-          console.error('BackgroundVideo: Video error:', e)
-          setVideoErrored(true)
-        }}
-        onLoadedData={() => {
-          // Video loaded successfully
-        }}
+        onError={() => setVideoErrored(true)}
       >
         <source src={videoUrl} type="video/mp4" />
       </video>
-      {/* Video overlay for fade effect */}
+      {/* Overlay for fade effect */}
       <div 
-        className="video-overlay absolute inset-0 bg-black/50" 
+        className="video-overlay absolute inset-0 bg-black/30" 
         style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }} 
       />
     </div>

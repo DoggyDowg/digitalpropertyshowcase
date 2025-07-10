@@ -12,7 +12,7 @@ interface FooterProps {
 }
 
 export function Footer({ property }: FooterProps) {
-  const { imageUrl, loading } = useFooterImage(property.id)
+  const { imageUrl, loading } = useFooterImage(property.id, property.is_demo)
   
   // Get agency branding logo - use light logo for dark background
   const agencyLogo = property.agency_settings?.branding?.logo?.light

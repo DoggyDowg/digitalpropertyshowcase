@@ -12,7 +12,7 @@ interface FooterProps {
 }
 
 export function Footer({ property }: FooterProps) {
-  const { imageUrl, loading, error } = useFooterImage(property.id)
+  const { imageUrl, loading, error } = useFooterImage(property.id, property.is_demo)
   
   // Debug logging
   // console.log('Footer Component Debug:', {

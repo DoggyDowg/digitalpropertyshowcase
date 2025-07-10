@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
-export function use3DTour(propertyId: string | undefined) {
+export function use3DTour(propertyId: string | undefined, isDemo?: boolean) {
   const [tourUrl, setTourUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -19,26 +20,16 @@ export function use3DTour(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property
-        const isDemo = propertyId?.includes('/demo/') || false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-        if (isDemo) {
-          // Try demo 3D tour
-          const { data: publicUrlData } = supabase.storage
-            .from('property-assets')
-            .getPublicUrl('demo/3d-tour/tour.html')
-
-          if (publicUrlData?.publicUrl) {
-            // Test if the tour is accessible
-            try {
-              const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-              if (response.ok) {
-                setTourUrl(publicUrlData.publicUrl)
+        if (isDemoProperty) {
+          // Try to load demo 3D tour using centralized path
+          const demoTourUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.tour_3d)
+          
+          if (demoTourUrl) {
+            setTourUrl(demoTourUrl)
                 return
-              }
-            } catch (err) {
-              // Continue to error handling
-            }
           }
 
           setError('Demo 3D tour not found')
@@ -75,7 +66,7 @@ export function use3DTour(propertyId: string | undefined) {
           .getPublicUrl(asset.storage_path)
 
         if (publicUrlData?.publicUrl) {
-          // Verify the tour is accessible
+          // Verify the 3D tour is accessible
           try {
             const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
             if (response.ok) {
@@ -83,7 +74,7 @@ export function use3DTour(propertyId: string | undefined) {
             } else {
               throw new Error('3D tour not accessible')
             }
-          } catch (verifyErr) {
+          } catch {
             throw new Error('3D tour verification failed')
           }
         } else {
@@ -99,7 +90,7 @@ export function use3DTour(propertyId: string | undefined) {
     }
 
     fetch3DTour()
-  }, [propertyId, supabase])
+  }, [propertyId, isDemo, supabase])
 
   return { tourUrl, loading, error }
 } 

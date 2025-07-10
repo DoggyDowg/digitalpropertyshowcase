@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
-interface AerialImage {
-  id: string;
-  src: string;
-  alt: string;
-}
-
-export function useAerialImages(propertyId: string | undefined) {
+export function useAerialImages(propertyId: string | undefined, isDemo?: boolean) {
   const [images, setImages] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -27,36 +22,19 @@ export function useAerialImages(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property
-        const isDemo = propertyId?.includes('/demo/') || false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-        if (isDemo) {
-          // Load demo aerial images
+        if (isDemoProperty) {
+          // Load demo aerial images using centralized paths
           const imageUrls: string[] = []
-          const formats = ['webp', 'jpg', 'jpeg', 'png']
           
-          for (let i = 1; i <= 6; i++) {
-            let foundImage = false
+          for (let i = 0; i < DEMO_CONFIG.assets.aerials.length; i++) {
+            const imagePath = DEMO_CONFIG.assets.aerials[i]
+            const imageUrl = await getDemoAssetUrl(supabase, imagePath)
             
-            for (const format of formats) {
-              if (foundImage) break
-              
-              try {
-                const { data: publicUrlData } = supabase.storage
-                  .from('property-assets')
-                  .getPublicUrl(`demo/aerial/${i}.${format}`)
-
-                if (publicUrlData?.publicUrl) {
-                  // Test if the image is accessible
-                  const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-                  if (response.ok) {
-                    imageUrls.push(publicUrlData.publicUrl)
-                    foundImage = true
-                  }
-                }
-              } catch (err) {
-                // Continue to next format
-              }
+            if (imageUrl) {
+              imageUrls.push(imageUrl)
             }
           }
 
@@ -69,7 +47,7 @@ export function useAerialImages(propertyId: string | undefined) {
           .from('assets')
           .select('storage_path')
           .eq('property_id', propertyId)
-          .eq('category', 'aerial')
+          .eq('category', 'aerials')
           .eq('status', 'active')
           .order('created_at', { ascending: true })
 
@@ -82,21 +60,18 @@ export function useAerialImages(propertyId: string | undefined) {
           return
         }
 
-        // Generate public URLs for all images
-        const imagePromises = data.map(async (asset) => {
-          if (!asset.storage_path) return null
-
+        // Generate public URLs for all aerial images
+        const aerialUrls = await Promise.all(
+          data.map(async (asset) => {
           const { data: publicUrlData } = supabase.storage
             .from('property-assets')
             .getPublicUrl(asset.storage_path)
 
-          return publicUrlData?.publicUrl || null
+            return publicUrlData.publicUrl
         })
-
-        const imageUrls = await Promise.all(imagePromises)
-        const validUrls = imageUrls.filter((url): url is string => url !== null)
+        )
         
-        setImages(validUrls)
+        setImages(aerialUrls)
 
       } catch (err) {
         console.error('Error loading aerial images:', err)
@@ -107,7 +82,7 @@ export function useAerialImages(propertyId: string | undefined) {
     }
 
     fetchAerialImages()
-  }, [propertyId, supabase])
+  }, [propertyId, isDemo, supabase])
 
   return { images, loading, error }
 } 

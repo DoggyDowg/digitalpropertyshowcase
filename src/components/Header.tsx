@@ -27,7 +27,7 @@ export function Header({ property }: HeaderProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [logoLoaded, setLogoLoaded] = useState(false)
-  const { logoUrl } = usePropertyLogo(property.id)
+  const { logoUrl } = usePropertyLogo(property.id, property.is_demo)
   const { registerAsset, markAssetAsLoaded } = useAssetLoading()
   const isCustomDomain = typeof window !== 'undefined' ? window.__CUSTOM_DOMAIN__ : false
 
@@ -35,6 +35,9 @@ export function Header({ property }: HeaderProps) {
   useEffect(() => {
     if (logoUrl) {
       registerAsset()
+    } else {
+      // If there's no logo URL, immediately set logoLoaded to true
+      setLogoLoaded(true)
     }
   }, [logoUrl, registerAsset])
 
@@ -90,6 +93,12 @@ export function Header({ property }: HeaderProps) {
                 <div 
                   className="bg-gray-200 flex items-center justify-center h-[44px]"
                   style={{ width: MAX_LOGO_WIDTH }}
+                  ref={(el) => {
+                    if (el && !logoLoaded) {
+                      setLogoLoaded(true)
+                      markAssetAsLoaded()
+                    }
+                  }}
                 >
                   <span className="text-gray-400 text-sm">Logo not found</span>
                 </div>

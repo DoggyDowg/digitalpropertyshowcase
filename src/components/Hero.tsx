@@ -43,93 +43,102 @@ export function Hero({ property }: HeroProps) {
   const subheadlineRef = useRef<HTMLHeadingElement>(null)
   const topSectionRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLDivElement>(null)
+  const heroSectionRef = useRef<HTMLElement>(null)
 
   // Set up GSAP animations
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
-    // Set up scroll animation for top section
-    if (topSectionRef.current) {
-      gsap.to(topSectionRef.current, {
-        y: '-50%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: 'body',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.5,
-          onUpdate: (self) => {
-            const progress = self.progress
-            const blurAmount = Math.pow(progress * 20, 2)
-            gsap.set(topSectionRef.current, {
-              filter: `blur(${Math.min(blurAmount, 30)}px)`
-            })
+        // Add a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      // Set up scroll animation for top section
+      if (topSectionRef.current && heroSectionRef.current) {
+         gsap.to(topSectionRef.current, {
+           y: '-50%',
+           ease: 'none',
+           scrollTrigger: {
+             trigger: heroSectionRef.current,
+             start: 'top top',
+             end: 'bottom top',
+             scrub: 0.5,
+                         onUpdate: (self) => {
+               const progress = self.progress
+               const blurAmount = Math.pow(progress * 20, 2)
+               gsap.set(topSectionRef.current, {
+                 filter: `blur(${Math.min(blurAmount, 30)}px)`
+               })
+             },
+            invalidateOnRefresh: true
           }
-        }
-      })
-    }
+        })
+        
+                 // Refresh ScrollTrigger to ensure proper calculations
+         ScrollTrigger.refresh()
+       }
 
-    // Function to start initial animations
-    const startAnimations = () => {
-      // Initial state - set elements to be blurred and slightly translated
-      gsap.set([logoRef.current, addressRef.current, suburbRef.current, ctaContainerRef.current, headlineRef.current, subheadlineRef.current], {
-        opacity: 0,
-        y: 30,
-        filter: 'blur(10px)'
-      })
+       // Function to start initial animations
+       const startAnimations = () => {
+        // Initial state - set elements to be blurred and slightly translated
+        gsap.set([logoRef.current, addressRef.current, suburbRef.current, ctaContainerRef.current, headlineRef.current, subheadlineRef.current], {
+          opacity: 0,
+          y: 30,
+          filter: 'blur(10px)'
+        })
 
-      // Text animations sequence
-      tl.to(logoRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6,
-        delay: 0.5
-      })
-      .to(addressRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6
-      }, '-=1.0')
-      .to(suburbRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6
-      }, '-=1.0')
-      .to(ctaContainerRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6
-      }, '-=1.0')
-      .to(headlineRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6
-      }, '-=1.0')
-      .to(subheadlineRef.current, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.6
-      }, '-=1.0')
-    }
+        // Text animations sequence
+        tl.to(logoRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6,
+          delay: 0.5
+        })
+        .to(addressRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6
+        }, '-=1.0')
+        .to(suburbRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6
+        }, '-=1.0')
+        .to(ctaContainerRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6
+        }, '-=1.0')
+        .to(headlineRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6
+        }, '-=1.0')
+        .to(subheadlineRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1.6
+        }, '-=1.0')
+      }
 
-    // Start animations
-    startAnimations()
+      // Start animations
+      startAnimations()
+    }, 100) // Small delay to ensure DOM is ready
 
     // Cleanup
     return () => {
+      clearTimeout(timer)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       tl.kill();
     }
   }, [])
 
   return (
-    <section className="relative h-screen w-full overflow-x-hidden">
+    <section ref={heroSectionRef} className="relative h-screen w-full overflow-x-hidden">
       {/* Content */}
       <div className="relative h-full flex flex-col text-brand-light text-center px-4 sm:px-6 lg:px-12">
         {/* Initial Navigation */}

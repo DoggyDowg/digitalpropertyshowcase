@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
-export function useNeighbourhoodBanner(propertyId: string | undefined) {
+export function useNeighbourhoodBanner(propertyId: string | undefined, isDemo?: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -21,33 +22,19 @@ export function useNeighbourhoodBanner(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property
-        const isDemo = propertyId?.includes('/demo/') || false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-        if (isDemo) {
-          // Try different formats for demo image
-          const formats = ['webp', 'jpg', 'jpeg', 'png']
-          
-          for (const format of formats) {
-            try {
-              const { data: publicUrlData } = supabase.storage
-                .from('property-assets')
-                .getPublicUrl(`demo/neighbourhood/banner.${format}`)
+        if (isDemoProperty) {
+          // Try to load demo image using centralized path
+          const demoImageUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.neighbourhood_banner)
 
-              if (publicUrlData?.publicUrl) {
-                // Test if the image is accessible
-                const response = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-                if (response.ok) {
-                  setImageUrl(publicUrlData.publicUrl)
+          if (demoImageUrl) {
+            setImageUrl(demoImageUrl)
                   return
-                }
-              }
-            } catch (err) {
-              // Continue to next format
-            }
           }
 
-          setError('No supported image format found for demo neighbourhood banner')
+          setError('Demo neighbourhood banner not found')
           return
         }
 
@@ -89,7 +76,7 @@ export function useNeighbourhoodBanner(propertyId: string | undefined) {
             } else {
               throw new Error('Image not accessible')
             }
-          } catch (verifyErr) {
+          } catch {
             throw new Error('Image verification failed')
           }
         } else {
@@ -105,7 +92,7 @@ export function useNeighbourhoodBanner(propertyId: string | undefined) {
     }
 
     fetchNeighbourhoodBanner()
-  }, [propertyId, supabase])
+  }, [propertyId, isDemo, supabase])
 
   return { imageUrl, loading, error }
 } 

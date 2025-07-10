@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
-export function useFooterImage(propertyId: string | undefined) {
+export function useFooterImage(propertyId: string | undefined, isDemo?: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,45 +24,19 @@ export function useFooterImage(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property
-        const isDemo = propertyId?.includes('/demo/') || false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-        if (isDemo) {
-          // Try different image formats for demo
-          const formats = ['webp', 'jpg', 'jpeg', 'png']
-          let foundImage = false
-
-          for (const format of formats) {
-            if (controller.signal.aborted) return
-
-            try {
-              if (!propertyId) return
-              const imagePath = `${propertyId.replace(/\.(webp|jpg|jpeg|png)$/i, '')}.${format}`
-              const { data: publicUrlData } = supabase.storage
-                .from('property-assets')
-                .getPublicUrl(imagePath)
-
-              if (publicUrlData?.publicUrl) {
-                // Test if the image is accessible
-                const response = await fetch(publicUrlData.publicUrl, { 
-                  method: 'HEAD',
-                  signal: controller.signal
-                })
+        if (isDemoProperty) {
+          // Try to load demo image using centralized path
+          const demoImageUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.footer_image)
                 
-                if (response.ok) {
-                  setImageUrl(publicUrlData.publicUrl)
-                  foundImage = true
-                  break
-                }
-              }
-            } catch {
-              // Continue to next format
-            }
+          if (demoImageUrl) {
+            setImageUrl(demoImageUrl)
+            return
           }
 
-          if (!foundImage) {
-            setError('No supported image format found for demo footer')
-          }
+          setError('Demo footer image not found')
           return
         }
 
@@ -70,14 +45,13 @@ export function useFooterImage(propertyId: string | undefined) {
           .from('assets')
           .select('storage_path')
           .eq('property_id', propertyId)
-          .eq('category', 'footer_image')
+          .eq('category', 'footer')
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(1)
 
         if (dbError) {
-          setError(`Database query error: ${dbError.message}`)
-          return
+          throw new Error(`Database query failed: ${dbError.message}`)
         }
 
         if (!data || data.length === 0) {
@@ -87,8 +61,7 @@ export function useFooterImage(propertyId: string | undefined) {
 
         const asset = data[0]
         if (!asset.storage_path) {
-          setError('No storage path found in asset data')
-          return
+          throw new Error('No storage path found')
         }
 
         // Generate the public URL for the image
@@ -103,23 +76,24 @@ export function useFooterImage(propertyId: string | undefined) {
               method: 'HEAD',
               signal: controller.signal
             })
+            
             if (response.ok) {
               setImageUrl(publicUrlData.publicUrl)
             } else {
-              setError('Image not accessible')
+              throw new Error('Image not accessible')
             }
-          } catch (err) {
-            if (err instanceof Error && err.name === 'AbortError') {
-              return
-            }
-            setError('Error verifying image accessibility')
+          } catch {
+            throw new Error('Image verification failed')
           }
+        } else {
+          throw new Error('Failed to generate public URL')
         }
 
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
           return
         }
+
         console.error('Error loading footer image:', err)
         setError(err instanceof Error ? err.message : 'Failed to load footer image')
       } finally {
@@ -132,7 +106,7 @@ export function useFooterImage(propertyId: string | undefined) {
     return () => {
       controller.abort()
     }
-  }, [propertyId, supabase])
+  }, [propertyId, isDemo, supabase])
 
   return { imageUrl, loading, error }
 } 

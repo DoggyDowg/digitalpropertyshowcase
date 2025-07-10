@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
 interface NeighbourhoodImage {
   id: string
@@ -27,50 +28,32 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
         setLoading(true)
         setError(null)
 
-        // If it's a demo property, generate demo neighbourhood images
-        if (isDemoProperty) {
-          // console.log('Loading demo neighbourhood images'); // Commented out
-          const supportedFormats = ['webp', 'jpg', 'jpeg', 'png']
+        // Check if it's a demo property using centralized logic
+        const isDemo = DEMO_CONFIG.isDemoProperty(propertyId, isDemoProperty)
+
+        if (isDemo) {
+          // Load demo neighbourhood images using centralized paths
           const demoImages: NeighbourhoodImage[] = []
 
-          for (let i = 1; i <= 3; i++) {
-            let foundImage = false
+          for (let i = 0; i < DEMO_CONFIG.assets.neighbourhood.length; i++) {
+            const imagePath = DEMO_CONFIG.assets.neighbourhood[i]
+            const imageUrl = await getDemoAssetUrl(supabase, imagePath)
             
-            for (const format of supportedFormats) {
-              const { data } = supabase.storage
-                .from('property-assets')
-                .getPublicUrl(`demo/neighbourhood/image${i}.${format}`)
-
-              // Verify if the image exists
-              try {
-                const response = await fetch(data.publicUrl, { method: 'HEAD' })
-                if (response.ok) {
-                  // console.log(`Found demo neighbourhood image ${i} in ${format} format`); // Commented out
+            if (imageUrl) {
                   demoImages.push({
-                    id: `demo-neighbourhood-${i}`,
-                    src: data.publicUrl,
-                    alt: `Neighbourhood Image ${i}`
-                  })
-                  foundImage = true
-                  break
-                }
-              } catch {
-                // console.log(`No ${format} format found for demo neighbourhood image ${i}`); // Commented out
-              }
-            }
-
-            if (!foundImage) {
-              console.error(`No supported image format found for demo neighbourhood image ${i}`)
+                id: `demo-neighbourhood-${i + 1}`,
+                src: imageUrl,
+                alt: `Neighbourhood Image ${i + 1}`
+              })
             }
           }
 
-          // console.log('Demo neighbourhood images:', demoImages); // Commented out
           setImages(demoImages)
+          setLoading(false)
           return
         }
 
-        // Otherwise, query the assets table for a real property
-        // console.log('Fetching neighbourhood images for property:', propertyId)
+        // For regular properties, query the database
         const { data, error } = await supabase
           .from('assets')
           .select('id, storage_path')
@@ -96,7 +79,6 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
             })
           )
 
-          // console.log('Neighbourhood images:', neighbourhoodImages) // Commented out log
           setImages(neighbourhoodImages)
         }
       } catch (err) {
@@ -108,7 +90,7 @@ export function useNeighbourhoodImages(propertyId?: string, isDemoProperty?: boo
     }
 
     loadImages()
-  }, [supabase, propertyId, isDemoProperty])
+  }, [propertyId, isDemoProperty, supabase])
 
   return { images, loading, error }
 } 

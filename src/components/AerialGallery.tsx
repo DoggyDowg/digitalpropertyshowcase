@@ -12,7 +12,7 @@ interface AerialGalleryProps {
 }
 
 export function AerialGallery({ property }: AerialGalleryProps) {
-  const { images, loading } = useAerialImages(property.id)
+  const { images, loading } = useAerialImages(property.id, property.is_demo)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   const { ref: sectionRef, inView } = useInView({
     threshold: 0.15,

@@ -23,8 +23,8 @@ export function YourHome({ property }: YourHomeProps) {
   const featuresRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [isFeaturesVisible, setIsFeaturesVisible] = useState(false)
-  const { imageUrl: bannerUrl, loading: bannerLoading } = useFeaturesBanner(property.id)
-  const { imageUrl: homeImageUrl, loading: homeImageLoading } = useYourHomeImage(property.id)
+  const { imageUrl: bannerUrl, loading: bannerLoading } = useFeaturesBanner(property.id, property.is_demo)
+  const { imageUrl: homeImageUrl, loading: homeImageLoading } = useYourHomeImage(property.id, property.is_demo)
   const isMobile = useMediaQuery('(max-width: 768px)')
   const { content } = property
   const { agent } = useAgent(property.agent_id)

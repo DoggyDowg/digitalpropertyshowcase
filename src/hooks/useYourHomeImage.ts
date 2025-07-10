@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { DEMO_CONFIG, getDemoAssetUrl } from '@/config/demo'
 
 const MAX_RETRIES = 3
 const RETRY_DELAY = 1000
 
-export function useYourHomeImage(propertyId: string | undefined) {
+export function useYourHomeImage(propertyId: string | undefined, isDemo?: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -27,30 +28,16 @@ export function useYourHomeImage(propertyId: string | undefined) {
         setLoading(true)
         setError(null)
 
-        // Check if it's a demo property
-        const isDemo = propertyId?.includes('/demo/') || false
+        // Check if it's a demo property using centralized logic
+        const isDemoProperty = DEMO_CONFIG.isDemoProperty(propertyId, isDemo)
 
-        if (isDemo) {
-          // Try to load demo image
-          const { data: publicUrlData } = supabase.storage
-            .from('property-assets')
-            .getPublicUrl('demo/yourhome/banner.webp')
-
-          if (publicUrlData?.publicUrl) {
-            // Test if the image is accessible
-            try {
-              const response = await fetch(publicUrlData.publicUrl, { 
-                method: 'HEAD',
-                signal: controller.signal
-              })
+        if (isDemoProperty) {
+          // Try to load demo image using centralized path
+          const demoImageUrl = await getDemoAssetUrl(supabase, DEMO_CONFIG.assets.yourhome_banner)
               
-              if (response.ok) {
-                setImageUrl(publicUrlData.publicUrl)
+          if (demoImageUrl) {
+            setImageUrl(demoImageUrl)
                 return
-              }
-            } catch {
-              // Continue to error handling
-            }
           }
 
           setError('Demo image not found')
@@ -131,7 +118,7 @@ export function useYourHomeImage(propertyId: string | undefined) {
     return () => {
       controller.abort()
     }
-  }, [propertyId, supabase, retryCount])
+  }, [propertyId, isDemo, supabase, retryCount])
 
   return { imageUrl, loading, error }
 } 
