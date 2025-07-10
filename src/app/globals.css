@@ -210,6 +210,67 @@
   animation: galleryFadeIn 0.5s ease-out forwards;
 }
 
+/* Shimmer Logo Loading Effect */
+.shimmer-logo-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shimmer-logo-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.shimmer-logo {
+  /* Make it monochrome with low opacity */
+  filter: grayscale(100%) brightness(0.3) contrast(1.2);
+  opacity: 0.25;
+  transition: all 0.3s ease;
+}
+
+.shimmer-logo-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    80deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 75%
+  );
+  animation: shimmer-sweep 2.5s ease-in-out infinite;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Responsive sizing */
+@media (max-width: 640px) {
+  .shimmer-logo {
+    width: 120px;
+    height: 45px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

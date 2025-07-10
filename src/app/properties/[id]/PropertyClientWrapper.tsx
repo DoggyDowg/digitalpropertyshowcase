@@ -6,6 +6,7 @@ import { DubaiTemplate } from '@/templates/dubai/page'
 import type { Property } from '@/types/property'
 import type { Asset, PropertyAssets } from '@/types/assets'
 import DynamicFavicon from '@/components/shared/DynamicFavicon'
+import { ShimmerLogo } from '@/components/shared/ShimmerLogo'
 
 // Add this new component for CSS-based styling
 /**
@@ -132,20 +133,9 @@ function StyleFixer({ property }: { property: Property }) {
       `;
     }
     
-    // Logo switching based on header style and available agency logos
-    const lightLogo = property.agency_settings?.branding?.logo?.light;
-    const darkLogo = property.agency_settings?.branding?.logo?.dark;
-    
-    if (lightLogo && darkLogo) {
-      // If both logos are available, switch based on header style
-      const logoToUse = headerStyle === 'dark' ? lightLogo : darkLogo;
-      css += `
-        /* Dynamic logo switching based on header style */
-        header img {
-          content: url('${logoToUse}') !important;
-        }
-      `;
-    }
+    // REMOVED: Logo switching that was overriding property logos with agency logos
+    // The header should display the property logo, not the agency logo
+    // Agency logos are displayed in the Hero section and other appropriate places
     
     // Base styles for all links regardless of hover effect selection
     css += `
@@ -525,10 +515,7 @@ export function PropertyClientWrapper({ property, template }: PropertyClientWrap
       {/* Add loading overlay that covers entire page */}
       {isLoading && (
         <div className="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
-          <div className="animate-pulse">
-            <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
-            <div className="h-4 w-32 bg-gray-200 rounded"></div>
-          </div>
+          <ShimmerLogo />
         </div>
       )}
     </>
