@@ -49,7 +49,7 @@ export function useYourHomeImage(propertyId: string | undefined, isDemo?: boolea
           .from('assets')
           .select('storage_path')
           .eq('property_id', propertyId)
-          .eq('category', 'yourhome_banner')
+          .eq('category', 'your_home')
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(1)
