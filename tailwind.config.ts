@@ -20,13 +20,15 @@ const config: Config = {
                     ...fontFamily.sans
                 ]
   		},
-  		animation: {
-  			'slide-in': 'slideIn 1s ease-out forwards',
-  			fadeIn: 'fadeIn 0.5s ease-out',
-  			loadingScreen: 'loadingScreen 2.5s ease-in-out forwards',
-  			'scale-up': 'scaleUp 0.15s ease-out forwards',
-  			'scale-down': 'scaleDown 0.15s ease-out forwards'
-  		},
+  				animation: {
+			'slide-in': 'slideIn 1s ease-out forwards',
+			fadeIn: 'fadeIn 0.5s ease-out',
+			loadingScreen: 'loadingScreen 2.5s ease-in-out forwards',
+			'scale-up': 'scaleUp 0.15s ease-out forwards',
+			'scale-down': 'scaleDown 0.15s ease-out forwards',
+			marquee: 'marquee var(--duration) linear infinite',
+			'marquee-vertical': 'marquee-vertical var(--duration) linear infinite'
+		},
   		keyframes: {
   			slideIn: {
   				'0%': {
@@ -71,6 +73,14 @@ const config: Config = {
   				'100%': {
   					transform: 'scale(1)'
   				}
+  			},
+  			marquee: {
+  				from: { transform: 'translateX(0%)' },
+  				to: { transform: 'translateX(-100%)' }
+  			},
+  			'marquee-vertical': {
+  				from: { transform: 'translateY(0%)' },
+  				to: { transform: 'translateY(-100%)' }
   			}
   		},
   		colors: {

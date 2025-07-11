@@ -1,6 +1,6 @@
 'use client'
 
-import { AutoScrollGallery } from './AutoScrollGallery'
+import { MarqueeGallery } from './MarqueeGallery'
 import type { Property } from '@/types/property'
 
 interface HomeGalleryProps {
@@ -8,5 +8,5 @@ interface HomeGalleryProps {
 }
 
 export function HomeGallery({ property }: HomeGalleryProps) {
-  return <AutoScrollGallery property={property} />
+  return <MarqueeGallery property={property} />
 } 
