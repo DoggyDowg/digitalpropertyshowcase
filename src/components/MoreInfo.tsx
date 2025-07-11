@@ -583,7 +583,9 @@ export function MoreInfo({ property }: MoreInfoProps) {
         
         {/* Social Share Dock */}
         <div className="mt-16 flex justify-center">
-          <SocialShareDock property={property} />
+          <div>
+            <SocialShareDock property={property} />
+          </div>
         </div>
       </div>
 

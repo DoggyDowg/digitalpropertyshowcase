@@ -142,6 +142,7 @@
 }
 
 .dock-button::before {
+  content: none !important;
   display: none !important;
 }
 
@@ -151,6 +152,7 @@
 }
 
 .dock-button:hover::before {
+  content: none !important;
   display: none !important;
   opacity: 0 !important;
   transform: none !important;
