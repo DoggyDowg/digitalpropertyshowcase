@@ -129,6 +129,33 @@
   }
 }
 
+/* Dock Button Styles - Override DocumentLink styles */
+.dock-button {
+  transform: scale(1) !important;
+  transition: none;
+  position: relative !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: none !important;
+  text-decoration: none !important;
+}
+
+.dock-button::before {
+  display: none !important;
+}
+
+.dock-button:hover {
+  transform: scale(1) !important;
+  background: none !important;
+}
+
+.dock-button:hover::before {
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
 /* Loading Screen */
 @keyframes loadingScreenAnimation {
   0% { opacity: 1; }

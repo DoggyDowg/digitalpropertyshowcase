@@ -14,6 +14,7 @@ import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/lib/youtube'
 import { format } from 'date-fns'
 import { useAgent } from '@/hooks/useAgent'
 import { DEMO_CONFIG } from '@/config/demo'
+import { SocialShareDock } from '@/components/shared/SocialShareDock';
 
 interface MoreInfoProps {
   property: PropertyType;
@@ -578,6 +579,11 @@ export function MoreInfo({ property }: MoreInfoProps) {
               </div>
             )}
           </div>
+        </div>
+        
+        {/* Social Share Dock */}
+        <div className="mt-16 flex justify-center">
+          <SocialShareDock property={property} />
         </div>
       </div>
 

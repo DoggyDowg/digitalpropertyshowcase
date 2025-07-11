@@ -3,11 +3,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { ParallaxBanner } from './shared/ParallaxBanner'
 import { MasonryGallery } from './shared/MasonryGallery'
-import SocialShare from './shared/SocialShare'
 import { useLifestyleBanner } from '@/hooks/useLifestyleBanner'
 import { useGalleryImages } from '@/hooks/useGalleryImages'
 import { useFooterImage } from '@/hooks/useFooterImage'
 import type { Property } from '@/types/property'
+import { SocialShareDock } from './shared/SocialShareDock'
 
 interface YourLifestyleProps {
   property: Property
@@ -133,13 +133,7 @@ export function YourLifestyle({ property }: YourLifestyleProps) {
               
               {/* Social Share Component */}
               <div className="flex justify-start items-center pt-4">
-                <SocialShare 
-                  title={property.name}
-                  description={`This beautiful home in ${property.suburb || 'this location'} features ${property.content?.og?.description || 'amazing features and lifestyle options'}`}
-                  url={typeof window !== 'undefined' ? window.location.href : ''}
-                  image={footerImageUrl || ''}
-                  hashtags={['RealEstate', property.suburb?.replace(/\s+/g, '') || 'DreamHome']}
-                />
+                <SocialShareDock property={property} />
               </div>
             </div>
           </div>
