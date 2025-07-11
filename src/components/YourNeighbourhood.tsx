@@ -13,6 +13,7 @@ import type { Property as DBProperty } from '@/types/property'
 import type { Property as MapProperty } from '@/types/maps'
 import { AerialGallery } from './AerialGallery'
 import { useAerialImages } from '@/hooks/useAerialImages'
+import { SocialShareDock } from './shared/SocialShareDock'
 
 interface YourNeighbourhoodProps {
   property: DBProperty
@@ -300,6 +301,11 @@ export function YourNeighbourhood({ property }: YourNeighbourhoodProps) {
               )}
             </div>
           </section>
+
+          {/* Social Share Dock */}
+          <div className="mt-16">
+            <SocialShareDock property={property} />
+          </div>
         </div>
       </div>
     </section>

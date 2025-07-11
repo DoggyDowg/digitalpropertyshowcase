@@ -2,9 +2,14 @@
 import { cn } from "@/lib/utils";
 import {
   AnimatePresence,
-  motion
+  MotionValue,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
 } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export const FloatingDock = ({
   items,
@@ -13,31 +18,85 @@ export const FloatingDock = ({
   items: { title: string; icon: React.ReactNode; href: string, onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void; }[];
   className?: string;
 }) => {
+  const mouseX = useMotionValue(Infinity);
   return (
-    <div
-      className={cn(
-        "mx-auto flex items-center justify-center gap-3 py-3",
-        className,
-      )}
-    >
-      {items.map((item) => (
-        <IconContainer key={item.title} {...item} />
-      ))}
+    <div className="w-full flex justify-center">
+      <motion.div
+        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseLeave={() => mouseX.set(Infinity)}
+        className={cn(
+          "flex h-16 items-end gap-1 sm:gap-4 rounded-2xl px-6 pb-3",
+          className,
+        )}
+      >
+        {items.map((item) => (
+          <IconContainer mouseX={mouseX} key={item.title} {...item} />
+        ))}
+      </motion.div>
     </div>
   );
 };
  
 function IconContainer({
+  mouseX,
   title,
   icon,
   href,
   onClick
 }: {
+  mouseX: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isLargeScreen = useMediaQuery('(min-width: 601px)');
+
+  const distance = useTransform(mouseX, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+ 
+    return val - bounds.x - bounds.width / 2;
+  });
+ 
+  // Responsive sizing
+  const baseSize = isLargeScreen ? 60 : 40;
+  const hoverSize = isLargeScreen ? 96 : 72;
+  const baseIconSize = isLargeScreen ? 30 : 20;
+  const hoverIconSize = isLargeScreen ? 48 : 36;
+
+  const widthTransform = useTransform(distance, [-150, 0, 150], [baseSize, hoverSize, baseSize]);
+  const heightTransform = useTransform(distance, [-150, 0, 150], [baseSize, hoverSize, baseSize]);
+ 
+  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [baseIconSize, hoverIconSize, baseIconSize]);
+  const heightTransformIcon = useTransform(
+    distance,
+    [-150, 0, 150],
+    [baseIconSize, hoverIconSize, baseIconSize],
+  );
+ 
+  const width = useSpring(widthTransform, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+  const height = useSpring(heightTransform, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+ 
+  const widthIcon = useSpring(widthTransformIcon, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+  const heightIcon = useSpring(heightTransformIcon, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+ 
   const [hovered, setHovered] = useState(false);
  
   return (
@@ -45,12 +104,15 @@ function IconContainer({
       href={href} 
       onClick={onClick}
       className="dock-button relative"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      style={{ transform: 'none' }}
     >
-      <div
+      <motion.div
+        ref={ref}
+        style={{ width, height }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         className={cn(
-          "relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow duration-300 w-12 h-12 md:w-14 md:h-14",
+          "relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow duration-300",
           hovered ? "shadow-xl" : "shadow-md"
         )}
       >
@@ -61,7 +123,7 @@ function IconContainer({
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 10, x: "-50%" }}
               transition={{ duration: 0.15 }}
-              className="absolute -top-10 md:-top-12 left-1/2 w-fit px-2 md:px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded-md whitespace-nowrap pointer-events-none"
+              className="absolute -top-12 left-1/2 w-fit px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded-md whitespace-nowrap pointer-events-none"
               style={{ zIndex: 9999 }}
             >
               {title}
@@ -69,12 +131,13 @@ function IconContainer({
             </motion.div>
           )}
         </AnimatePresence>
-        <div
-          className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8" // Static icon container
+        <motion.div
+          style={{ width: widthIcon, height: heightIcon }}
+          className="flex items-center justify-center text-black dark:text-white"
         >
           {icon}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </a>
   );
 } 

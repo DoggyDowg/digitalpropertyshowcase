@@ -132,7 +132,7 @@ export function YourLifestyle({ property }: YourLifestyleProps) {
               </div>
               
               {/* Social Share Component */}
-              <div className="flex justify-start items-center pt-4">
+              <div className="pt-4">
                 <SocialShareDock property={property} />
               </div>
             </div>
