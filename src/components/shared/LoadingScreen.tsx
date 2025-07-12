@@ -16,15 +16,16 @@ export default function LoadingScreen() {
   }
 
   return (
-    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6 z-[9999]">
-      <div className="w-64 h-24 relative mb-4">
+    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6 z-[9999] px-4">
+      <div className="relative mb-4">
         <Image
           src="/logos/dps_whitebg.png"
           alt="Digital Property Showcase"
-          fill
-          sizes="(max-width: 256px) 100vw, 256px"
-          className="object-contain"
+          width={250}
+          height={100}
+          className="object-contain max-w-full h-auto"
           priority
+          sizes="100vw"
         />
       </div>
       

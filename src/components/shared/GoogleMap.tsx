@@ -62,8 +62,6 @@ export function GoogleMap({
   const [selectedLandmark, setSelectedLandmark] = useState<Landmark | null>(null);
   const [activeFilters, setActiveFilters] = useState<LandmarkType[]>([]);
   const [showPropertyInfo, setShowPropertyInfo] = useState<boolean>(false);
-  const [isListOpen, setIsListOpen] = useState(false);
-  const [allowTransitions, setAllowTransitions] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const listViewRef = useRef<HTMLDivElement>(null);
   const { imageUrl, loading } = useFooterImage(property?.id, property?.is_demo);
@@ -87,23 +85,16 @@ export function GoogleMap({
     const checkWidth = () => {
       const width = window.innerWidth;
       setWindowWidth(width);
-      setIsListOpen(width >= 800);
     };
 
     // Initial check
     checkWidth();
-    
-    // Enable transitions after initial render
-    const timeoutId = setTimeout(() => {
-      setAllowTransitions(true);
-    }, 100);
 
     // Add resize listener
     window.addEventListener('resize', checkWidth);
     
     return () => {
       window.removeEventListener('resize', checkWidth);
-      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -379,26 +370,14 @@ export function GoogleMap({
     setPlacesService(null);
   }, [map]);
 
-  // Handle click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (isListOpen && listViewRef.current && !listViewRef.current.contains(event.target as Node)) {
-        setIsListOpen(false);
-      }
-    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isListOpen]);
 
   return (
     <div className="w-full">
       <div className="w-full overflow-x-hidden">
         <div className="flex w-full">
           {/* Map Container */}
-          <div className="w-full">
+          <div className={`${isMobile ? 'w-full' : 'w-full'}`}>
             {mode === 'admin' && isAddingLandmark && (
               <div className="absolute top-4 left-4 right-4 z-10 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow">
                 <div className="flex items-center gap-2">
@@ -572,16 +551,11 @@ export function GoogleMap({
             />
           </div>
 
-          {/* List View */}
-          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && landmarks.length > 0 && (
+          {/* Desktop List View - Only show on desktop (!isMobile) */}
+          {!isMobile && (mode === 'view' || !isAddingLandmark) && windowWidth > 0 && landmarks.length > 0 && (
             <div 
               ref={listViewRef}
-              className={`
-                w-80 rounded-lg shadow-lg
-                bg-white md:block
-                flex flex-col
-                ${allowTransitions ? 'transition-transform duration-300 ease-in-out' : ''}
-              `}
+              className="w-80 rounded-lg shadow-lg bg-white flex flex-col"
               style={{ height: '600px', display: 'flex', overflow: 'hidden' }}
             >
               {/* Header - No fixed height, will take natural height */}
@@ -592,7 +566,6 @@ export function GoogleMap({
                       setSelectedLandmark(null);
                       map?.panTo(property.position);
                       setShowPropertyInfo(true);
-                      setIsListOpen(false);
                     }}
                     className="w-full text-left group"
                   >
@@ -671,7 +644,6 @@ export function GoogleMap({
                         key={index}
                         onClick={() => {
                           setSelectedLandmark(landmark);
-                          setIsListOpen(false);
                         }}
                         className={`w-full text-left hover:bg-gray-50 transition-colors flex items-center gap-3 relative ${
                           selectedLandmark?.name === landmark.name ? 'bg-blue-50' : ''
@@ -706,149 +678,7 @@ export function GoogleMap({
             </div>
           )}
 
-          {/* Mobile List View */}
-          {(mode === 'view' || !isAddingLandmark) && windowWidth > 0 && isMobile && landmarks.length > 0 && (
-            <div 
-              ref={listViewRef}
-              className={`
-                fixed top-[88px] right-0 bottom-0 w-80
-                bg-white shadow-lg md:hidden
-                flex-col
-                z-30
-                ${allowTransitions ? 'transition-transform duration-300 ease-in-out' : ''}
-                ${isListOpen ? 'translate-x-0' : 'translate-x-full'}
-              `}
-              style={{ 
-                height: 'calc(100vh - 88px)',
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-            >
-              <div className="p-4 bg-gray-50 border-b flex-shrink-0">
-                {property && (
-                  <button 
-                    onClick={() => {
-                      setSelectedLandmark(null);
-                      map?.panTo(property.position);
-                      setShowPropertyInfo(true);
-                      setIsListOpen(false); // Close panel on mobile after selection
-                    }}
-                    className="w-full text-left group"
-                  >
-                    <div className="font-heading text-lg mb-2 group-hover:text-blue-600 transition-colors text-brand-dark">
-                      {property.name}
-                    </div>
-                    <div className="font-paragraph text-sm text-brand-dark group-hover:text-blue-600 transition-colors">
-                      {property.address?.split(',').length > 1 ? property.address.split(',')[1].trim() : property.address}
-                    </div>
-                  </button>
-                )}
-                <div className="h-px bg-gray-200 my-3" />
-                <div className="font-paragraph text-sm text-brand-dark mb-3">Nearby Places</div>
-                <div className="flex flex-wrap gap-2 relative">
-                  {LANDMARK_TYPES.map((config) => {
-                    const Icon = config.icon;
-                    const type = config.type.toLowerCase() as LandmarkType;
-                    const isSelected = activeFilters.includes(type);
-                    const colorClasses = {
-                      shopping: {
-                        selected: 'bg-blue-600 text-white border-blue-600',
-                        unselected: 'bg-white text-blue-600 border-blue-600'
-                      },
-                      dining: {
-                        selected: 'bg-orange-600 text-white border-orange-600',
-                        unselected: 'bg-white text-orange-600 border-orange-600'
-                      },
-                      schools: {
-                        selected: 'bg-green-600 text-white border-green-600',
-                        unselected: 'bg-white text-green-600 border-green-600'
-                      },
-                      leisure: {
-                        selected: 'bg-purple-600 text-white border-purple-600',
-                        unselected: 'bg-white text-purple-600 border-purple-600'
-                      },
-                      transport: {
-                        selected: 'bg-red-600 text-white border-red-600',
-                        unselected: 'bg-white text-red-600 border-red-600'
-                      }
-                    };
-                    const colors = colorClasses[type];
-                    return (
-                      <button
-                        key={config.type}
-                        onClick={() => toggleFilter(type)}
-                        className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-colors ${
-                          isSelected ? colors.selected : colors.unselected
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </button>
-                    );
-                  })}
-                  {activeFilters.length > 0 && (
-                    <button
-                      onClick={() => setActiveFilters([])}
-                      className="hover:text-gray-900 transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 6L6 18M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="divide-y overflow-y-auto flex-1 pb-6">
-                {filteredLandmarks.map((landmark, index) => {
-                  const type = landmark.type.toLowerCase() as LandmarkType;
-                  const typeConfig = getLandmarkTypeConfig(type);
-                  const Icon = typeConfig.icon;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSelectedLandmark(landmark);
-                        setIsListOpen(false);
-                      }}
-                      className={`w-full text-left hover:bg-gray-50 transition-colors flex items-center gap-3 relative ${
-                        selectedLandmark?.name === landmark.name ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      {selectedLandmark?.name === landmark.name && (
-                        <div 
-                          className="absolute left-0 top-0 bottom-0 w-1"
-                          style={{ backgroundColor: typeConfig.markerColor }}
-                        />
-                      )}
-                      <div className="p-4 flex items-center gap-3 w-full">
-                        <Icon className="w-5 h-5 text-brand-dark shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <div className="!font-paragraph !text-base !not-italic text-brand-dark truncate">{landmark.name}</div>
-                          <div className="!font-paragraph text-sm text-brand-dark mt-1">
-                            {landmark.details?.shortDescription} • {formatDistance(calculateDistance(
-                              property!.position.lat,
-                              property!.position.lng,
-                              landmark.position.lat,
-                              landmark.position.lng
-                            ))} away
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-                {/* Add bottom padding spacer */}
-                <div className="h-16" />
-              </div>
-            </div>
-          )}
 
-          {/* Overlay for mobile when list is open */}
-          {isListOpen && mode === 'view' && landmarks.length > 0 && (
-            <div 
-              className="fixed md:hidden inset-0 bg-black bg-opacity-50 z-20"
-              onClick={() => setIsListOpen(false)}
-            />
-          )}
         </div>
       </div>
     </div>
