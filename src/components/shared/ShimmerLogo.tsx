@@ -14,7 +14,7 @@ export function ShimmerLogo({ className = '' }: ShimmerLogoProps) {
           src="/assets/logo/logo_lightgb.png"
           alt="Digital Property Showcase"
           width={160}
-          height={60}
+          height={67}
           className="shimmer-logo"
           priority
         />

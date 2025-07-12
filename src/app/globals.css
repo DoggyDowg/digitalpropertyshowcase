@@ -296,7 +296,7 @@
 @media (max-width: 640px) {
   .shimmer-logo {
     width: 120px;
-    height: 45px;
+    height: 51px;  /* Maintains 2.375:1 aspect ratio (1900x800) */
   }
 }
 
