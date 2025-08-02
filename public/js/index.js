@@ -130,7 +130,7 @@ if (localStorage.getItem('color-mode') === 'dark' || (!('color-mode' in localSto
     updateToggleModeBtn()
 }
 
-function toggleMode(){
+window.toggleMode = function(){
     document.documentElement.classList.toggle("tw-dark")
     updateToggleModeBtn()
 }
@@ -173,11 +173,25 @@ function openVideo(){
     document.body.classList.add("modal-open")
 }
 
-function closeVideo(){
+window.closeVideo = function(){
     if (!videoBg || !videoContainer) {
         console.error("Video modal elements not found for closeVideo");
         return;
     }
+    
+    // Pause both videos before closing
+    const desktopVideo = document.querySelector("#desktop-video");
+    const mobileVideo = document.querySelector("#mobile-video");
+    
+    if (desktopVideo) {
+        desktopVideo.pause();
+        desktopVideo.currentTime = 0; // Reset to beginning
+    }
+    if (mobileVideo) {
+        mobileVideo.pause();
+        mobileVideo.currentTime = 0; // Reset to beginning
+    }
+    
     videoContainer.classList.add("tw-scale-0")
     videoContainer.classList.remove("tw-scale-100")
     setTimeout(() => {
@@ -198,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Typed !== 'undefined') {
-        const typed = new Typed('#prompts-sample', {
+        new Typed('#prompts-sample', {
             strings: ["How to solve a rubik's cube? Step by step guide", 
                         "What's Pixa playground?", 
                         "How to build an AI SaaS App?", 

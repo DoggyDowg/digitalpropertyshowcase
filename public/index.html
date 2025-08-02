@@ -212,22 +212,69 @@
                     padding: 12px !important;
                 }
                 
-                /* Video wrapper for 9:16 aspect ratio */
-                #video-container .md\:tw-hidden {
-                    width: 100% !important;
-                    aspect-ratio: 9/16 !important;
-                    height: auto !important;
-                    min-height: 420px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    background: black !important;
-                    margin: 0 auto !important;
-                    overflow: hidden !important;
+                /* Mobile video display rules */
+                @media (max-width: 767px) {
+                    #desktop-video-container {
+                        display: none !important;
+                    }
+                    #mobile-video-container {
+                        display: flex !important;
+                        width: 100% !important;
+                        aspect-ratio: 9/16 !important;
+                        height: auto !important;
+                        min-height: 420px !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        background: black !important;
+                        margin: 0 auto !important;
+                        overflow: hidden !important;
+                    }
+                }
+                
+                /* Desktop video display rules */
+                @media (min-width: 768px) {
+                    #desktop-video-container {
+                        display: block !important;
+                    }
+                    #mobile-video-container {
+                        display: none !important;
+                    }
+                    /* CTA Section - Show desktop video, hide mobile video */
+                    .cta-desktop-only {
+                        display: block !important;
+                    }
+                    .cta-mobile-only {
+                        display: none !important;
+                    }
+                }
+                
+                /* Mobile video display rules */
+                @media (max-width: 767px) {
+                    #desktop-video-container {
+                        display: none !important;
+                    }
+                    #mobile-video-container {
+                        display: flex !important;
+                        width: 100% !important;
+                        aspect-ratio: 9/16 !important;
+                        height: auto !important;
+                        min-height: 420px !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        background: black !important;
+                        margin: 0 auto !important;
+                        overflow: hidden !important;
+                    }
+                    /* CTA Section - Show mobile video, hide desktop video */
+                    .cta-desktop-only {
+                        display: none !important;
+                    }
+                    .cta-mobile-only {
+                        display: block !important;
+                    }
                 }
                 
                 #mobile-video {
-                    display: block !important;
                     width: 100% !important;
                     height: auto !important;
                     max-height: 100% !important;
@@ -245,13 +292,7 @@
                     flex-direction: column !important;
                 }
                 
-                .md\:tw-hidden {
-                    display: block !important;
-                }
-                
-                .max-md\:tw-hidden {
-                    display: none !important;
-                }
+                /* Remove the problematic overrides - let Tailwind handle responsive display */
             }
             
             /* Additional fixes for video container */
@@ -625,21 +666,16 @@
             <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-0 tw-z-[100] tw-transition-opacity
                 tw-duration-300 tw-scale-0 tw-opacity-0 tw-p-2
                 tw-w-screen tw-h-screen tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg" 
-                style="position: fixed !important; width: 100vw !important; height: 100vh !important;">
+                style="position: fixed !important; width: 100vw !important; height: 100vh !important;" onclick="closeVideo();">
 
                 <div class="tw-max-w-[80vw] max-md:tw-max-w-[95vw] max-md:tw-w-[95vw] tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl max-md:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md
                             tw-h-[90vh] max-md:tw-h-auto max-md:tw-min-h-[520px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full"
-                             id="video-container" style="position: relative !important; z-index: 101 !important; margin: 0 auto !important; display: flex; flex-direction: column;">
-                    <div class="tw-w-full tw-flex tw-justify-end">
-                        <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl tw-p-2" title="close" style="z-index: 102;">
-                            <i class="bi bi-x-circle-fill"></i>
-                        </button>
-                    </div>
+                             id="video-container" style="position: relative !important; z-index: 101 !important; margin: 0 auto !important; display: flex; flex-direction: column;" onclick="event.stopPropagation();">
                     
                     <!-- Simple HTML5 video players - one for desktop, one for mobile -->
                     <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-w-full tw-h-full" style="flex: 1; padding: 0;">
                         <!-- DESKTOP VIDEO CONTAINER -->
-                        <div class="max-md:tw-hidden tw-w-full tw-h-full tw-bg-black tw-rounded-md tw-overflow-hidden">
+                        <div id="desktop-video-container" class="tw-w-full tw-h-full tw-bg-black tw-rounded-md tw-overflow-hidden" style="display: block;">
                             <video id="desktop-video" class="tw-w-full tw-h-full" controls playsinline>
                                 <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_wide_z4tsad.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
@@ -647,8 +683,8 @@
                         </div>
 
                         <!-- MOBILE VIDEO CONTAINER - with explicit dimensions and positioning -->
-                        <div class="md:tw-hidden tw-w-full tw-h-auto tw-flex tw-items-center tw-justify-center tw-bg-black tw-rounded-md tw-overflow-hidden tw-mx-auto"
-                             style="aspect-ratio: 9/16; max-width: 100%; margin: 0 auto;">
+                        <div id="mobile-video-container" class="tw-w-full tw-h-auto tw-flex tw-items-center tw-justify-center tw-bg-black tw-rounded-md tw-overflow-hidden tw-mx-auto"
+                             style="aspect-ratio: 9/16; max-width: 100%; margin: 0 auto; display: none;">
                             <video id="mobile-video" 
                                   style="width: 100%; height: 100%; object-fit: contain;"
                                   controls 
@@ -1787,13 +1823,13 @@
                 <div class="reveal-up tw-w-full tw-max-w-[800px] tw-mt-8 tw-rounded-xl tw-overflow-hidden tw-shadow-lg">
                     <div class="tw-relative tw-bg-black" style="padding-top: 56.25%;">
                         <!-- Desktop Video (hidden on mobile) -->
-                        <video id="cta-desktop-video" class="max-md:tw-hidden tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full" controls playsinline>
+                        <video id="cta-desktop-video" class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full cta-desktop-only" controls playsinline style="display: block;">
                             <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_wide_z4tsad.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                         
                         <!-- Mobile Video (hidden on desktop) -->
-                        <video id="cta-mobile-video" class="md:tw-hidden tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full" controls playsinline>
+                        <video id="cta-mobile-video" class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full cta-mobile-only" controls playsinline style="display: none;">
                             <source src="https://res.cloudinary.com/dxljgvhwe/video/upload/v1717021235/dps_promo_mobile_1_cs0pkp.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
