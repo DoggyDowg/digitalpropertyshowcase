@@ -1,16 +1,22 @@
 /* eslint-disable no-unused-vars */
 
+// Pricing data used by index.html and onboarding.html
 const pricingData = {
-    essential: {
-        price: 'AU$460',
-        setupFee: '$0 setup fee'
+    demonstration: {
+        price: 'AU$149',
+        setupFee: 'One-time payment'
     },
-    premium: {
-        price: 'AU$520',
-        setupFee: '$220 setup fee'
+    showcase: {
+        price: 'AU$399',
+        setupFee: 'Covers 3 months of hosting, then AU$80/month if your campaign lasts longer'
     },
-    prestige: {
-        price: 'AU$680',
-        setupFee: '$220 setup fee'
+    enterprise: {
+        price: 'Custom',
+        setupFee: 'Contact for pricing'
     }
-}; 
+};
+
+// Export for global use (satisfies linter)
+if (typeof window !== 'undefined') {
+    window.pricingData = pricingData;
+}

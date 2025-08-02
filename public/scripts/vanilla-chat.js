@@ -274,7 +274,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
                 
                 // Create simple response based on question
                 if (reply.text.toLowerCase().includes('cost')) {
-                  responseMessage.textContent = "Our pricing starts at AU$499 for the Essential tier, which includes a custom domain and unlimited media. For detailed pricing information, please check our pricing section on the website.";
+                  responseMessage.textContent = "We offer three options: Demonstration Showcase (AU$149) for pitching to vendors, Normal Showcase (AU$399) for live listings, and Enterprise pricing for volume needs. For detailed pricing information, please check our pricing section on the website.";
                 } 
                 else if (reply.text.toLowerCase().includes('how long')) {
                   responseMessage.textContent = "Once we have all your information and assets, your showcase website will be ready within 48 hours! The entire process typically takes 3-5 days from start to finish.";
@@ -867,7 +867,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             // Create fallback response based on question
             let responseText = '';
             if (messageText.toLowerCase().includes('cost') || messageText.toLowerCase().includes('price')) {
-              responseText = "Our pricing starts at AU$499 for Essential tier. We offer three tiers with different features: Essential, Premium, and Prestige. The Premium tier includes full agency branding and interactive local maps, while Prestige includes all premium features plus Instagram carousel generation and unlimited updates.";
+              responseText = "We offer three options: Demonstration Showcase (AU$149) for pitching to vendors using previous listing data, Normal Showcase (AU$399) for live listings with all premium features including branding and Instagram carousel, and Enterprise pricing for agencies with volume needs.";
             } 
             else if (messageText.toLowerCase().includes('time') || messageText.toLowerCase().includes('long') || messageText.toLowerCase().includes('create')) {
               responseText = "Once we have all your property information and assets, your showcase website will be ready within 48 hours! The entire process from initial contact to going live typically takes 3-5 days total.";
@@ -999,7 +999,7 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
             // Create fallback response based on question
             let responseText = '';
             if (action.toLowerCase().includes('cost') || action.toLowerCase().includes('price')) {
-              responseText = "Our pricing starts at AU$499 for Essential tier. We offer three tiers with different features: Essential, Premium, and Prestige. The Premium tier includes full agency branding and interactive local maps, while Prestige includes all premium features plus Instagram carousel generation and unlimited updates.";
+              responseText = "We offer three options: Demonstration Showcase (AU$149) for pitching to vendors using previous listing data, Normal Showcase (AU$399) for live listings with all premium features including branding and Instagram carousel, and Enterprise pricing for agencies with volume needs.";
             } 
             else if (action.toLowerCase().includes('time') || action.toLowerCase().includes('long') || action.toLowerCase().includes('create')) {
               responseText = "Once we have all your property information and assets, your showcase website will be ready within 48 hours! The entire process from initial contact to going live typically takes 3-5 days total.";
@@ -1453,4 +1453,4 @@ console.log("🚀 Vanilla-chat.js loaded - version with test line");
   } catch (error) {
     console.error('Critical error in VanillaChat script:', error);
   }
-})(); 
+})();
