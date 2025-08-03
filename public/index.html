@@ -531,17 +531,29 @@
                 box-shadow: 0 4px 15px rgba(58, 36, 199, 0.3) !important;
             }
             
-            /* Pricing card hover effects */
+            /* Optimized pricing card hover effects with lightweight glow */
             .pricing-card {
-                transition: transform 0.3s ease !important;
+                transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+                position: relative;
+                will-change: transform, box-shadow;
             }
             
             .pricing-card:hover {
-                transform: scale(1.05) !important;
+                transform: scale(1.03) translateY(-2px) !important;
             }
             
             .pricing-card:hover img {
-                transform: scale(1.4) !important;
+                transform: scale(1.2) !important;
+            }
+            
+            /* Gradient glow effects for all pricing cards */
+            .pricing-card:hover {
+                box-shadow: 
+                    0 -10px 20px rgba(58, 36, 199, 0.3),
+                    0 10px 20px rgba(255, 51, 122, 0.3),
+                    0 0 25px rgba(58, 36, 199, 0.2),
+                    0 0 25px rgba(255, 51, 122, 0.2),
+                    0 5px 15px rgba(0, 0, 0, 0.1) !important;
             }
             
             /* Flickering Grid Styles */
@@ -1796,7 +1808,7 @@
                 </div>
 
             </div>
-            <div class="purple-bg-grad max-md:tw-hidden reveal-up tw-absolute tw-bottom-14 tw-right-[20%]
+            <div class="purple-bg-grad max-md:tw-hidden reveal-up tw-absolute tw-bottom-32 tw-right-[20%]
                                  tw-h-[150px] tw-w-[150px] tw-rounded-full"
                 ></div>
 

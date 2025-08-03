@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 // Pricing data used by index.html and onboarding.html
 const pricingData = {
     demonstration: {

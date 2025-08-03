@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from 'tailwindcss/defaultTheme'
+import { fontFamily } from 'tailwindcss/defaultTheme';
+import tailwindcssAnimate from "tailwindcss-animate";
+import tailwindScrollbar from "tailwind-scrollbar";
 
 const config: Config = {
     darkMode: ["class"],
@@ -147,8 +149,8 @@ const config: Config = {
     'bg-brand-dark',
   ],
   plugins: [
-    require("tailwindcss-animate"),
-    require("tailwind-scrollbar")({ nocompatible: true })
+    tailwindcssAnimate,
+    tailwindScrollbar({ nocompatible: true })
   ]
 } satisfies Config;
 
