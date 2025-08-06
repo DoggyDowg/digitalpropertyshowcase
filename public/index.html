@@ -315,6 +315,31 @@
 
         <!-- Centralized Pricing Data -->
         <script src="./scripts/pricingData.js"></script>
+        
+        <!-- Populate How It Works pricing from pricingData -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.pricingData) {
+                    // Populate demo pricing in step 1
+                    const demoStep1 = document.getElementById('demo-price-step1');
+                    if (demoStep1) {
+                        demoStep1.textContent = window.pricingData.demonstration.price;
+                    }
+                    
+                    // Populate demo pricing in step 3
+                    const demoStep3 = document.getElementById('demo-price-step3');
+                    if (demoStep3) {
+                        demoStep3.textContent = window.pricingData.demonstration.price;
+                    }
+                    
+                    // Populate full showcase pricing in step 3
+                    const fullShowcaseStep3 = document.getElementById('full-showcase-price-step3');
+                    if (fullShowcaseStep3) {
+                        fullShowcaseStep3.textContent = window.pricingData.showcase.price;
+                    }
+                }
+            });
+        </script>
 
         <!-- Fixes for video modal display -->
         <style>
@@ -1047,9 +1072,9 @@
         <!-- === HOW IT WORKS SECTION === -->
         <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center" id="how-it-works" style="padding-top: 100px !important; padding-bottom: 64px;">
             <div class="tw-container tw-mx-auto tw-text-center" style="padding-left: 24px; padding-right: 24px; max-width: 980px; margin-left: auto; margin-right: auto;">
-                <h2 class="reveal-up section-heading tw-leading-tight tw-text-center tw-mb-8" style="font-size: 36px; font-weight: bold; padding-top: 100px;">How It Works:<br><span class="highlight-text" data-text="Your Showcase Journey"> Showcase Your Listing</span></h2>
+                <h2 class="reveal-up section-heading tw-leading-tight tw-text-center tw-mb-8" style="font-size: 36px; font-weight: bold; padding-top: 100px;">Try Risk-Free.<br><span class="highlight-text" data-text="Win More Listings"> Win More Listings</span></h2>
                 <p class="reveal-up standard-paragraph tw-text-gray-600 tw-text-center tw-mb-12">
-                    From initial contact to impressing vendors, our streamlined process makes creating your showcase effortless.
+                    From first impression to securing the listing, our zero-risk offer helps you stand out confidently.
                 </p>
             </div>
 
@@ -1090,50 +1115,50 @@
                 <div id="how-it-works-steps" class="tw-w-full tw-flex tw-flex-col lg:tw-flex-row tw-justify-center tw-items-stretch tw-gap-8" style="flex-direction: column;">
                 <!-- Step 1 -->
                 <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
-                    <img src="/assets/images/howitworks-icons/step1.svg" alt="Get Started icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
-                    <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
+                    <img src="/assets/images/pricing-icons/demo.png" alt="Get Your Demo Showcase icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <div class="tw-rounded-full tw-mb-8 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
                         1
                     </div>
-                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Get Started</h3>
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-8" style="color: #3A24C7; padding-top: 12px; padding-bottom: 8px;">Get Your Demo</h3>
                     <p class="tw-text-center tw-text-gray-600 tw-text-sm">
-                        Complete our simple form with basic details about your listing. Takes just 1-2 minutes of your time.
+                        Complete a simple form in just 2 minutes. Receive a branded demo showcase—perfectly tailored with your brand, ready to impress at your next vendor presentation.
                     </p>
                 </div>
 
                 <!-- Step 2 -->
                 <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
-                    <img src="/assets/images/howitworks-icons/step2.svg" alt="We Reach Out icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <img src="/assets/images/howitworks-icons/handshake.png" alt="Win Listings with Confidence icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
                     <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
                         2
                     </div>
-                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">We Reach Out</h3>
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7; padding-top: 12px; padding-bottom: 8px;">Win Listings</h3>
                     <p class="tw-text-center tw-text-gray-600 tw-text-sm">
-                        Within 24 business hours, we'll contact you to collect listing details and assets needed for your showcase.
+                        Use your demo showcase at vendor meetings for up to 6 months. When you secure your next prestigious listing, upgrade effortlessly to our full showcase.
                     </p>
                 </div>
 
                 <!-- Step 3 -->
                 <div class="reveal-up tw-flex tw-flex-col tw-items-center tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-border tw-border-gray-200 tw-w-full">
-                    <img src="/assets/images/howitworks-icons/step3.svg" alt="We Reach Out icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
+                    <img src="/assets/images/howitworks-icons/vault.png" alt="Zero Risk Guaranteed icon" style="width: 120px; height: 120px; display: block; margin: 0 auto;" class="tw-mb-4">
                     <div class="tw-rounded-full tw-mb-4 tw-text-xl tw-font-bold" style="background-color: #3A24C7; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white !important;">
                         3
                     </div>                   
-                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Showcase Goes Live</h3>
+                    <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7; padding-top: 12px; padding-bottom: 8px;">Zero Risk Guaranteed</h3>
                     <p class="tw-text-center tw-text-gray-600 tw-text-sm">
-                        Within 48 hours of receiving all information, your impressive showcase will be live and ready to win listings.
+                        If you win a listing, we'll credit your <span id="demo-price-step3"></span> demo fee towards your full showcase (<span id="full-showcase-price-step3"></span>). If you don't secure a listing within 6 months, we'll fully refund your demo cost. Either way, your risk is zero.
                     </p>
                 </div>
                 </div>
             </div>
 
-            <!-- No-risk callout -->
+            <!-- Updated callout -->
             <div class="reveal-up tw-mt-6 tw-max-w-2xl tw-mx-auto tw-text-center">
                 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem;">
                     <img src="/assets/images/howitworks-icons/zerorisk.svg" alt="Zero Risk Guarantee Shield Icon" style="width: 120px; height: 120px;">
                 </div>
-                <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Zero Risk Guarantee</h3>
+                <h3 class="tw-text-xl tw-font-semibold tw-mb-2" style="color: #3A24C7;">Your Success is Guaranteed</h3>
                 <p class="tw-text-gray-600">
-                    You don't pay a cent until your showcase is ready and you're completely satisfied with the result.
+                    Either you win listings and get your demo fee credited, or you get a full refund. There's absolutely no risk to you.
                 </p>
             </div>
 
@@ -1322,6 +1347,45 @@
                     >
                         <li class="tw-flex tw-gap-2">
                             <i class="bi bi-check-circle-fill tw-text-[var(--primary-color)]" style="font-size: 0.8em;"></i>
+                            <span style="color: #000000; font-size: 0.8em; position: relative;">
+                                <span class="guarantee-text" style="border-bottom: 1px dotted #000; cursor: pointer;">100% money-back guarantee</span>
+                                <i class="bi bi-info-circle guarantee-icon" style="font-size: 0.7em; margin-left: 4px; cursor: pointer;"></i>
+                                <div class="guarantee-tooltip" style="
+                                    position: absolute;
+                                    bottom: 100%;
+                                    left: 0;
+                                    background: #3A24C7;
+                                    color: white;
+                                    padding: 8px 12px;
+                                    border-radius: 6px;
+                                    font-size: 0.8rem;
+                                    white-space: nowrap;
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                    z-index: 1000;
+                                    opacity: 0;
+                                    visibility: hidden;
+                                    transform: translateY(5px);
+                                    transition: all 0.2s ease;
+                                    margin-bottom: 5px;
+                                    max-width: 250px;
+                                    white-space: normal;
+                                    line-height: 1.3;
+                                ">If you don't secure a listing within 6 months, we'll fully refund your demo cost. Zero risk to you.
+                                    <div style="
+                                        position: absolute;
+                                        top: 100%;
+                                        left: 20px;
+                                        width: 0;
+                                        height: 0;
+                                        border-left: 6px solid transparent;
+                                        border-right: 6px solid transparent;
+                                        border-top: 6px solid #3A24C7;
+                                    "></div>
+                                </div>
+                            </span>    
+                        </li>
+                        <li class="tw-flex tw-gap-2">
+                            <i class="bi bi-check-circle-fill tw-text-[var(--primary-color)]" style="font-size: 0.8em;"></i>
                             <span style="color: #000000; font-size: 0.8em;">Fully branded for your agency</span>    
                         </li>
                         <li class="tw-flex tw-gap-2">
@@ -1348,14 +1412,13 @@
                     
                     <hr class="tw-w-full tw-my-4 tw-border-gray-500" />
                     
-                    <p class="tw-mt-6 tw-text-center tw-italic tw-text-black" style="color: #000000;">
-                        <i class="bi bi-megaphone-fill tw-mr-2 tw-text-[var(--primary-color)]"></i>
-                        Win more listings with a professional showcase demo.
+                    <p class="tw-text-center tw-italic tw-text-black" style="color: #000000; font-size: 14px;">
+                        Use your branded demo in listing presentations until you win your first prestige listing worth millions.
                     </p>
                     
                     <a
                         href="/onboarding.html"
-                        class="lp-btn lp-btn-primary lp-btn-md tw-mt-auto !tw-w-full"
+                        class="lp-btn lp-btn-primary lp-btn-md tw-mt-6 !tw-w-full"
                     >
                         Get Demo Showcase
                     </a>
@@ -1520,7 +1583,7 @@
                      </div>
                     
                     <hr class="tw-w-full tw-my-4 tw-border-gray-600" />
-                     <p class="tw-text-sm tw-text-white tw-text-center tw-mt-4" id="pricing-showcase-setup-fee-bottom" style="color: #ffffff;"></p>
+                     <p class="tw-text-sm tw-text-white tw-text-center" id="pricing-showcase-setup-fee-bottom" style="color: #ffffff;"></p>
                     
                     <a
                         href="/onboarding.html"
@@ -1548,7 +1611,8 @@
                     </p>
                     <hr class="tw-w-full tw-my-4 tw-border-gray-500" />
                     <ul
-                        class="tw-mt-4 tw-flex tw-flex-col tw-gap-1 tw-text-base tw-text-black"
+                        class="tw-mt-2
+                         tw-flex tw-flex-col tw-gap-1 tw-text-base tw-text-black"
                         style="color: #000000;"
                     >
                         <li class="tw-flex tw-gap-2">
@@ -1579,8 +1643,8 @@
                     
                     <hr class="tw-w-full tw-my-4 tw-border-gray-500" />
                     
-                    <p class="tw-mt-4 tw-text-center tw-text-black" style="color: #000000;">
-                        Contact for Pricing
+                    <p class="tw-text-center tw-text-black" style="color: #000000; font-size: 14px;">
+                        Have a bunch of vendors to delight? We offer volume discounts and custom packages tailored to your agency's needs.
                     </p>
                     
                     <a
@@ -1589,6 +1653,21 @@
                     >
                         Contact Us
                     </a>
+                </div>
+            </div>
+            
+            <!-- Money Back Guarantee Card -->
+            <div class="tw-mt-12 tw-max-w-[600px] tw-mx-auto">
+                <div class="tw-bg-gray-100 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-p-8 tw-shadow-lg">
+                    <div class="tw-flex tw-justify-center tw-items-center tw-mb-6">
+                        <img src="/assets/images/howitworks-icons/moneyback.png" alt="Money Back Guarantee" class="tw-h-20 tw-max-h-20 tw-w-auto tw-mx-auto tw-block" style="height: 90px !important; max-height: 90px !important; display: block !important; margin: 0 auto !important;" />
+                    </div>
+                    <div class="tw-text-center tw-mb-4">
+                        <h3 class="tw-text-2xl tw-font-bold tw-text-gray-800">100% Money Back Guarantee</h3>
+                    </div>
+                    <p class="tw-text-center tw-text-gray-700 tw-text-lg tw-leading-relaxed tw-font-medium">
+                        If you don't win any listings using the Demo Showcase in the next 6 months, we'll refund your payment - no questions asked.
+                    </p>
                 </div>
             </div>
             
@@ -2202,6 +2281,77 @@
 
         // Run this function when the document is ready
         document.addEventListener('DOMContentLoaded', populatePricingSection);
+        
+        // Guarantee tooltip functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const guaranteeText = document.querySelector('.guarantee-text');
+            const guaranteeIcon = document.querySelector('.guarantee-icon');
+            const tooltip = document.querySelector('.guarantee-tooltip');
+            
+            if (guaranteeText && guaranteeIcon && tooltip) {
+                let isTooltipVisible = false;
+                
+                function showTooltip() {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
+                    tooltip.style.transform = 'translateY(0)';
+                    isTooltipVisible = true;
+                }
+                
+                function hideTooltip() {
+                    tooltip.style.opacity = '0';
+                    tooltip.style.visibility = 'hidden';
+                    tooltip.style.transform = 'translateY(5px)';
+                    isTooltipVisible = false;
+                }
+                
+                function toggleTooltip() {
+                    if (isTooltipVisible) {
+                        hideTooltip();
+                    } else {
+                        showTooltip();
+                    }
+                }
+                
+                // Hover events (immediate show, hide on leave)
+                [guaranteeText, guaranteeIcon].forEach(element => {
+                    element.addEventListener('mouseenter', showTooltip);
+                    element.addEventListener('mouseleave', function() {
+                        // Only hide on mouse leave if tooltip wasn't clicked to stay open
+                        setTimeout(() => {
+                            if (!tooltip.matches(':hover')) {
+                                hideTooltip();
+                            }
+                        }, 100);
+                    });
+                });
+                
+                // Click/tap events (toggle)
+                [guaranteeText, guaranteeIcon].forEach(element => {
+                    element.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleTooltip();
+                    });
+                });
+                
+                // Keep tooltip visible when hovering over it
+                tooltip.addEventListener('mouseenter', function() {
+                    showTooltip();
+                });
+                
+                tooltip.addEventListener('mouseleave', function() {
+                    hideTooltip();
+                });
+                
+                // Close tooltip when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!guaranteeText.contains(e.target) && !guaranteeIcon.contains(e.target) && !tooltip.contains(e.target)) {
+                        hideTooltip();
+                    }
+                });
+            }
+        });
     </script>
     
     <!-- Failsafe for mobile white border issue -->
