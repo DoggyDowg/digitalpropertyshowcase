@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success Modal Test - Digital Property Showcase</title>
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="/css/tailwind-build.css">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/custom-page-styles.css">
+    
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+        integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+    
+    <style>
+        /* Success modal styling */
+        #success-modal {
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Prevent body scrolling when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="tw-bg-gray-50">
+    <div class="tw-container tw-mx-auto tw-px-4 tw-py-8">
+        <div class="tw-text-center tw-mb-8">
+            <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-4">Success Modal Test</h1>
+            <p class="tw-text-gray-600 tw-mb-6">Click the button below to test the success modal styling.</p>
+            <button id="show-modal-btn" class="lp-btn lp-btn-primary lp-btn-md">
+                Show Success Modal
+            </button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4" style="display: flex; align-items: center; justify-content: center;">
+        <div class="tw-bg-white tw-rounded-lg tw-p-6 sm:tw-p-8 tw-text-center tw-shadow-xl tw-relative tw-mx-4 sm:tw-mx-auto" style="text-align: center; max-width: 600px;">
+            <div class="tw-mb-8" style="text-align: center; margin-bottom: 2rem;">
+                <div class="tw-w-16 tw-h-16 tw-bg-green-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-6" style="margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-check-circle-fill tw-text-green-500 tw-text-3xl" style="text-align: center;"></i>
+                </div>
+                <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-mb-2" style="margin-bottom: 0;">Thank You!</h3>
+                <p class="tw-text-gray-600 tw-mb-6" style="margin-bottom: 1.5rem;">Thanks for your request and interest in Digital Property Showcase!</p>
+            </div>
+            
+            <div class="tw-text-center tw-mb-8" style="margin-bottom: 2rem;">
+                <h4 class="tw-font-semibold tw-text-gray-900 tw-mb-2" style="margin-bottom: 0;">Next Steps:</h4>
+                <ul class="tw-text-sm tw-text-gray-600 tw-space-y-3 tw-list-none tw-p-0" style="margin-bottom: 0;">
+                    <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                        <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                        <span>We will review your request</span>
+                    </li>
+                    <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                          <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                          <span>We'll be in touch via email with all the info and assets we need from you (logos, branding, etc.)</span>
+                      </li>
+                      <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                          <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                          <span>Payment will not be requested until the product is ready for delivery</span>
+                      </li>
+                      <li class="tw-text-center" style="margin-bottom: 0;">
+                           <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                           <span>The whole process should take 2 business days from when we've received all the materials we need</span>
+                       </li>
+                </ul>
+            </div>
+            
+            <div class="tw-pt-6 tw-text-center" style="text-align: center; padding-top: 1.5rem;">
+                <button id="modal-ok-button" class="lp-btn lp-btn-primary lp-btn-md tw-inline-block" style="max-width: 160px; margin: 0 auto; display: inline-block;">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show modal function
+        function showSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            modal.classList.remove('tw-hidden');
+            document.body.classList.add('modal-open');
+        }
+        
+        // Hide modal function
+        function hideSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('tw-hidden');
+            document.body.classList.remove('modal-open');
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show modal button
+            const showModalBtn = document.getElementById('show-modal-btn');
+            if (showModalBtn) {
+                showModalBtn.addEventListener('click', showSuccessModal);
+            }
+            
+            // Modal OK button
+            const modalOkButton = document.getElementById('modal-ok-button');
+            if (modalOkButton) {
+                modalOkButton.addEventListener('click', hideSuccessModal);
+            }
+            
+            // Close modal when clicking outside
+            const modal = document.getElementById('success-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        hideSuccessModal();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

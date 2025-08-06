@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Get Started - Create Your Prestige Property Showcase</title>
+        <title>Get Started - Create Your Property Showcase</title>
         <meta name="description" content="Begin creating your custom-branded digital property showcase in a few simple steps to impress sellers and win more listings." />
 
         <!-- Favicon -->
@@ -12,7 +12,7 @@
         <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png" />
 
         <!-- Open Graph / Facebook -->
-        <meta property="og:title" content="Get Started - Create Your Prestige Property Showcase" />
+        <meta property="og:title" content="Get Started - Create Your Property Showcase" />
         <meta property="og:description" content="Begin creating your custom-branded digital property showcase in a few simple steps to impress sellers and win more listings." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://digitalpropertyshowcase.com/onboarding.html" />
@@ -479,6 +479,16 @@
             .autocomplete-suggestion-item:hover {
                 background-color: #f3f4f6;
             }
+            
+            /* Success modal styling */
+            #success-modal {
+                backdrop-filter: blur(4px);
+            }
+            
+            /* Prevent body scrolling when modal is open */
+            body.modal-open {
+                overflow: hidden;
+            }
         </style>
 
         <!-- Centralized Pricing Data -->
@@ -523,13 +533,10 @@
                         <div class="step-indicator active" id="step-indicator-1">1</div>
                         <div class="step-line" id="step-line-1"></div>
                         <div class="step-indicator" id="step-indicator-2">2</div>
-                        <div class="step-line" id="step-line-2"></div>
-                        <div class="step-indicator" id="step-indicator-3">3</div>
                     </div>
                     <div class="tw-flex tw-justify-between tw-text-xs tw-text-gray-600">
-                        <span>Choose Tier</span>
-                        <span>Agent Details</span>
-                        <span>Property Info</span>
+                        <span>Choose Solution</span>
+                        <span>Input Info</span>
                     </div>
                 </div>
 
@@ -537,132 +544,123 @@
                 <form id="onboarding-form" class="tw-bg-white tw-rounded-xl tw-shadow-md tw-px-4 tw-py-6 sm:tw-p-6 tw-pb-6 tw-mb-6">
                     <!-- Step 1: Tier Selection -->
                     <div class="step-container active" id="step-1">
-                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3 center-heading">Step 1: Choose Your Showcase Tier</h2>
+                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3 center-heading">Step 1: Choose Your Solution</h2>
                         <p class="description-text-sm tw-mb-2">
                             Select the tier that best fits your needs. You can change this later if needed.
                         </p>
 
                         <div class="tier-grid tw-mt-2">
-                            <!-- Essential Tier -->
-                            <div class="tier-card" data-tier="essential" onclick="selectTier('essential')">
+                            <!-- Demonstration Solution -->
+                            <div class="tier-card" data-tier="demonstration" onclick="selectTier('demonstration')">
                                 <div class="tier-header">
-                                    <h3 class="tw-font-semibold">Essential</h3>
+                                    <h3 class="tw-font-semibold">Demonstration</h3>
                                     <div class="tier-checkbox">
                                         <div class="tier-checkbox-inner tw-hidden"></div>
                                     </div>
                                 </div>
-                                <p class="tier-price" id="essential-price"></p>
-                                <p class="tier-period" id="essential-setup-fee"></p>
+                                <p class="tier-price" id="demonstration-price"></p>
+                                <p class="tier-period" id="demonstration-setup-fee"></p>
                                 
                                 <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
                                 
-                                <div class="tier-features" id="essential-features">
+                                <div class="tier-features" id="demonstration-features">
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>Unbranded website</span>
+                                        <span>Perfect for pitching to vendors with previous listing examples</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>Custom domain</span>
+                                        <span>Show potential clients what their property could look like</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>Unlimited media</span>
+                                        <span>Quick setup to win listings faster</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>3 months live</span>
+                                        <span>Cost-effective way to test our platform</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="tier-guarantee" style="margin-top: 15px; padding: 12px; background-color: #f3f0ff; border: 1px solid #3A24C7; border-radius: 8px; text-align: center;">
+                                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                        <i class="bi bi-shield-check" style="color: #3A24C7; margin-right: 8px; font-size: 1.1em;"></i>
+                                        <strong style="color: #3A24C7; font-size: 0.9em;">Money-Back Guarantee</strong>
+                                    </div>
+                                    <p style="margin: 0; font-size: 0.8em; color: #374151; line-height: 1.4;">If you don't win any listings using this showcase in the next 6 months, we'll refund your payment - no questions asked.</p>
+                                </div>
+                            </div>
+
+                            <!-- Showcase Solution -->
+                            <div class="tier-card" data-tier="showcase" onclick="selectTier('showcase')">
+                                <div class="tier-header">
+                                    <h3 class="tw-font-semibold">Showcase</h3>
+                                    <div class="tier-checkbox">
+                                        <div class="tier-checkbox-inner tw-hidden"></div>
+                                    </div>
+                                </div>
+                                <p class="tier-price" id="showcase-price"></p>
+                                <p class="tier-period" id="showcase-setup-fee"></p>
+                                
+                                <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
+                                
+                                <div class="tier-features" id="showcase-features">
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Impress sellers with premium marketing that wins listings</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>5 content updates</span>
+                                        <span>Your agency branding showcases your professionalism</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>Email support</span>
+                                        <span>Interactive maps and features engage buyers longer</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Complete campaign coverage for the entire sales period</span>
+                                    </div>
+                                    <div class="tier-feature">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Dedicated support to ensure your success</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Premium Tier -->
-                            <div class="tier-card" data-tier="premium" onclick="selectTier('premium')">
-                                <div class="tier-popular-badge">Popular</div>
+                            <!-- Enterprise Solution -->
+                            <div class="tier-card" data-tier="enterprise" onclick="selectTier('enterprise')">
                                 <div class="tier-header">
-                                    <h3 class="tw-font-semibold">Premium</h3>
+                                    <h3 class="tw-font-semibold">Enterprise</h3>
                                     <div class="tier-checkbox">
                                         <div class="tier-checkbox-inner tw-hidden"></div>
                                     </div>
                                 </div>
-                                <p class="tier-price" id="premium-price"></p>
-                                <p class="tier-period" id="premium-setup-fee"></p>
+                                <p class="tier-price" id="enterprise-price"></p>
+                                <p class="tier-period" id="enterprise-setup-fee"></p>
                                 
                                 <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
                                 
-                                <div class="tier-features" id="premium-features">
+                                <div class="tier-features" id="enterprise-features">
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Full agency branding</strong></span>
+                                        <span>Tailored solution designed for your agency's unique needs</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Custom logo</strong></span>
+                                        <span>Personal account manager ensures seamless operations</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Interactive local map</strong></span>
+                                        <span>Connect with your existing CRM and marketing tools</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>Backlinking to your site</span>
+                                        <span>Scale your marketing efforts across multiple properties</span>
                                     </div>
                                     <div class="tier-feature">
                                         <i class="bi bi-check-circle-fill"></i>
-                                        <span>10 website updates</span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Phone support</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Prestige Tier -->
-                            <div class="tier-card" data-tier="prestige" onclick="selectTier('prestige')">
-                                <div class="tier-header">
-                                    <h3 class="tw-font-semibold">Prestige</h3>
-                                    <div class="tier-checkbox">
-                                        <div class="tier-checkbox-inner tw-hidden"></div>
-                                    </div>
-                                </div>
-                                <p class="tier-price" id="prestige-price"></p>
-                                <p class="tier-period" id="prestige-setup-fee"></p>
-                                
-                                <a href="javascript:void(0)" class="toggle-features" onclick="toggleAllFeatures(event)">What's included? <i class="bi bi-chevron-down"></i></a>
-                                
-                                <div class="tier-features" id="prestige-features">
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Instagram carousel</strong></span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Dynamic open house data</strong></span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span><strong>Dedicated account manager</strong></span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Unlimited updates</span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Advanced SEO optimization</span>
-                                    </div>
-                                    <div class="tier-feature">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Priority support</span>
+                                        <span>White-glove service with immediate response times</span>
                                     </div>
                                 </div>
                             </div>
@@ -767,94 +765,10 @@
                             </div>
                         </div>
 
-                        <div class="tw-flex tw-justify-between">
-                            <button type="button" onclick="prevStep(2)" 
-                                    class="lp-btn lp-btn-outline-dark lp-btn-md lp-btn-icon-left">
-                                <i class="bi bi-arrow-left"></i>
-                                Back
-                            </button>
-                            <button type="button" onclick="nextStep(2)" 
-                                    class="lp-btn lp-btn-primary lp-btn-md lp-btn-icon-right">
-                                Continue
-                                <i class="bi bi-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Property Details -->
-                    <div class="step-container" id="step-3">
-                        <h2 class="tw-text-2xl tw-font-semibold tw-mb-3">Step 3: Property Details</h2>
-                        <p class="tw-text-gray-600 tw-mb-5">
-                            Tell us about the property you want to showcase.
-                        </p>
-
-                        <div class="tw-grid tw-gap-4 md:tw-grid-cols-2" style="width: 100%;">
-                            <div class="tw-relative"> <!-- Added tw-relative class -->
-                                <label for="street_address" class="form-label">Address <span class="tw-text-red-500">*</span></label>
-                                <input type="text" id="street_address" name="street_address" class="form-input" required>
-                                <div id="autocomplete-suggestions-container" class="autocomplete-suggestions-container"></div> <!-- Added suggestions container -->
-                            </div>
-                            <div>
-                                <label for="property_name" class="form-label">Property Name (Optional)</label>
-                                <input type="text" id="property_name" name="property_name" class="form-input"
-                                       placeholder="If empty, will use the full address">
-                            </div>
-                            <div>
-                                <label for="price" class="form-label">Price <span class="tw-text-red-500">*</span></label>
-                                <input type="text" id="price" name="price" class="form-input" required
-                                       placeholder="e.g. $1,200,000 or Contact Agent">
-                            </div>
-                            <div>
-                                <label class="form-label">Sale Type <span class="tw-text-red-500">*</span></label>
-                                <div class="tw-flex tw-items-center tw-gap-4 tw-mt-2">
-                                    <label class="tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
-                                        <input type="radio" name="sale_type" value="private_sale" checked
-                                               onchange="toggleAuctionFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
-                                        <span>Private Sale</span>
-                                    </label>
-                                    <label class="tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
-                                        <input type="radio" name="sale_type" value="auction"
-                                               onchange="toggleAuctionFields()" class="tw-w-4 tw-h-4 tw-accent-[var(--primary-color)]">
-                                        <span>Auction</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Auction Date/Time (hidden by default) -->
-                        <div id="auction_fields" class="tw-mt-4 hide-section">
-                            <div class="tw-grid tw-gap-4 md:tw-grid-cols-2" style="width: 100%;">
-                                <div>
-                                    <label for="auction_date" class="form-label">Auction Date <span class="tw-text-red-500">*</span></label>
-                                    <input type="date" id="auction_date" name="auction_date" class="form-input">
-                                </div>
-                                <div>
-                                    <label for="auction_time" class="form-label">Auction Time <span class="tw-text-red-500">*</span></label>
-                                    <input type="time" id="auction_time" name="auction_time" class="form-input">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tw-mt-5">
-                            <label for="preferred_domain" class="form-label">Preferred Domain <span class="tw-text-red-500">*</span></label>
-                            <div class="tw-flex tw-items-center">
-                                <span class="tw-px-3 tw-py-2 tw-bg-gray-100 tw-border tw-border-r-0 tw-border-gray-300 tw-rounded-l-lg">www.</span>
-                                <input type="text" id="preferred_domain" name="preferred_domain" class="form-input tw-rounded-l-none"
-                                       placeholder="123mainstreet.com" required>
-                            </div>
-                            <p class="tw-text-xs tw-text-gray-500 tw-mt-1">
-                                Choose a simple, memorable domain related to the property address.
-                            </p>
-                            <p class="tw-text-xs tw-text-gray-500 tw-mt-1" style="font-size: 0.65rem;">
-                                Please note: We cannot guarantee the availability of any domains and will advise if there are any problems with the chosen domain.
-                            </p>
-                        </div>
-
-
                         <div id="form-message" class="tw-text-center tw-text-sm tw-mb-4" style="min-height: 1.2em;"></div>
 
-                        <div class="tw-mt-8 tw-flex tw-justify-between">
-                            <button type="button" onclick="prevStep(3)"
+        <div class="tw-flex tw-justify-between">
+                            <button type="button" onclick="prevStep(2)" 
                                     class="lp-btn lp-btn-outline-dark lp-btn-md lp-btn-icon-left">
                                 <i class="bi bi-arrow-left"></i>
                                 Back
@@ -866,6 +780,9 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Step 3: Property Details -->
+
                 </form>
             </div>
         </main>
@@ -877,18 +794,59 @@
             </div>
         </footer>
 
+        <!-- Success Modal -->
+        <div id="success-modal" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-hidden tw-p-4" style="display: flex; align-items: center; justify-content: center;">
+            <div class="tw-bg-white tw-rounded-lg tw-p-6 sm:tw-p-8 tw-text-center tw-shadow-xl tw-relative tw-mx-4 sm:tw-mx-auto" style="text-align: center; max-width: 600px;">
+                <div class="tw-mb-8" style="text-align: center; margin-bottom: 2rem;">
+                    <div class="tw-w-16 tw-h-16 tw-bg-green-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-6" style="margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-check-circle-fill tw-text-green-500 tw-text-3xl" style="text-align: center;"></i>
+                    </div>
+                    <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-mb-2" style="margin-bottom: 0;">Thank You!</h3>
+                     <p class="tw-text-gray-600 tw-mb-6" style="margin-bottom: 1.5rem;">Thanks for your request and interest in Digital Property Showcase!</p>
+                </div>
+                
+                <div class="tw-text-center tw-mb-8" style="margin-bottom: 2rem;">
+                    <h4 class="tw-font-semibold tw-text-gray-900 tw-mb-2" style="margin-bottom: 0;">Next Steps:</h4>
+                     <ul class="tw-text-sm tw-text-gray-600 tw-space-y-3 tw-list-none tw-p-0" style="margin-bottom: 0;">
+                         <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                              <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                              <span>We will review your request</span>
+                          </li>
+                          <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                              <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                              <span>We'll be in touch via email with all the info and assets we need from you (logos, branding, etc.)</span>
+                          </li>
+                          <li class="tw-text-center" style="margin-bottom: 0.25rem;">
+                              <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                              <span>Payment will not be requested until the product is ready for delivery</span>
+                          </li>
+                          <li class="tw-text-center" style="margin-bottom: 0;">
+                               <span class="tw-text-green-500 tw-mr-2" style="font-size: 1.2em; font-weight: bold;">•</span>
+                               <span>The whole process should take 2 business days from when we've received all the materials we need</span>
+                           </li>
+                    </ul>
+                </div>
+                
+                <div class="tw-pt-6 tw-text-center" style="text-align: center; padding-top: 1.5rem;">
+                    <button id="modal-ok-button" class="lp-btn lp-btn-primary lp-btn-md tw-inline-block" style="max-width: 160px; margin: 0 auto; display: inline-block;">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <script>
             let selectedTier = '';
             let featuresVisible = false;
             
             // Function to populate tier prices from the data object
             function populateTierPrices() {
-                document.getElementById('essential-price').textContent = pricingData.essential.price;
-                document.getElementById('essential-setup-fee').textContent = pricingData.essential.setupFee;
-                document.getElementById('premium-price').textContent = pricingData.premium.price;
-                document.getElementById('premium-setup-fee').textContent = pricingData.premium.setupFee;
-                document.getElementById('prestige-price').textContent = pricingData.prestige.price;
-                document.getElementById('prestige-setup-fee').textContent = pricingData.prestige.setupFee;
+                document.getElementById('demonstration-price').textContent = pricingData.demonstration.price;
+                document.getElementById('demonstration-setup-fee').textContent = pricingData.demonstration.setupFee;
+                document.getElementById('showcase-price').textContent = pricingData.showcase.price;
+                document.getElementById('showcase-setup-fee').textContent = pricingData.showcase.setupFee;
+                document.getElementById('enterprise-price').textContent = pricingData.enterprise.price;
+                document.getElementById('enterprise-setup-fee').textContent = pricingData.enterprise.setupFee;
             }
 
             // Function to select tier
@@ -1212,10 +1170,10 @@
 
                     if (response.ok) {
                         console.log('Submission successful:', result);
-                        messageArea.textContent = 'Form submitted successfully! Your data has been saved.';
-                        messageArea.style.color = '#10b981'; // Green color for success
-                        // Track conversion first
-                        gtag_report_conversion('/');
+                        // Show success modal instead of text message
+                        showSuccessModal();
+                        // Track conversion without automatic redirect
+                        gtag_report_conversion();
                     } else {
                         console.error('Submission failed:', result.error);
                         messageArea.textContent = `Form submission failed: ${result.error || 'Unknown error'}`;
@@ -1233,13 +1191,38 @@
                 }
             });
             
+            // Success modal functions
+            function showSuccessModal() {
+                const modal = document.getElementById('success-modal');
+                modal.classList.remove('tw-hidden');
+                document.body.classList.add('modal-open');
+            }
+            
+            function hideSuccessModal() {
+                const modal = document.getElementById('success-modal');
+                modal.classList.add('tw-hidden');
+                document.body.classList.remove('modal-open');
+            }
+            
+            // Modal OK button click handler
+            document.addEventListener('DOMContentLoaded', function() {
+                const modalOkButton = document.getElementById('modal-ok-button');
+                if (modalOkButton) {
+                    modalOkButton.addEventListener('click', function() {
+                        hideSuccessModal();
+                        // Redirect to home page
+                        window.location.href = '/';
+                    });
+                }
+            });
+            
             // Initialize the form
             document.addEventListener('DOMContentLoaded', function() {
                 // Populate the tier prices
                 populateTierPrices();
 
-                // Pre-select Essential tier as default
-                selectTier('premium');
+                // Pre-select Showcase solution as default
+                selectTier('showcase');
             });
         </script>
 
