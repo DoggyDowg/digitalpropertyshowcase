@@ -89,7 +89,7 @@ async function sendConfirmationEmail({
   const resend = new Resend(process.env.RESEND_API_KEY);
   
   await resend.emails.send({
-    from: 'Digital Property Showcase <onboarding@digitalpropertyshowcase.com>',
+    from: 'Digital Property Showcase <no-reply@digitalpropertyshowcase.com>',
     to: user_email,
     subject: 'Welcome to Digital Property Showcase - Submission Confirmed',
     html: `
@@ -163,7 +163,7 @@ async function sendInternalNotification({
   
   for (const email of internalEmails) {
     await resend.emails.send({
-      from: 'Digital Property Showcase <onboarding@digitalpropertyshowcase.com>',
+      from: 'Digital Property Showcase <no-reply@digitalpropertyshowcase.com>',
       to: email.trim(),
       subject: `New Onboarding Request - ${tierDisplayName} Tier`,
       html: `
