@@ -337,6 +337,37 @@
                     if (fullShowcaseStep3) {
                         fullShowcaseStep3.textContent = window.pricingData.showcase.price;
                     }
+                    
+                    // Populate FAQ pricing elements
+                    const faqDemoPrice = document.getElementById('faq-demo-price');
+                    if (faqDemoPrice) {
+                        faqDemoPrice.textContent = window.pricingData.demonstration.price;
+                    }
+                    
+                    const faqListingPrice = document.getElementById('faq-listing-price');
+                    if (faqListingPrice) {
+                        faqListingPrice.textContent = window.pricingData.listing.price;
+                    }
+                    
+                    const faqMonthlyPrice = document.getElementById('faq-monthly-price');
+                    if (faqMonthlyPrice) {
+                        faqMonthlyPrice.textContent = window.pricingData.monthly.price;
+                    }
+                    
+                    const faqExtensionPrice = document.getElementById('faq-extension-price');
+                    if (faqExtensionPrice) {
+                        faqExtensionPrice.textContent = window.pricingData.monthly.price;
+                    }
+                    
+                    const faqDemoCredit = document.getElementById('faq-demo-credit');
+                    if (faqDemoCredit) {
+                        faqDemoCredit.textContent = window.pricingData.demonstration.price;
+                    }
+                    
+                    const faqFullShowcasePrice = document.getElementById('faq-full-showcase-price');
+                    if (faqFullShowcasePrice) {
+                        faqFullShowcasePrice.textContent = window.pricingData.listing.price;
+                    }
                 }
             });
         </script>
@@ -1672,7 +1703,7 @@
             </div>
             
             <div class="tw-mt-8 tw-text-center tw-max-w-[800px]">
-                <p class="tw-text-gray-600">Demonstration showcases are valid for 12 months. Normal showcases are live for 3 months, then AU$80/month if extended.</p>
+                <p class="tw-text-gray-600">Demonstration showcases are valid for 12 months. Listing showcases are live for 3 months, then AU$75/month if extended.</p>
                 <p class="tw-text-gray-600 tw-mt-2">Enterprise pricing available for agencies requiring multiple showcases. <a href="#contact" class="tw-text-[var(--primary-color)] tw-underline">Contact us</a> for custom quotes.</p>
             </div>
         </section>
@@ -1702,24 +1733,41 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>We offer three options: Demonstration Showcase, Normal Showcase, and Enterprise pricing. For full pricing details, please visit our <a href="#pricing" class="tw-text-[var(--primary-color)] tw-underline">Pricing section</a>.</p>
-                            <p class="tw-mt-2 tw-text-gray-600">Demonstration showcases are for pitching to vendors, Normal showcases are for live listings, and Enterprise pricing is available for agencies with volume needs.</p>
+                            <p>We offer three options: Demonstration Showcase, Listing Showcase, and Enterprise pricing. For full pricing details, please visit our <a href="#pricing" class="tw-text-[var(--primary-color)] tw-underline">Pricing section</a>.</p>
+                            <p class="tw-mt-2 tw-text-gray-600">Demonstration showcases are for pitching to vendors, Listing showcases are for live listings, and Enterprise pricing is available for agencies with volume needs.</p>
                         </div>
                     </div>
                     <hr class="tw-my-3">
                     
                     <div class="faq tw-w-full">
                         <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
-                            <span style="color: #888888; font-weight: normal;">What's included in each pricing tier?</span>
+                            <span style="color: #888888; font-weight: normal;">What's included?</span>
                             <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
                             <p>Each option serves different needs:</p>
                             <ul class="tw-list-disc tw-pl-5 tw-mt-2">
-                                <li><strong>Demonstration Showcase (AU$149):</strong> Fully branded showcase using your previous listing data, valid for 12 months, no custom domain, no maintenance after build</li>
-                                <li><strong>Normal Showcase (AU$399):</strong> All premium features including full branding, custom domain, interactive maps, Instagram carousel, unlimited updates, valid for 3 months then AU$80/month</li>
-                                <li><strong>Enterprise:</strong> Custom pricing for agencies requiring multiple showcases or volume discounts, includes dedicated account manager and flexible terms</li>
+                                <li><strong>Demonstration Showcase (<span id="faq-demo-price">AU$189</span>):</strong> Fully branded showcase using your previous listing data, valid for 12 months, no custom domain, no maintenance after build</li>
+                                <li><strong>Listing Showcase (<span id="faq-listing-price">AU$549</span>):</strong> All premium features including full branding, custom domain, interactive maps, Instagram carousel, unlimited updates, valid for 3 months then <span id="faq-monthly-price">AU$75</span>/month</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="tw-my-3">
+                    
+                    <div class="faq tw-w-full">
+                        <h4 class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg">
+                            <span style="color: #888888; font-weight: normal;">What is your 100% Money-Back Guarantee?</span>
+                            <i class="bi bi-plus tw-text-xl tw-origin-center tw-duration-300 tw-transition-transform
+                                    tw-ml-auto tw-font-semibold"></i>
+                        </h4>
+                        <div class="content max-lg:tw-text-sm">
+                            <p>If you don't win any listings using the Demo Showcase in the next 6 months, we'll refund your payment - no questions asked.</p>
+                            <p class="tw-mt-2">Here's how it works:</p>
+                            <ul class="tw-list-disc tw-pl-5 tw-mt-2">
+                                <li><strong>Get Your Demo:</strong> Complete a simple form in just 2 minutes. Receive a branded demo showcase—perfectly tailored with your brand, ready to impress at your next vendor presentation.</li>
+                                <li><strong>Win Listings:</strong> Use your demo showcase at vendor meetings for up to 6 months. When you secure your next prestigious listing, upgrade effortlessly to our full showcase.</li>
+                                <li><strong>Zero Risk Guaranteed:</strong> If you win a listing, we'll credit your <span id="faq-demo-credit">AU$189</span> demo fee towards your full showcase (<span id="faq-full-showcase-price">AU$549</span>). If you don't secure a listing within 6 months, we'll fully refund your demo cost. Either way, your risk is zero.</li>
                             </ul>
                         </div>
                     </div>
@@ -1732,7 +1780,7 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>No long-term contract. Each showcase website is live for 3 months, extendable month-to-month for AU$80 per month.</p>
+                            <p>No long-term contract. Each showcase website is live for 3 months, extendable month-to-month for <span id="faq-extension-price">AU$75</span> per month. Demo Showcases will be live for 12 months.</p>
                         </div>
                     </div>
                 </div>
@@ -1774,7 +1822,7 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>Yes, both Demonstration and Normal showcases offer fully branded websites reflecting your agency's unique style, including fonts, colors, logos, and backlinks.</p>
+                            <p>Yes, both Demonstration and Listing showcases offer fully branded websites reflecting your agency's unique style, including fonts, colors, logos, and backlinks.</p>
                         </div>
                     </div>
                     <hr class="tw-my-3">
@@ -1851,7 +1899,7 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>Demonstration showcases receive no maintenance after build. Normal showcases include unlimited updates during the 3-month period and ongoing maintenance if extended.</p>
+                            <p>Demonstration showcases receive no maintenance after build. Listing showcases include unlimited updates during the 3-month period and ongoing maintenance if extended.</p>
                         </div>
                     </div>
                 </div>
@@ -1881,7 +1929,7 @@
                                     tw-ml-auto tw-font-semibold"></i>
                         </h4>
                         <div class="content max-lg:tw-text-sm">
-                            <p>Yes, we link to your social media pages. Normal showcases include automated Instagram carousel generation, allowing you to easily share professional content on social media.</p>
+                            <p>Yes, we link to your social media pages. Listing showcases include automated Instagram carousel generation, allowing you to easily share professional content on social media.</p>
                         </div>
                     </div>
                 </div>
@@ -2155,10 +2203,9 @@
                         
                         <!-- Social Links moved here -->
                         <div class="footer-social">
-                            <a href="#" aria-label="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
-                            <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                            <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                            <a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                            <a href="https://www.instagram.com/digipropshow/" aria-label="Instagram" target="_blank"><i class="bi bi-instagram"></i></a>
+                            <a href="https://www.facebook.com/profile.php?id=61576962171439" aria-label="Facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+                            <a href="https://wa.me/61488878040" aria-label="WhatsApp" target="_blank"><i class="bi bi-whatsapp"></i></a>
                         </div>
                     </div>
                     
